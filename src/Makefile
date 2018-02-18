@@ -14,6 +14,6 @@ extract:
 
 clean:
 	rm -f *.[oads] *~ *.tokens *Listener.py *Parser.py *Lexer.py
-	rm -rf __pycache__ generated_* test_* CUnit* *.dot
+	rm -rf __pycache__ generated_* test_* CUnit* *.dot out*
 
 

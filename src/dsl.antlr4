@@ -63,8 +63,8 @@ position: 'top' | 'bottom' | 'left' | 'right' | 'center'
     ;
 
 datasheet_prop:
-        'extract' ':' ID '(' STRING ')' 'as' ID ';'
-    |   'file'    ':' STRING ';'
+        'extract' ':' extractor=ID '(' title=STRING ')' 'as' table=ID ';'
+    |   'file'    ':' filename=STRING ';'
     ;
 
 dim_prop: 'width'  ':' expr ';'

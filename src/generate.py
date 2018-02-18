@@ -1,9 +1,11 @@
 import sys
+import os
 import pystache
 from antlr4 import *
 from dslLexer import dslLexer
 from dslParser import dslParser
 from dslListener import dslListener
+from datasheets import read_data_sheets
 
 def Usage():
     print("USAGE: xxx.edsl");
@@ -29,7 +31,6 @@ def getBaseName(name):
     return name
 
 
-
 fileName = None
 for arg in sys.argv[1:]:
     if arg.endswith(".edsl"):
@@ -41,4 +42,5 @@ if fileName == None:
     Usage("missing xxx.edsl file")
 
 
-parse(fileName)
+tree = parse(fileName)
+read_data_sheets(tree);
