@@ -1,0 +1,9 @@
+
+component ADC {
+  datasheet {
+  file: "/home/rove/Projects/edsl/docs/AD9201.pdf";
+  extract: package("28-Lead Shrink Small Outline (SSOP)") as package;
+  extract: table("PIN FUNCTION DESCRIPTIONS") as pins;
+  extract: table("AD9200-SPECIFICATIONS") as specs;
+  }
+}

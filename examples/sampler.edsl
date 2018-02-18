@@ -71,7 +71,7 @@ connection Rx_to_Connector[x:ADC_BITS] {
 
 //----- constraints section:
 
-contraint equal_lengths_for_ADC_to_connector {
+constraint equal_lengths_for_ADC_to_connector {
   for i in ADC_BITS {
       for j in ADC_BITS {
 

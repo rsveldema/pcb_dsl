@@ -2,8 +2,11 @@ grammar dsl;
 
 startRule: directive* EOF;
 
-directive: component | connection | constraint | strategy;
+directive: component | connection | constraint | strategy | constant;
 
+// ---- CONSTANT -----
+
+constant: 'const' ID '=' expr ';';
 
 // ---- STRATEGY -----
 
@@ -41,9 +44,11 @@ component_property:
         'dimensions' '{' dim_prop* '}'
     |   'datasheet'  '{' datasheet_prop* '}'
     |   'location'   '{' location_prop* '}'
-    |   'pin'  ID*   '{' pin_prop* '}'
+    |   'pin'  pin_name*   '{' pin_prop* '}'
     |   'value' ':' expr ';'
     ;
+
+pin_name: ID (',' ID)* ;
 
 pin_prop: ('input' | 'output' | 'digital_ground' | 'analog_ground') ';';
 
@@ -54,11 +59,11 @@ location_prop:
 
 orientation: 'horizontal' | 'vertical'; 
 
-position: 'top' | 'bottom' | 'left' | 'right'
+position: 'top' | 'bottom' | 'left' | 'right' | 'center'
     ;
 
 datasheet_prop:
-        'extract' ':' ID(STRING) 'as' ID ';'
+        'extract' ':' ID '(' STRING ')' 'as' ID ';'
     |   'file'    ':' STRING ';'
     ;
 
@@ -82,7 +87,7 @@ expr: primary (op primary)?
 
 op: '==' | '!= ' | '<' | '>' | '<=' | '>=' | '+' | '-' | '*' | '/';
 
-access: ID index? '.' ID index?
+access: ID index? ('.' ID index?)*
     ;
 
 index: ('[' ID ']');
@@ -97,7 +102,7 @@ unit: 'cm'
 // ---- TOKENS ----
 
 STRING: '"' STRCHAR*? '"';
-fragment STRCHAR:[ ,?!a-zA-Z0-9_/.\\<>\-:;];
+fragment STRCHAR:[ ,?!a-zA-Z0-9_/.\\<>\-:;\(\)];
 
 ID: [a-zA-Z][_a-zA-Z0-9]*;
 
