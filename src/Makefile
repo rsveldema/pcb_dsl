@@ -9,6 +9,9 @@ generate_parser:
 install:
 	sudo pip3 install antlr4-python3-runtime
 
+extract:
+	python extract-text.py 
+
 clean:
 	rm -f *.[oads] *~ *.tokens *Listener.py *Parser.py *Lexer.py
 	rm -rf __pycache__ generated_* test_* CUnit* *.dot
