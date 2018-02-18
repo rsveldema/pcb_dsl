@@ -1,0 +1,114 @@
+grammar dsl;
+
+startRule: directive* EOF;
+
+directive: component | connection | constraint | strategy;
+
+
+// ---- STRATEGY -----
+
+strategy: 'strategy' ID '{' strategy_property* '}';
+
+strategy_property: strategy_foreach | strategy_call;
+
+strategy_foreach: 'for' ID 'in' ID '{' strategy_property* '}';
+
+strategy_call: access '('  ')' ';' ;
+
+// ---- CONSTRAINT -----
+
+constraint: 'constraint' ID '{' constraint_property* '}';
+
+constraint_property: constraint_foreach | constraint_require;
+
+constraint_foreach: 'for' ID 'in' ID '{' constraint_property* '}';
+
+constraint_require: 'require' expr ';';
+
+// ---- CONNECTION -----
+
+connection: 'connection' object_name '{' access '->' access ';' '}';
+
+
+// ---- COMPONENT -----
+
+object_name: ID ('[' ID ':' ID ']')?
+    ;
+        
+component: 'component' object_name '{' component_property*  '}';
+
+component_property:
+        'dimensions' '{' dim_prop* '}'
+    |   'datasheet'  '{' datasheet_prop* '}'
+    |   'location'   '{' location_prop* '}'
+    |   'pin'  ID*   '{' pin_prop* '}'
+    |   'value' ':' expr ';'
+    ;
+
+pin_prop: ('input' | 'output' | 'digital_ground' | 'analog_ground') ';';
+
+location_prop:
+        'position' ':' position ';'
+    |   'orientation' ':' orientation ';'
+    ;
+
+orientation: 'horizontal' | 'vertical'; 
+
+position: 'top' | 'bottom' | 'left' | 'right'
+    ;
+
+datasheet_prop:
+        'extract' ':' ID(STRING) 'as' ID ';'
+    |   'file'    ':' STRING ';'
+    ;
+
+dim_prop: 'width'  ':' expr ';'
+    |     'height' ':' expr ';'
+    |     'layers' ':' expr ';'
+    ;
+
+
+// ---- EXPR -----
+
+primary:
+        NUMBER unit
+    |   '(' expr ')'
+    |   access
+    ;
+        
+
+expr: primary (op primary)?
+    ;
+
+op: '==' | '!= ' | '<' | '>' | '<=' | '>=' | '+' | '-' | '*' | '/';
+
+access: ID index? '.' ID index?
+    ;
+
+index: ('[' ID ']');
+
+
+unit: 'cm'
+    | 'mm'
+    | 'layer'
+    | 'ohm'
+    ;
+
+// ---- TOKENS ----
+
+STRING: '"' STRCHAR*? '"';
+fragment STRCHAR:[ ,?!a-zA-Z0-9_/.\\<>\-:;];
+
+ID: [a-zA-Z][_a-zA-Z0-9]*;
+
+NUMBER: [0-9]+ ('.' [0-9]+)?;
+
+WS: [ \r\n\t]+ -> skip
+   ;
+
+
+COMMENT: '/*' .*? '*/' -> skip
+    ;
+
+LINE_COMMENT: '//' ~[\r\n]* -> skip
+    ;

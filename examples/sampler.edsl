@@ -1,0 +1,94 @@
+
+component board {
+  dimensions {
+  width: 10 cm;
+  height: 10 cm;
+  layers: 2 layer;
+  }
+}
+
+component ADC {
+  datasheet {
+  file: "/home/rove/Projects/edsl/docs/AD9201.pdf";
+  extract: package("28-Lead Shrink Small Outline (SSOP)") as package;
+  extract: table("PIN FUNCTION DESCRIPTIONS") as pins;
+  extract: table("AD9200-SPECIFICATIONS") as specs;
+  }
+  
+  location {
+  position: center;
+  }
+}
+
+const ADC_BITS = ADC.pins.RESOLUTION;
+
+component analog_connector {
+  pin P0, P1 {
+    input;
+  }
+  pin P2 {
+    analog_ground;
+  }
+  location {
+  position:top;
+  orientation: horizontal;
+  }
+}
+
+component fpga_connector {
+  pin P0, P1, P2, P3, P4, P5, P6, P6, P7, P8, P9 {
+    output;
+  }
+  pin P10 {
+    digital_ground;
+  }
+  location {
+  position:bottom;
+  orientation: horizontal;
+  }
+}
+
+
+
+component R[x:ADC_BITS] {
+ value: 20 ohm;
+  pin IN {
+    input;
+  }
+  pin OUT {
+    output;
+  }
+}
+
+connection ADC_to_Rx[x:ADC_BITS] {
+  ADC.P[x] -> R[x].IN;
+}
+
+connection Rx_to_Connector[x:ADC_BITS] {
+  R[x].OUT -> fpga_connector1.P[x];
+}
+
+
+//----- constraints section:
+
+contraint equal_lengths_for_ADC_to_connector {
+  for i in ADC_BITS {
+      for j in ADC_BITS {
+
+	  require Rx_to_Connector[i].length == 3mm;
+	  
+	  require
+	    (ADC_to_Rx[i].length + Rx_to_Connector[i].length) ==
+	    (ADC_to_Rx[j].length + Rx_to_Connector[j].length);
+	}
+    }
+}
+
+
+strategy meandering {
+  for j in ADC_BITS {
+      ADC_to_Rx[j].meander();
+    }
+}
+
+
