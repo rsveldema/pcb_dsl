@@ -12,8 +12,11 @@ def unimplemented(msg):
 
 def error(msg):
     print("ERROR: " + msg)
-    sys.exit(1)
+    assert False
 
+def normalize(string):
+    string = string.replace('–', '-')
+    return string
 
 pin_forbidden = ["CAUTION"]
 
@@ -51,7 +54,32 @@ class Text:
     
     def dump(self):
         print(self.string)
-    
+
+
+class Row:
+    def __init__(self, y):
+        self.cols = []
+        self.y = y;
+
+    def add(self,p):
+        self.cols.append(p)
+        
+class Table:
+    def __init__(self):
+        self.rows = []
+
+    def add(self, p):
+        row = self.findRow(p)
+        row.add(p)
+
+    def findRow(self, p):
+        for r in self.rows:
+            if r.y == p.y:
+                return r
+        newrow = Row(p.y)
+        self.rows.append(newrow)
+        return newrow
+        
 class Page:
     def __init__(self, width, height):
         self.texts = []
@@ -93,6 +121,12 @@ class Page:
                     newPage.add(p)
         return newPage
 
+    def extractTable(self):
+        table = Table();
+        for p in self.texts:
+            table.add(p)
+        return table
+
     def extractPinTexts(self):
         newPage = Page(self.width, self.height)
         for p in self.texts:
@@ -119,10 +153,12 @@ def createPageArray(soup):
         for t in page.find_all("text"):
             string = t.string
             if string != None:
+                string = normalize(string)
                 x = int(t['left'])
                 y = int(t['top'])
                 width = int(t['width'])
                 height = int(t['height'])
+                print("saw: " + string)
                 current.add(Text(x, y, string, width, height))
 
     return pages
@@ -145,7 +181,9 @@ def extract_package(pages, title, outputName):
     
 def extract_table(pages, title, outputName):
     p = find_page(pages, title)
-    unimplemented("table")
+    p = p.extract_section(title)
+    table = p.extractTable()
+    return table
     
 def destringify(s):
     assert s[0] == '"'

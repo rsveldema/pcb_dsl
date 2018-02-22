@@ -12,11 +12,11 @@ component ADC {
   file: "/home/rove/Projects/edsl/docs/AD9201.pdf";
   extract: package("PIN CONFIGURATION") as package;
   extract: table("PIN FUNCTION DESCRIPTIONS") as pins;
-  extract: table("AD9200-SPECIFICATIONS") as specs;
+  extract: table("AD9201-SPECIFICATIONS") as specs;
   }
   
   location {
-  position: center;
+    position: center;
   }
 }
 
