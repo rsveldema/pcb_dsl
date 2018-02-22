@@ -6,6 +6,7 @@ from dslLexer import dslLexer
 from dslParser import dslParser
 from dslListener import dslListener
 from datasheets import read_data_sheets
+from model import read_model
 
 def Usage():
     print("USAGE: xxx.edsl");
@@ -44,3 +45,4 @@ if fileName == None:
 
 tree = parse(fileName)
 read_data_sheets(tree);
+read_model(tree)

@@ -76,7 +76,7 @@ dim_prop: 'width'  ':' expr ';'
 // ---- EXPR -----
 
 primary:
-        NUMBER unit
+        n=NUMBER unit
     |   '(' expr ')'
     |   access
     ;

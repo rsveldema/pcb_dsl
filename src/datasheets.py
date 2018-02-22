@@ -158,7 +158,7 @@ def createPageArray(soup):
                 y = int(t['top'])
                 width = int(t['width'])
                 height = int(t['height'])
-                print("saw: " + string)
+                #print("saw: " + string)
                 current.add(Text(x, y, string, width, height))
 
     return pages
@@ -190,16 +190,17 @@ def destringify(s):
     assert s[len(s)-1] == '"'
     return s[1:len(s)-1]
 
-def extract_tables(pages, ds_prop_list):
+def extract_tables(comp, pages, ds_prop_list):
     for p in ds_prop_list:
         extractor = p.extractor
         if extractor != None:
             title            = destringify(p.title.text)
+            table            = destringify(p.table.text)
             createdTableName = p.table.text
             if extractor.text == "package":
-                extract_package(pages, title, createdTableName)
+                pkg = extract_package(pages, title, createdTableName)
             elif extractor.text == "table":
-                extract_table(pages, title, createdTableName)
+                table = extract_table(pages, title, createdTableName)
             else:
                 unimplemented("extractor: " + extractor.text)
 
@@ -210,26 +211,20 @@ def getFileName(pl):
             return p.filename.text
     return None
 
+
+
+#def enterComponent_property(self, ctxt):
+#if len(ctxt.datasheet_prop()) > 0:
+
+
+def process_datasheet_prop(comp, prop):
+    filename = getFileName(prop) #ctxt.datasheet_prop())
+    print("reading component prop: " + str(filename))
+    os.system("pdftohtml -xml " + filename + " out.xml")
+    fp = open("out.xml")
+    soup = BeautifulSoup(fp, "xml")
+    pages = createPageArray(soup)
+    fp.close()
     
-
-                
-class DatasheetListener(dslListener):
-    def __init__(self):
-        pass
-
-    def enterComponent_property(self, ctxt):
-        if len(ctxt.datasheet_prop()) > 0:
-            filename = getFileName(ctxt.datasheet_prop())
-            print("reading component prop: " + str(filename))
-            os.system("pdftohtml -xml " + filename + " out.xml")
-            fp = open("out.xml")
-            soup = BeautifulSoup(fp, "xml")
-            pages = createPageArray(soup)
-            fp.close()
-
-            extract_tables(pages, ctxt.datasheet_prop())
-            
-def read_data_sheets(tree):
-    ds = DatasheetListener()
-    walker = ParseTreeWalker()
-    walker.walk(ds, tree)
+    extract_tables(comp, pages, ctxt.datasheet_prop())
+    
