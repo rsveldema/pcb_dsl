@@ -101,14 +101,9 @@ unit: 'cm'
 
 // ---- TOKENS ----
 
-//STRING: '"' STRCHAR*? '"';
-//fragment STRCHAR:[ ,?!a-zA-Z0-9_/.\\<>\-:;\(\)];
-
 STRING
    : '"' ~ ["\r\n]* '"'
    ;
-
-
 
 ID: [a-zA-Z][_a-zA-Z0-9]*;
 

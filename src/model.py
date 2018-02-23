@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from antlr4 import *
 import os
 import sys
+from datasheets import process_datasheet_prop
 
 __uniq=0
 constants={}
@@ -97,10 +98,15 @@ class ModelListener(dslListener):
 
 
     def enterComponent(self, ctxt):
-        names=ctxt.object_name().ID()
+        names = ctxt.object_name().ID()
+
         if len(names) == 1:
             comp = Component(str(names[0]))
             components.append(comp)
+
+            if ctxt.component_property() != None:
+                for p in ctxt.component_property():
+                    process_datasheet_prop(comp, p.datasheet_prop())
         else:
             limit = str(names[2])
             count = constants[limit]

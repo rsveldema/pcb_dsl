@@ -219,6 +219,9 @@ def getFileName(pl):
 
 def process_datasheet_prop(comp, prop):
     filename = getFileName(prop) #ctxt.datasheet_prop())
+    if filename == None:
+        return;
+    
     print("reading component prop: " + str(filename))
     os.system("pdftohtml -xml " + filename + " out.xml")
     fp = open("out.xml")
