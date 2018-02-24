@@ -14,6 +14,10 @@ component ADC {
   extract: table("PIN FUNCTION DESCRIPTIONS") as pins;
   extract: table("AD9201-SPECIFICATIONS") as specs;
   }
+
+   // TODO: extract from datasheet
+  pin P0, P1, P2, P3, P4,P5,P6,P7,P8,P9 {
+  }
   
   location {
     position: center;
@@ -65,7 +69,7 @@ connection ADC_to_Rx[x:ADC_BITS] {
 }
 
 connection Rx_to_Connector[x:ADC_BITS] {
-  R[x].OUT -> fpga_connector1.P[x];
+  R[x].OUT -> fpga_connector.P[x];
 }
 
 

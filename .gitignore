@@ -3,3 +3,10 @@
 dslLexer.py
 dslListener.py
 dslParser.py
+*.png
+model.pdf
+*.dot
+e
+f
+__pycache__
+*.xml

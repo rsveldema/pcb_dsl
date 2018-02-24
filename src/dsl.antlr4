@@ -44,7 +44,7 @@ component_property:
         'dimensions' '{' dim_prop* '}'
     |   'datasheet'  '{' datasheet_prop* '}'
     |   'location'   '{' location_prop* '}'
-    |   'pin'  pin_name*   '{' pin_prop* '}'
+    |   'pin'  pin_name   '{' pin_prop* '}'
     |   'value' ':' expr ';'
     ;
 
@@ -87,10 +87,13 @@ expr: primary (op primary)?
 
 op: '==' | '!= ' | '<' | '>' | '<=' | '>=' | '+' | '-' | '*' | '/';
 
-access: ID index? ('.' ID index?)*
+access: ID index? access_suffix*
     ;
 
-index: ('[' ID ']');
+access_suffix: ('.' ID index?)
+    ;	   
+
+index: '[' ID ']';
 
 
 unit: 'cm'
