@@ -63,22 +63,40 @@ class Row:
 
     def add(self,p):
         self.cols.append(p)
+
+    def has_key(self, name):
+        if len(self.cols) > 0:
+            #print(self.cols[0].string + "  ================ " + name)
+            if self.cols[0].string == name:
+                return True
+        return False
+
+    def get(self, ix):
+        return self.cols[ix]
+
         
 class Table:
     def __init__(self):
         self.rows = []
 
     def add(self, p):
-        row = self.findRow(p)
+        row = self.find_row(p)
         row.add(p)
 
-    def findRow(self, p):
+    def find_row(self, p):
         for r in self.rows:
             if r.y == p.y:
                 return r
         newrow = Row(p.y)
         self.rows.append(newrow)
         return newrow
+
+
+    def find_row_by_key(self, name):
+        for r in self.rows:
+            if r.has_key(name):
+                return r
+        return None
         
 class Page:
     def __init__(self, width, height):
@@ -171,21 +189,25 @@ def find_page(pages, title):
     error("failed to find page holding " + title)
             
 
-def extract_package(pages, title, outputName):
+def extract_package(pkg_name, pages, title, outputName):
     p = find_page(pages, title)
     p = p.extract_section(title)
     p = p.extractPinTexts()
     p.dump("extracted subsection")
+    p.name = pkg_name
+    return p
     
 
     
-def extract_table(pages, title, outputName):
+def extract_table(tableName, pages, title, outputName):
     p = find_page(pages, title)
     p = p.extract_section(title)
     table = p.extractTable()
+    table.name = tableName
     return table
     
 def destringify(s):
+    print("string ----- " + s)
     assert s[0] == '"'
     assert s[len(s)-1] == '"'
     return s[1:len(s)-1]
@@ -195,12 +217,12 @@ def extract_tables(comp, pages, ds_prop_list):
         extractor = p.extractor
         if extractor != None:
             title            = destringify(p.title.text)
-            table            = destringify(p.table.text)
-            createdTableName = p.table.text
+            table            = str(p.table.text)
+            createdTableName = str(p.table.text)
             if extractor.text == "package":
-                pkg = extract_package(pages, title, createdTableName)
+                comp.add_package(extract_package(table, pages, title, createdTableName))
             elif extractor.text == "table":
-                table = extract_table(pages, title, createdTableName)
+                comp.add_table(extract_table(table, pages, title, createdTableName))
             else:
                 unimplemented("extractor: " + extractor.text)
 
@@ -229,5 +251,5 @@ def process_datasheet_prop(comp, prop):
     pages = createPageArray(soup)
     fp.close()
     
-    extract_tables(comp, pages, ctxt.datasheet_prop())
+    extract_tables(comp, pages, prop)
     

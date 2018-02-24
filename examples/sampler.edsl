@@ -20,7 +20,7 @@ component ADC {
   }
 }
 
-const ADC_BITS = ADC.pins.RESOLUTION;
+const ADC_BITS = ADC.specs.RESOLUTION;
 
 component analog_connector {
   pin P0, P1 {

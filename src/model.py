@@ -33,15 +33,35 @@ class Component:
         self.id = get_unique_id()
         self.name = name
         self.connections = []
+        self.pkg_list = []
+        self.table_list = []
 
     def addRef(self, comp):
         self.connections.append(Connection(comp))
 
     def writeDotFile(self, fp):
         fp.write("ID" + str(self.id) + "[label=\"" + self.name + "\"];\n")
+        
+    def add_package(self, pkg):
+        self.pkg_list.append(pkg)
 
-    def constant_fold(self, names):
-        return 10
+    def add_table(self, table):
+        self.table_list.append(table)
+
+    def find_table(self, name):
+        for t in self.table_list:
+            print(t.name + " vs " + name)
+            if t.name == str(name):
+                return t
+        return None
+        
+    def constant_fold(self, names):        
+        #print("constant fold in component " + str(names) + ", list = " + str(self.table_list))
+        table = self.find_table(str(names[0]))
+        row = table.find_row_by_key(str(names[1]))
+        value = int(row.get(1).string)
+        #print("RESULT FROM TABLE LOOKUP = " + str(value))
+        return value
         
 
 def setBoard(brd):
