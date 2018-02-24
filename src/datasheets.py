@@ -56,6 +56,10 @@ class Text:
         print(self.string)
 
 
+    def __repr__(self):
+        return "Text["+self.string+"]"
+
+
 class Row:
     def __init__(self, y):
         self.cols = []
@@ -74,6 +78,9 @@ class Row:
     def get(self, ix):
         return self.cols[ix]
 
+    def __repr__(self):
+        return "row["+str(self.y)+"]" + str(self.cols)
+
         
 class Table:
     def __init__(self):
@@ -90,6 +97,13 @@ class Table:
         newrow = Row(p.y)
         self.rows.append(newrow)
         return newrow
+
+    def cleanup(self):
+        cleaned = []
+        for r in self.rows:
+            if len(r.cols) > 1:
+                cleaned.append(r)
+        self.rows = cleaned
 
 
     def find_row_by_key(self, name):
@@ -162,7 +176,7 @@ class Page:
 def createPageArray(soup):
     pages = []
     for page in soup.find_all("page"):
-        print("examining page " + page['number'])
+        #print("examining page " + page['number'] + " of PDF")
         page_width = int(page['width'])
         page_height = int(page['height'])
         
@@ -193,7 +207,7 @@ def extract_package(pkg_name, pages, title, outputName):
     p = find_page(pages, title)
     p = p.extract_section(title)
     p = p.extractPinTexts()
-    p.dump("extracted subsection")
+    #p.dump("extracted subsection")
     p.name = pkg_name
     return p
     
@@ -207,7 +221,7 @@ def extract_table(tableName, pages, title, outputName):
     return table
     
 def destringify(s):
-    print("string ----- " + s)
+    #print("string ----- " + s)
     assert s[0] == '"'
     assert s[len(s)-1] == '"'
     return s[1:len(s)-1]
@@ -220,9 +234,12 @@ def extract_tables(comp, pages, ds_prop_list):
             table            = str(p.table.text)
             createdTableName = str(p.table.text)
             if extractor.text == "package":
-                comp.add_package(extract_package(table, pages, title, createdTableName))
+                pkg = extract_package(table, pages, title, createdTableName)
+                comp.add_package(pkg)
             elif extractor.text == "table":
-                comp.add_table(extract_table(table, pages, title, createdTableName))
+                table = extract_table(table, pages, title, createdTableName)
+                table.cleanup()
+                comp.add_table(table)
             else:
                 unimplemented("extractor: " + extractor.text)
 

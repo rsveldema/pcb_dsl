@@ -14,13 +14,10 @@ component ADC {
   extract: table("PIN FUNCTION DESCRIPTIONS") as pins;
   extract: table("AD9201-SPECIFICATIONS") as specs;
   }
-
-   // TODO: extract from datasheet
-  pin P0, P1, P2, P3, P4,P5,P6,P7,P8,P9 {
-  }
   
   location {
-    position: center;
+  from: 5 cm, 5 cm;
+  to: 5.5 cm, 5.5 cm;
   }
 }
 
@@ -34,8 +31,21 @@ component analog_connector {
     analog_ground;
   }
   location {
-  position:top;
-  orientation: horizontal;
+  from: 1 cm, 1 cm;
+  to:   8 cm, 1.3 cm;	
+  }
+}
+
+
+component AGND {
+  pin GND {
+    analog_ground;
+  }
+}
+
+component DGND {
+  pin GND {
+    digital_ground;
   }
 }
 
@@ -46,12 +56,12 @@ component fpga_connector {
   pin P10 {
     digital_ground;
   }
+
   location {
-  position:bottom;
-  orientation: horizontal;
+  from: 1 cm, 9 cm;
+  to:   8 cm, 9.3 cm;	
   }
 }
-
 
 
 component R[x:ADC_BITS] {
@@ -64,17 +74,133 @@ component R[x:ADC_BITS] {
   }
 }
 
-connection ADC_to_Rx[x:ADC_BITS] {
-  ADC.P[x] -> R[x].IN;
+component R5K_1 {
+ value: 5000 ohm;
+   pin IN {
+    input;
+  }
+  pin OUT {
+    output;
+  }
 }
 
-connection Rx_to_Connector[x:ADC_BITS] {
+component R5K_2 {
+ value: 5000 ohm;
+   pin IN {
+    input;
+  }
+  pin OUT {
+    output;
+  }
+}
+
+component C_01_uF_1 {
+  value: 0.1 uF;
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_10_uF_1 {
+  value: 10 uF;
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+
+component C_01_uF_2 {
+  value: 0.1 uF;
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_10_uF_2 {
+  value: 10 uF;
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+
+
+component C_01_uF_3 {
+  value: 0.1 uF;
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_10_uF_3 {
+  value: 10 uF;
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_01_uF_4 {
+  value: 0.1 uF;
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_01_uF_5 {
+  value: 0.1 uF;
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+
+
+
+
+component C_01_uF_6 {
+  value: 0.1 uF;
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_10_uF_7 {
+  value: 10 uF;
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_01_uF_8 {
+  value: 0.1 uF;
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_01_uF_9 {
+  value: 0.1 uF;
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+
+
+
+network ADC_to_Rx[x:ADC_BITS] {
+  ADC.D[x] -> R[x].IN;
+}
+
+network Rx_to_Connector[x:ADC_BITS] {
   R[x].OUT -> fpga_connector.P[x];
+}
+
+// 1V mode, single ended inputs for I/Q channels as per page 11 of AD9201
+network ADC_ina1 {
+  DGND -> AGND;
+  
+  analog_connector.P0 -> ADC.INA_I;
+  analog_connector.P1 -> ADC.INA_Q;
+  analog_connector.P2 -> AGND;
+
+  ADC.REFSENSE -> C_01_uF_1 -> AGND;
+  ADC.REFSENSE -> C_10_uF_1 -> AGND;
+  
+  ADC.VREF -> ADC.REFSENSE;  
+  ADC.VREF -> R5K_1 -> R5K_2 -> AGND;
+
+  R5K_2.IN -> C_01_uF_2 -> AGND;
+  R5K_2.IN -> C_10_uF_2 -> AGND;
+  
+  ADC.INB_I -> R5K_2.IN;
+  ADC.INB_Q -> R5K_2.IN;
+  
+  ADC.REFT_I -> C_01_uF_3.IN  -> C_10_uF_3.IN  -> C_01_uF_4 -> AGND;
+  ADC.REFB_I -> C_01_uF_3.OUT -> C_10_uF_3.OUT -> C_01_uF_5 -> AGND;
+
+  ADC.REFT_Q -> C_01_uF_6.IN  -> C_10_uF_7.IN  -> C_01_uF_8 -> AGND;
+  ADC.REFB_Q -> C_01_uF_6.OUT -> C_10_uF_7.OUT -> C_01_uF_9 -> AGND;
 }
 
 
 //----- constraints section:
-
 constraint equal_lengths_for_ADC_to_connector {
   for i in ADC_BITS {
       for j in ADC_BITS {

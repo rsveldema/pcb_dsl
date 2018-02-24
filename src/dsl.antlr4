@@ -2,7 +2,7 @@ grammar dsl;
 
 startRule: directive* EOF;
 
-directive: component | connection | constraint | strategy | constant;
+directive: component | network | constraint | strategy | constant;
 
 // ---- CONSTANT -----
 
@@ -30,7 +30,9 @@ constraint_require: 'require' expr ';';
 
 // ---- CONNECTION -----
 
-connection: 'connection' object_name '{' access '->' access ';' '}';
+network: 'network' object_name '{' connection* '}';
+
+connection: access ('->' access)+ ';' ;
 
 
 // ---- COMPONENT -----
@@ -53,13 +55,8 @@ pin_name: ID (',' ID)* ;
 pin_prop: ('input' | 'output' | 'digital_ground' | 'analog_ground') ';';
 
 location_prop:
-        'position' ':' position ';'
-    |   'orientation' ':' orientation ';'
-    ;
-
-orientation: 'horizontal' | 'vertical'; 
-
-position: 'top' | 'bottom' | 'left' | 'right' | 'center'
+        from_tok='from' ':' expr ',' expr ';'
+    |   to_tok='to'   ':' expr ',' expr ';'
     ;
 
 datasheet_prop:
@@ -96,10 +93,11 @@ access_suffix: ('.' ID index?)
 index: '[' ID ']';
 
 
-unit: 'cm'
-    | 'mm'
-    | 'layer'
-    | 'ohm'
+unit: name='cm'
+    | name='mm'
+    | name='layer'
+    | name='ohm'
+    | name='uF'
     ;
 
 // ---- TOKENS ----
