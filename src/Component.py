@@ -1,4 +1,4 @@
-from phys import Outline,Dimension
+from phys import Outline,Dimension,Point
 from utils import get_unique_id,normalize,valid_pin_name
 from Pin import Pin
 
@@ -37,17 +37,31 @@ class Component:
         self.pins = []
 
 
+    def transpose(self, pos):
+        self.outline.transpose(pos)
+        for p in self.pins:
+            p.transpose(pos)
+        
     def create_outline(self, outline_type):
         p = findPackage(outline_type)
         self.width = p.w
         self.height = p.h
 
-        if self.fixed_position != None:
-            self.outline.addRect(self.fixed_position, self.fixed_position.add(self.width, self.height))
-            print("outline =============> " + str(self.outline))
-        else:
-            print("outline =============> NO FIXED POS")
+        pos = self.fixed_position
+        if pos == None:
+            pos = Point(Dimension(0, "cm"),
+                        Dimension(0, "cm"),
+                        0)
 
+        end = pos.clone().add(self.width,
+                              self.height)
+
+        print("start = " + str(pos))
+        print("end = " + str(end))
+        
+        self.outline.addRect(pos,
+                             end)
+        print("created: " + str(self.outline))
 
     def add_pin(self, name):
         pin = Pin(self, name)

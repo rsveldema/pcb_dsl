@@ -113,11 +113,9 @@ def process_location(comp, loc_prop_list):
             # no 'to' given,
             comp.fixed_position = Point(sx, sy, 0)
 
-            if comp.width != None:
-                from_pos = Point(sx, sy, 0)
-                to_pos = from_pos.clone()
-                to_pos.add(comp.width, comp.height)
-                comp.outline.addRect(from_pos, to_pos)
+            print("transposing: " + str(comp.fixed_position))
+            comp.transpose(comp.fixed_position)
+            print("transposing after: " + str(comp.outline))
         
 def process_dimensions(comp, dim_prop_list):
     model = comp.model

@@ -19,8 +19,8 @@ def draw_line(dwg, from_pos, to_pos):
 """
 class Point:
     def __init__(self, x, y, layer):
-        self.x = x;
-        self.y = y
+        self.x = x.clone()
+        self.y = y.clone()
         self.layer = layer
 
     def clone(self):
@@ -29,11 +29,31 @@ class Point:
     def add(self, x, y):
         self.x.add(x)
         self.y.add(y)
+        return self
+        
+    def transpose(self, pos):
+        return Point(self.x.add(pos.x),
+                     self.y.add(pos.y),
+                     self.layer)
+
+    def __repr__(self):
+        return "(" + str(self.x) + "," + str(self.y) + ")"
+
 
 class LayerLine:
     def __init__(self, f, t):
-        self.f = f;
-        self.t = t;
+        self.f = f.clone();
+        self.t = t.clone();
+
+    def clone(self):
+        return LayerLine(self.f.clone(), self.t.clone())
+
+    def transpose(self, pos):
+        self.f = self.f.transpose(pos)
+        self.t = self.t.transpose(pos)
+
+    def __repr__(self):
+        return "line(" + str(self.f) + " -> " + str(self.t) + ")"
 
 class Dimension:
     def __init__(self, d, unit):
@@ -74,6 +94,7 @@ class Dimension:
         else:
             print("don't know unit: " + self.unit)
             unimplemented();
+        return self
             
     def svg(self):
         if self.unit == "mm":
@@ -93,6 +114,11 @@ class Outline:
     def __init__(self, comp):
         self.lines = []
         self.comp = comp
+
+
+    def transpose(self, pos):
+        for p in self.lines:
+            p.transpose(pos)
 
     def addLayerLine(self, sx, sy, ex, ey):
         self.lines.append(LayerLine(Point(sx, sy, 0), Point(ex, ey, 0)))

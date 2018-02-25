@@ -24,6 +24,9 @@ class Pin:
     def getDotID(self):
         return self.component.getDotID() +  "___PIN_" + str(self.id)
 
+    def transpose(self, pos):
+        self.outline.transpose(pos)
+
     def writeDotFile(self, fp):
         k = self.getDotID()
         fp.write(k + "[label=\""+self.name+"\"];\n")
