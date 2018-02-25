@@ -15,8 +15,15 @@ The vision is to:
 This is all work in progress. Currently, it scrapes example datasheet pdfs already for some tables.
 
 
-installation:
+--- installation:
 
- - install python3
- - pip3 install pystache
- - pip4 install antlr4-python3-runtime
+ -# install python3
+ -# install pdftohtml from poppler-utils
+ -# install python3-lxml
+
+ Once that's done:
+ -# pip3 install pystache
+ -# pip3 install bs4
+ -# pip3 install svgwrite
+ -# pip3 install antlr4-python3-runtime
+ 
