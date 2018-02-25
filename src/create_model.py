@@ -7,6 +7,21 @@ from datasheets import process_datasheet_prop
 COMPONENT_INDEX_STRING=""
 
 """
+    access_suffix: ('.' ID index?)
+"""
+def constant_fold_field(comp, access_suffixes):
+    name0 = str(access_suffixes[0].ID())
+    name1 = str(access_suffixes[1].ID())
+    
+    #print("constant fold in component " + str(names) + ", list = " + str(self.table_list))
+    table = comp.find_table(name0)
+    row = table.find_row_by_key(name1)
+    value = int(row.get(1).string)
+    print("PDF TABLE LOOKUP["+name0+"."+name1+"] = " + str(value))
+    return value
+
+
+"""
 access: ID index? access_suffix*
 access_suffix: ('.' ID index?)
 """
@@ -18,7 +33,7 @@ def constant_fold_access(model, access):
         
     comp = model.find_component(name)
     if comp != None:
-        return comp.constant_fold(access.access_suffix())
+        return constant_fold_field(comp, access.access_suffix())
     unimpl()
 
 

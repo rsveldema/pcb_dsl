@@ -2,6 +2,8 @@ from phys import Outline
 from utils import get_unique_id,normalize,valid_pin_name
 from Pin import Pin
 
+
+
 class Component:
     def __init__(self, model, name):
         self.model = model
@@ -90,17 +92,3 @@ class Component:
                 return t
         return None
 
-    """
-    access_suffix: ('.' ID index?)
-    ;	   
-    """
-    def constant_fold(self, access_suffixes):
-        name0 = str(access_suffixes[0].ID())
-        name1 = str(access_suffixes[1].ID())
-        
-        #print("constant fold in component " + str(names) + ", list = " + str(self.table_list))
-        table = self.find_table(name0)
-        row = table.find_row_by_key(name1)
-        value = int(row.get(1).string)
-        print("PDF TABLE LOOKUP["+name0+"."+name1+"] = " + str(value))
-        return value
