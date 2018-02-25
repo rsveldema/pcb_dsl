@@ -13,7 +13,8 @@ class KnownPackageInfo:
 
 
     def create_pins_RS28(self, comp):
-        for ix in range(0, len(comp.pins)):
+        np = len(comp.pins)
+        for ix in range(0, np):
             p = comp.pins[ix]
             
             print("creating pin: " + str(p.name))
@@ -21,13 +22,14 @@ class KnownPackageInfo:
             mid = len(comp.pins)/2
 
             k = comp.height.mul(1.0/mid)
+            starty = k.mul(0.25) #self.pin_dist.mul(0.5)
             if ix >= mid:
                 x = comp.width
-                y = self.pin_dist.mul(0.5).add(k.mul(ix - mid))
+                y = starty.add(k.mul((np-1) - ix))
             else:
                 print(">>>> " + str(ix))
                 x = self.pin_len.mul(-1)                
-                y = self.pin_dist.mul(0.5).add(k.mul(ix))
+                y = starty.add(k.mul(ix))
             
             pos = Point(x, y, 0)
             end = pos.add(self.pin_len, self.pin_width)
