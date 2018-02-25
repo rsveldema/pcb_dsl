@@ -64,9 +64,9 @@ datasheet_prop:
     |   'file'    ':' filename=STRING ';'
     ;
 
-dim_prop: 'width'  ':' expr ';'
-    |     'height' ':' expr ';'
-    |     'layers' ':' expr ';'
+dim_prop: 'width'  ':' width=expr ';'
+    |     'height' ':' height=expr ';'
+    |     'layers' ':' layers=expr ';'
     ;
 
 

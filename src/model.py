@@ -9,8 +9,6 @@ import svgwrite
 from datasheets import process_datasheet_prop
 from svgwrite import cm, mm  
 
-view_width = 512
-view_height = 512
 
 __uniq=0
 COMPONENT_INDEX_STRING=""
@@ -44,7 +42,6 @@ class Model:
 
     def writeSVG(self, filename):
         dwg = svgwrite.Drawing(filename, profile='tiny')
-        draw_wireframe_rect(dwg, 1, 1, view_width, view_height)
         #dwg.add(dwg.text('Test', insert=(10, 10.2), fill='red'))
         
         for c in self.components:
@@ -70,7 +67,6 @@ def normalize(s):
     s = s.replace('-', '_')
     s = s.replace(' ', '_')
     return s
-
 
 def valid_pin_name(name):
     if name == "Name":
@@ -111,7 +107,11 @@ class Pin:
     
 class Component:
     def __init__(self, name):
-        self.location_from = self.location_to = None
+        self.width = None
+        self.height = None
+        self.layers = None
+        self.location_from = None
+        self.location_to = None
         self.id = get_unique_id()
         self.name = name
         self.pkg_list = []
@@ -234,8 +234,15 @@ def constant_fold_access(access):
 
 class Dimension:
     def __init__(self, d, unit):
-        self.value = float(d.text);
-        self.unit  = str(unit.name.text)
+        if hasattr(d, "text"):
+            self.value = float(d.text);
+        else:
+            self.value = d;
+
+        if hasattr(unit, "name"):
+            self.unit  = str(unit.name.text)
+        else:
+            self.unit = unit
 
     def svg(self):
         if self.unit == "mm":
@@ -318,6 +325,19 @@ def process_location(comp, loc_prop_list):
         else:
             comp.location_to = Point(x,y)
 
+def process_dimensions(comp, dim_prop_list):
+    for dim in dim_prop_list:
+        if dim.width != None:
+            comp.width = constant_fold_expr(dim.width)
+        if dim.height != None:
+            comp.height = constant_fold_expr(dim.height)
+        if dim.layers != None:
+            comp.layers = constant_fold_expr(dim.layers)
+    if comp.name == "board":
+        print("BOArD SIZE = " + str(comp.width) + " , " + str(comp.height))
+        comp.location_from = Point(Dimension(0, "cm"), Dimension(0, "cm"))
+        comp.location_to   = Point(comp.width, comp.height)
+            
 class ModelListener(dslListener):
     def __init__(self):
         pass
@@ -360,8 +380,8 @@ class ModelListener(dslListener):
                 mctxt = ModelContext()
                 mctxt.add(var)
                 self.add_connections(mctxt, ctxt)
-                                
 
+    
     def enterComponent(self, ctxt):
         names = ctxt.object_name().ID()
 
@@ -373,6 +393,7 @@ class ModelListener(dslListener):
 
             if ctxt.component_property() != None:
                 for p in ctxt.component_property():
+                    process_dimensions(comp, p.dim_prop())
                     process_location(comp, p.location_prop())
                     process_datasheet_prop(comp, p.datasheet_prop())
         else:
@@ -382,6 +403,10 @@ class ModelListener(dslListener):
                 comp = Component(str(names[0]) + COMPONENT_INDEX_STRING + str(i))
                 self.add_pins(comp, ctxt.component_property())
                 model.components.append(comp)
+
+                if ctxt.component_property() != None:
+                    for p in ctxt.component_property():
+                        process_dimensions(comp, p.dim_prop())
                 
             
 def read_model(tree):
