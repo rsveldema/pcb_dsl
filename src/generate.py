@@ -5,7 +5,7 @@ from antlr4 import *
 from dslLexer import dslLexer
 from dslParser import dslParser
 from dslListener import dslListener
-from model import read_model
+from create_model import read_model
 
 def Usage():
     print("USAGE: xxx.edsl");

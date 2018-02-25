@@ -52,11 +52,11 @@ component_property:
 
 pin_name: ID (',' ID)* ;
 
-pin_prop: ('input' | 'output' | 'digital_ground' | 'analog_ground') ';';
+pin_prop: (pinmode='input' | pinmode='output' | pinmode='digital_ground' | pinmode='analog_ground') ';';
 
 location_prop:
-        from_tok='from' ':' expr ',' expr ';'
-    |   to_tok='to'   ':' expr ',' expr ';'
+        'from' ':' expr ',' expr ';'
+        'to'   ':' expr ',' expr ';'
     ;
 
 datasheet_prop:
