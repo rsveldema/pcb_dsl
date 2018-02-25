@@ -1,12 +1,31 @@
-from phys import Outline
+from phys import Outline,Dimension
 from utils import get_unique_id,normalize,valid_pin_name
 from Pin import Pin
 
+class PackageInfo:
+    def __init__(self, name, w, h, pin_len):
+        self.name = name
+        self.w = w
+        self.h = h
+        self.pin_len = pin_len
+
+packages = [PackageInfo("RS-28",
+                        Dimension(5.38, "mm"),
+                        Dimension(10.34, "mm"),
+                        Dimension(1.26, "mm"))]
+
+
+def findPackage(name):
+    for p in packages:
+        if p.name == name:
+            return p
+    failed_to_find_package()
 
 
 class Component:
     def __init__(self, model, name):
         self.model = model
+        self.fixed_position = None
         self.width = None
         self.height = None
         self.layers = None
@@ -16,6 +35,19 @@ class Component:
         self.pkg_list = []
         self.table_list = []
         self.pins = []
+
+
+    def create_outline(self, outline_type):
+        p = findPackage(outline_type)
+        self.width = p.w
+        self.height = p.h
+
+        if self.fixed_position != None:
+            self.outline.addRect(self.fixed_position, self.fixed_position.add(self.width, self.height))
+            print("outline =============> " + str(self.outline))
+        else:
+            print("outline =============> NO FIXED POS")
+
 
     def add_pin(self, name):
         pin = Pin(self, name)

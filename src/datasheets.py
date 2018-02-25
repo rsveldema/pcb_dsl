@@ -226,6 +226,15 @@ def destringify(s):
     assert s[len(s)-1] == '"'
     return s[1:len(s)-1]
 
+
+def extract_outline(comp, pages, title):
+    p = find_page(pages, title)
+    if p.contains("28-Lead Shrink Small Outline Package (SSOP)") or p.contains("(RS-28)"):
+        comp.create_outline("RS-28")
+    else:
+        unknown_outline_type()
+        
+
 def extract_tables(comp, pages, ds_prop_list):
     for p in ds_prop_list:
         extractor = p.extractor
@@ -236,6 +245,8 @@ def extract_tables(comp, pages, ds_prop_list):
             if extractor.text == "package":
                 pkg = extract_package(table, pages, title, createdTableName)
                 comp.add_package(pkg)
+            elif extractor.text == "outline":
+                extract_outline(comp, pages, title)
             elif extractor.text == "table":
                 table = extract_table(table, pages, title, createdTableName)
                 table.cleanup()

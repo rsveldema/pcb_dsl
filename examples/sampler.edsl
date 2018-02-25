@@ -13,11 +13,11 @@ component ADC {
   extract: package("PIN CONFIGURATION") as package;
   extract: table("PIN FUNCTION DESCRIPTIONS") as pins;
   extract: table("AD9201-SPECIFICATIONS") as specs;
+  extract: outline("OUTLINE DIMENSIONS") as outline;
   }
   
   location {
   from: 5 cm, 5 cm;
-  to: 5.5 cm, 5.5 cm;
   }
 }
 

@@ -56,7 +56,7 @@ pin_prop: (pinmode='input' | pinmode='output' | pinmode='digital_ground' | pinmo
 
 location_prop:
         'from' ':' expr ',' expr ';'
-        'to'   ':' expr ',' expr ';'
+        ('to'   ':' expr ',' expr ';')?
     ;
 
 datasheet_prop:

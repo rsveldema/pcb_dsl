@@ -23,6 +23,12 @@ class Point:
         self.y = y
         self.layer = layer
 
+    def clone(self):
+        return Point(self.x.clone(), self.y.clone(), self.layer)
+        
+    def add(self, x, y):
+        self.x.add(x)
+        self.y.add(y)
 
 class LayerLine:
     def __init__(self, f, t):
@@ -41,6 +47,34 @@ class Dimension:
         else:
             self.unit = unit
 
+    def clone(self):
+        return Dimension(self.value, self.unit)
+            
+    def asMM(self):
+        if self.unit == "mm":
+            return self.value
+        elif self.unit == "cm":
+            return self.value * 10.0
+        print("don't know unit: " + self.unit)
+        unimplemented()
+        
+    def asCM(self):
+        if self.unit == "mm":
+            return self.value / 10.0
+        elif self.unit == "cm":
+            return self.value
+        print("don't know unit: " + self.unit)
+        unimplemented()        
+            
+    def add(self, value):
+        if self.unit == "mm":
+            self.value += value.asMM()
+        elif self.unit == "cm":
+            self.value += value.asCM()
+        else:
+            print("don't know unit: " + self.unit)
+            unimplemented();
+            
     def svg(self):
         if self.unit == "mm":
             return self.value * mm
@@ -74,3 +108,5 @@ class Outline:
         for line in self.lines:
             draw_line(dwg, line.f, line.t)
 
+    def __repr__(self):
+        return str(self.lines)

@@ -99,15 +99,26 @@ def access_to_component_pin(model, access, context, odd):
 def process_location(comp, loc_prop_list):
     model = comp.model
     for loc in loc_prop_list:
+        # FROM:
         sx = constant_fold_expr(model, loc.expr()[0])
         sy = constant_fold_expr(model, loc.expr()[1])
-                           
-        ex = constant_fold_expr(model, loc.expr()[2])
-        ey = constant_fold_expr(model, loc.expr()[3])
 
-        comp.outline.addRect(Point(sx, sy, 0),
-                             Point(ex, ey, 0))
+        if len(loc.expr()) > 2:
+            # TO
+            ex = constant_fold_expr(model, loc.expr()[2])
+            ey = constant_fold_expr(model, loc.expr()[3])
+            
+            comp.outline.addRect(Point(sx, sy, 0), Point(ex, ey, 0))
+        else:
+            # no 'to' given,
+            comp.fixed_position = Point(sx, sy, 0)
 
+            if comp.width != None:
+                from_pos = Point(sx, sy, 0)
+                to_pos = from_pos.clone()
+                to_pos.add(comp.width, comp.height)
+                comp.outline.addRect(from_pos, to_pos)
+        
 def process_dimensions(comp, dim_prop_list):
     model = comp.model
     for dim in dim_prop_list:
@@ -118,7 +129,7 @@ def process_dimensions(comp, dim_prop_list):
         if dim.layers != None:
             comp.layers = constant_fold_expr(model, dim.layers)
     if comp.name == "board":
-        print("BOArD SIZE = " + str(comp.width) + " , " + str(comp.height))
+        print("BOARD SIZE = " + str(comp.width) + " , " + str(comp.height))
         sx = Dimension(0, "cm")
         sy = Dimension(0, "cm")
         comp.outline.addRect(Point(sx, sy, 0),
