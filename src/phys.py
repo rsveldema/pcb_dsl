@@ -19,17 +19,15 @@ def draw_line(dwg, from_pos, to_pos):
 """
 class Point:
     def __init__(self, x, y, layer):
-        self.x = x.clone()
-        self.y = y.clone()
+        self.x = x.deepclone()
+        self.y = y.deepclone()
         self.layer = layer
 
-    def clone(self):
-        return Point(self.x.clone(), self.y.clone(), self.layer)
+    def deepclone(self):
+        return Point(self.x.deepclone(), self.y.deepclone(), self.layer)
         
     def add(self, x, y):
-        self.x.add(x)
-        self.y.add(y)
-        return self
+        return Point(self.x.add(x), self.y.add(y), self.layer)
         
     def transpose(self, pos):
         return Point(self.x.add(pos.x),
@@ -42,11 +40,11 @@ class Point:
 
 class LayerLine:
     def __init__(self, f, t):
-        self.f = f.clone();
-        self.t = t.clone();
+        self.f = f.deepclone();
+        self.t = t.deepclone();
 
-    def clone(self):
-        return LayerLine(self.f.clone(), self.t.clone())
+    def deepclone(self):
+        return LayerLine(self.f.deepclone(), self.t.deepclone())
 
     def transpose(self, pos):
         self.f = self.f.transpose(pos)
@@ -67,7 +65,7 @@ class Dimension:
         else:
             self.unit = unit
 
-    def clone(self):
+    def deepclone(self):
         return Dimension(self.value, self.unit)
             
     def asMM(self):
@@ -87,15 +85,11 @@ class Dimension:
         unimplemented()        
             
     def add(self, value):
-        if self.unit == "mm":
-            self.value += value.asMM()
-        elif self.unit == "cm":
-            self.value += value.asCM()
-        else:
-            print("don't know unit: " + self.unit)
-            unimplemented();
-        return self
-            
+        return Dimension(self.asMM() + value.asMM(), "mm")
+
+    def mul(self, value):
+        return Dimension(self.asMM() * value, "mm")
+        
     def svg(self):
         if self.unit == "mm":
             return self.value * mm
@@ -114,7 +108,6 @@ class Outline:
     def __init__(self, comp):
         self.lines = []
         self.comp = comp
-
 
     def transpose(self, pos):
         for p in self.lines:

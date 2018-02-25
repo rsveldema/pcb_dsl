@@ -114,6 +114,7 @@ def process_location(comp, loc_prop_list):
             comp.fixed_position = Point(sx, sy, 0)
 
             print("transposing: " + str(comp.fixed_position))
+            print("transposing before: " + str(comp.outline))
             comp.transpose(comp.fixed_position)
             print("transposing after: " + str(comp.outline))
         

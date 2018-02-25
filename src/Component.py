@@ -2,17 +2,66 @@ from phys import Outline,Dimension,Point
 from utils import get_unique_id,normalize,valid_pin_name
 from Pin import Pin
 
-class PackageInfo:
-    def __init__(self, name, w, h, pin_len):
+class KnownPackageInfo:
+    def __init__(self, name, w, h, pin_len, pin_dist, pin_width):
         self.name = name
         self.w = w
         self.h = h
         self.pin_len = pin_len
+        self.pin_dist = pin_dist
+        self.pin_width = pin_width
 
-packages = [PackageInfo("RS-28",
-                        Dimension(5.38, "mm"),
-                        Dimension(10.34, "mm"),
-                        Dimension(1.26, "mm"))]
+
+    def create_pins_RS28(self, comp):
+        for ix in range(0, len(comp.pins)):
+            p = comp.pins[ix]
+            
+            print("creating pin: " + str(p.name))
+
+            mid = len(comp.pins)/2
+
+            k = comp.height.mul(1.0/mid)
+            if ix >= mid:
+                x = comp.width
+                y = self.pin_dist.mul(0.5).add(k.mul(ix - mid))
+            else:
+                print(">>>> " + str(ix))
+                x = self.pin_len.mul(-1)                
+                y = self.pin_dist.mul(0.5).add(k.mul(ix))
+            
+            pos = Point(x, y, 0)
+            end = pos.add(self.pin_len, self.pin_width)
+                          
+
+            print("creating pin: " + str(p.name) + ", at " + str(pos))
+            
+            p.outline.addRect(pos, end)
+
+    def create_outline(self, comp):
+        comp.width  = self.w
+        comp.height = self.h
+        pos = Point(Dimension(0, "cm"),
+                    Dimension(0, "cm"),
+                    0)
+        end = pos.add(comp.width,
+                      comp.height)
+        comp.outline.addRect(pos,
+                             end)
+        print("created: " + str(comp.outline))
+
+        if self.name == "RS-28":
+            self.create_pins_RS28(comp)
+        else:
+            unimplemented()
+
+        
+
+packages = [KnownPackageInfo("RS-28",
+                             Dimension(5.38, "mm"), # w
+                             Dimension(10.34, "mm"), # h
+                             Dimension(1.26, "mm"), # pin-len
+                             Dimension(0.65, "mm"), # pin-dist
+                             Dimension(0.38, "mm"))] # pin-width
 
 
 def findPackage(name):
@@ -44,24 +93,8 @@ class Component:
         
     def create_outline(self, outline_type):
         p = findPackage(outline_type)
-        self.width = p.w
-        self.height = p.h
+        p.create_outline(self)
 
-        pos = self.fixed_position
-        if pos == None:
-            pos = Point(Dimension(0, "cm"),
-                        Dimension(0, "cm"),
-                        0)
-
-        end = pos.clone().add(self.width,
-                              self.height)
-
-        print("start = " + str(pos))
-        print("end = " + str(end))
-        
-        self.outline.addRect(pos,
-                             end)
-        print("created: " + str(self.outline))
 
     def add_pin(self, name):
         pin = Pin(self, name)
