@@ -43,4 +43,9 @@ if fileName == None:
 
 
 tree = parse(fileName)
-read_model(tree)
+model = read_model(tree)
+model.writeDot("model.dot")
+model.writeSVG("model.svg")
+
+clone = model.deepclone()
+clone.writeSVG("clone.svg")

@@ -20,6 +20,13 @@ class Pin:
         c.id = self.id
         c.outline = self.outline.deepclone(c, map)
 
+        for p in self.connections:
+            new_comp = map[p.component]
+            new_pin = new_comp.find_pin_by_id(p.id)
+            c.connections.append(new_pin)
+        
+        return c
+
     def add_connection(self, to_pin):
         self.connections.append(to_pin)
 

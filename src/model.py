@@ -26,7 +26,6 @@ class Model:
         
         for comp in self.components:
             comp.deepclone(m, map)
-
         return m
 
     def find_component(self, name):

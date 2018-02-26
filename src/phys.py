@@ -128,7 +128,7 @@ class Outline:
         self.parent = parent # either component or pin
         self.center = None
 
-    def deepclone(parent, map):
+    def deepclone(self, parent, map):
         c = Outline(parent)
         c.center = self.center
         for p in self.lines:

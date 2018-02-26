@@ -238,11 +238,7 @@ class ModelListener(dslListener):
             
 def read_model(tree):
     model = Model()
-
     ds = ModelListener(model)
     walker = ParseTreeWalker()
     walker.walk(ds, tree)
-
-    model.writeDot("model.dot")
-    model.writeSVG("model.svg")
     return model

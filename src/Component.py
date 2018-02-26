@@ -38,7 +38,8 @@ class Component:
     def deepclone(self, model, map):
         c = map[self]
         for p in self.pins:
-            cloned_pin = p.deep_clone(c, map)
+            cloned_pin = p.deepclone(c, map)
+            assert cloned_pin != None
             c.pins.append(cloned_pin)
         c.outline = self.outline.deepclone(self, map)
         
