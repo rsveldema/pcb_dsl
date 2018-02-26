@@ -1,7 +1,14 @@
 
 __uniq=0
 
- 
+
+
+def destringify(s):
+    #print("string ----- " + s)
+    assert s[0] == '"'
+    assert s[len(s)-1] == '"'
+    return s[1:len(s)-1]
+
 def normalize(s):
     s = s.replace('-', '_')
     s = s.replace(' ', '_')

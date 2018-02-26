@@ -9,9 +9,12 @@ def draw_line(dwg, from_pos, to_pos):
     ex = to_pos.x.svg()
     ey = to_pos.y.svg()
     layer=from_pos.layer
-    dwg.add(dwg.line( (x,y), (ex, ey), stroke='green'))   
+    dwg.add(dwg.line( (x,y), (ex, ey), 
+                      stroke_width = "1",
+                      stroke='green'))   
 
 
+no_displayed_required = ["board"]
 
 
 """
@@ -32,6 +35,11 @@ class Point:
     def transpose(self, pos):
         return Point(self.x.add(pos.x),
                      self.y.add(pos.y),
+                     self.layer)
+
+    def average(self, pt):
+        return Point(self.x.average(pt.x),
+                     self.y.average(pt.y),
                      self.layer)
 
     def __repr__(self):
@@ -67,6 +75,13 @@ class Dimension:
 
     def deepclone(self):
         return Dimension(self.value, self.unit)
+
+    def constant_fold(self, op, count):
+        if op == "*":
+            return self.mul(count)
+        if op == "/":
+            return self.mul(1.0/count)
+        unknown()
             
     def asMM(self):
         if self.unit == "mm":
@@ -83,7 +98,10 @@ class Dimension:
             return self.value
         print("don't know unit: " + self.unit)
         unimplemented()        
-            
+
+    def average(self, value):
+        return Dimension((self.asMM() + value.asMM()) / 2.0, "mm")
+        
     def add(self, value):
         return Dimension(self.asMM() + value.asMM(), "mm")
 
@@ -105,13 +123,16 @@ class Dimension:
 
 
 class Outline:
-    def __init__(self, comp):
+    def __init__(self, parent):
         self.lines = []
-        self.comp = comp
-
+        self.parent = parent # either component or pin
+        self.center = None
+        
     def transpose(self, pos):
         for p in self.lines:
             p.transpose(pos)
+        if self.center != None:
+            self.center = self.center.transpose(pos)
 
     def addLayerLine(self, sx, sy, ex, ey):
         self.lines.append(LayerLine(Point(sx, sy, 0), Point(ex, ey, 0)))
@@ -121,11 +142,24 @@ class Outline:
         self.addLayerLine(s.x, s.y, e.x, s.y)
         self.addLayerLine(e.x, s.y, e.x, e.y)
         self.addLayerLine(s.x, e.y, e.x, e.y)
+        self.center = s.average(e)
+        
         
     def writeSVG(self, dwg):
-        #print("writing " + self.comp.name + " with " + str(len(self.lines)));
+        #print("writing " + self.parent.name + " with " + str(len(self.lines)));
         for line in self.lines:
             draw_line(dwg, line.f, line.t)
+
+        name = self.parent.name
+        if self.center != None and name != None and not (name in no_displayed_required):
+            x = self.center.x.svg()
+            y = self.center.y.svg()
+            #print("pos = "  + str(x) + ","+str(y) + " ==> "+ self.parent.name)
+            
+            dwg.add(dwg.text(str(name), (x,y),
+                             stroke='red',
+                             stroke_width = "0.1",
+                             font_size="2px"))
 
     def __repr__(self):
         return str(self.lines)

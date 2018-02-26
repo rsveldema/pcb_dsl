@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from antlr4 import *
 import os
 import sys
+from utils import destringify
 
 def unimplemented(msg):
     print("UNIMPLEMENTED: " + msg)
@@ -16,6 +17,7 @@ def error(msg):
 
 def normalize(string):
     string = string.replace('–', '-')
+    string = string.replace('­', '-')
     return string
 
 pin_forbidden = ["CAUTION"]
@@ -220,17 +222,12 @@ def extract_table(tableName, pages, title, outputName):
     table.name = tableName
     return table
     
-def destringify(s):
-    #print("string ----- " + s)
-    assert s[0] == '"'
-    assert s[len(s)-1] == '"'
-    return s[1:len(s)-1]
-
 
 def extract_outline(comp, pages, title):
     p = find_page(pages, title)
     if p.contains("28-Lead Shrink Small Outline Package (SSOP)") or p.contains("(RS-28)"):
-        comp.create_outline("RS-28")
+        comp.component_type = "RS-28"
+        comp.create_outline()
     else:
         unknown_outline_type()
         
@@ -273,8 +270,15 @@ def process_datasheet_prop(comp, prop):
         return;
     
     print("reading component prop: " + str(filename))
-    os.system("pdftohtml -xml " + filename + " out.xml")
-    fp = open("out.xml")
+    out = os.system("pdftohtml -xml " + filename + " out.xml")
+    print(out)
+
+    try:
+        fp = open("out.xml", 'rb')
+    except FileNotFoundError:
+        # OSx:
+        fp = open("out.xml.xml", 'rb')
+    
     soup = BeautifulSoup(fp, "xml")
     pages = createPageArray(soup)
     fp.close()

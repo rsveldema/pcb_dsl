@@ -1,8 +1,10 @@
 from dslListener import dslListener
 from antlr4 import *
+from utils import destringify
 from model import Model,Component
 from phys import Dimension,Point
 from datasheets import process_datasheet_prop
+from known_packages import findKnownPackage
 
 COMPONENT_INDEX_STRING=""
 
@@ -38,6 +40,10 @@ def constant_fold_access(model, access):
 
 
 def constant_fold_primary(model, p):
+    if p.length != None:
+        name = str(p.ID())
+        return model.current_component.resolve_length(name)
+        
     if p.expr() != None:
         return constant_fold_expr(p.expr())
     if p.access() != None:
@@ -49,10 +55,14 @@ def constant_fold_primary(model, p):
 
 def constant_fold_expr(model, expr):
     p = expr.primary()
+    left = constant_fold_primary(model, p[0])
+        
     if len(p) == 1:
-        return constant_fold_primary(model, p[0])
+        return left
     else:
-        unimpl()
+        right = constant_fold_primary(model, p[1])        
+        operand = expr.op().operand.text;
+        return right.constant_fold(operand, left)
 
 
 class ModelVar:
@@ -99,27 +109,23 @@ def access_to_component_pin(model, access, context, odd):
 def process_location(comp, loc_prop_list):
     model = comp.model
     for loc in loc_prop_list:
-        # FROM:
+        # AT:
+        model.current_component = comp
         sx = constant_fold_expr(model, loc.expr()[0])
         sy = constant_fold_expr(model, loc.expr()[1])
 
-        if len(loc.expr()) > 2:
-            # TO
-            ex = constant_fold_expr(model, loc.expr()[2])
-            ey = constant_fold_expr(model, loc.expr()[3])
-            
-            comp.outline.addRect(Point(sx, sy, 0), Point(ex, ey, 0))
-        else:
-            # no 'to' given,
-            comp.fixed_position = Point(sx, sy, 0)
-
-            print("transposing: " + str(comp.fixed_position))
-            print("transposing before: " + str(comp.outline))
-            comp.transpose(comp.fixed_position)
-            print("transposing after: " + str(comp.outline))
+        # no 'to' given,
+        comp.fixed_position = Point(sx, sy, 0)
+        
+        print("transposing["+comp.name+"]: " + str(comp.fixed_position))
+        print("transposing before: " + str(comp.outline))
+        comp.transpose(comp.fixed_position)
+        print("transposing after: " + str(comp.outline))
+        
         
 def process_dimensions(comp, dim_prop_list):
     model = comp.model
+    model.current_component = comp
     for dim in dim_prop_list:
         if dim.width != None:
             comp.width = constant_fold_expr(model, dim.width)
@@ -127,12 +133,51 @@ def process_dimensions(comp, dim_prop_list):
             comp.height = constant_fold_expr(model, dim.height)
         if dim.layers != None:
             comp.layers = constant_fold_expr(model, dim.layers)
-    if comp.name == "board":
-        print("BOARD SIZE = " + str(comp.width) + " , " + str(comp.height))
+
+    if comp.width != None and comp.height != None:
         sx = Dimension(0, "cm")
         sy = Dimension(0, "cm")
-        comp.outline.addRect(Point(sx, sy, 0),
-                             Point(comp.width, comp.height, 0))
+        print("DIM["+comp.name+"], width = "+ str(comp.width) + ", height "+ str(comp.height))
+        if comp.component_type != None:
+            pkg = findKnownPackage(comp.component_type)
+            pkg.create_outline(comp)
+        else: 
+            comp.outline.addRect(Point(sx, sy, comp.layers),
+                                 Point(comp.width, comp.height, comp.layers))
+
+
+
+def add_dimensions(comp, ctxt):
+    if ctxt.component_property() != None:
+        for p in ctxt.component_property():                    
+            process_dimensions(comp, p.dim_prop())
+
+            
+def add_location(comp, ctxt):
+    if ctxt.component_property() != None:
+        for p in ctxt.component_property():                    
+            process_location(comp, p.location_prop())
+            
+def add_datasheet_props(comp, ctxt):
+    if ctxt.component_property() != None:
+        for p in ctxt.component_property():                    
+            process_datasheet_prop(comp, p.datasheet_prop())
+
+def add_pins(comp, props):
+    for p in props:
+        if p.component_type != None:
+            comp.component_type = destringify(p.component_type.text)
+            print("SAW COMPONENT TYPE: "+ comp.component_type)
+            
+    for p in props:
+        if p.pin_name() != None:
+            for pin_name in p.pin_name().ID():
+                pin = comp.add_pin(str(pin_name))
+                for k in p.pin_prop():
+                    pin.mode = k.pinmode
+                        
+
+
             
 class ModelListener(dslListener):
     def __init__(self, model):
@@ -144,16 +189,6 @@ class ModelListener(dslListener):
         expr = ctxt.expr()
         print("resolve constant: " + name)
         self.model.constants[name] = constant_fold_expr(self.model, expr)
-
-    def add_pins(self, comp, props):
-        for p in props:
-            if p.pin_name() != None:
-                for pin_name in p.pin_name().ID():
-                    pin = comp.add_pin(str(pin_name))
-                    for k in p.pin_prop():
-                        pin.mode = k.pinmode
-                        
-
 
     def add_connections(self, mctxt, ctxt):
         for conn in ctxt.connection():
@@ -181,24 +216,23 @@ class ModelListener(dslListener):
     
     def enterComponent(self, ctxt):
         names = ctxt.object_name().ID()
-
         #print("EXAMINE COMPONENT: " + str(names))
         if len(names) == 1:
             comp = Component(self.model, str(names[0]))
-            self.add_pins(comp, ctxt.component_property())
+            self.model.current_component = comp
+            add_pins(comp, ctxt.component_property())
             self.model.components.append(comp)
 
-            if ctxt.component_property() != None:
-                for p in ctxt.component_property():
-                    process_dimensions(comp, p.dim_prop())
-                    process_location(comp, p.location_prop())
-                    process_datasheet_prop(comp, p.datasheet_prop())
+            add_dimensions(comp, ctxt)
+            add_datasheet_props(comp, ctxt)
+            add_location(comp, ctxt)            
         else:
             limit = str(names[2])
             count = self.model.constants[limit]
             for i in range(0, count):
                 comp = Component(self.model, str(names[0]) + COMPONENT_INDEX_STRING + str(i))
-                self.add_pins(comp, ctxt.component_property())
+                self.model.current_component = comp
+                add_pins(comp, ctxt.component_property())
                 self.model.components.append(comp)
 
                 if ctxt.component_property() != None:

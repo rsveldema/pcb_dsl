@@ -47,7 +47,8 @@ component_property:
     |   'datasheet'  '{' datasheet_prop* '}'
     |   'location'   '{' location_prop* '}'
     |   'pin'  pin_name   '{' pin_prop* '}'
-    |   'value' ':' expr ';'
+    |   'value' ':' value=expr ';'
+    |   'type'  ':' component_type=STRING ';'
     ;
 
 pin_name: ID (',' ID)* ;
@@ -55,8 +56,7 @@ pin_name: ID (',' ID)* ;
 pin_prop: (pinmode='input' | pinmode='output' | pinmode='digital_ground' | pinmode='analog_ground') ';';
 
 location_prop:
-        'from' ':' expr ',' expr ';'
-        ('to'   ':' expr ',' expr ';')?
+        'at' ':' expr ',' expr ';'
     ;
 
 datasheet_prop:
@@ -76,13 +76,18 @@ primary:
         n=NUMBER unit
     |   '(' expr ')'
     |   access
+    |   length='#' ID
     ;
         
 
 expr: primary (op primary)?
     ;
 
-op: '==' | '!= ' | '<' | '>' | '<=' | '>=' | '+' | '-' | '*' | '/';
+op:   operand='==' | operand='!= '
+    | operand='<'  | operand='>'
+    | operand='<=' | operand='>='
+    | operand='+'  | operand='-' | operand='*' | operand='/'
+    ;
 
 access: ID index? access_suffix*
     ;
