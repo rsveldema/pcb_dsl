@@ -13,17 +13,19 @@ class Pin:
         self.id = get_unique_id()
 
 
-    def deepclone(self, comp, map):
+    def shallow_clone(self, comp, map):
         c = Pin(comp, self.name)
         c.description = self.description
         c.mode = self.mode
         c.id = self.id
         c.outline = self.outline.deepclone(c, map)
+        return c
 
-        for p in self.connections:
+    def deepclone(self, orig, map):
+        for p in orig.connections:
             new_comp = map[p.component]
             new_pin = new_comp.find_pin_by_id(p.id)
-            c.connections.append(new_pin)
+            self.connections.append(new_pin)
         
         return c
 

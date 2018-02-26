@@ -19,6 +19,14 @@ class Component:
         self.pins = []
         self.has_data_sheet = False
 
+
+    def find_pin_by_id(self, id):
+        for p in self.pins:
+            if p.id == id:
+                return p
+        print("failed to find pin " + str(id))
+        failed_to_find_pin();
+
     def shallow_clone(self, model, map):
         c = Component(model, self.name)
 
@@ -31,16 +39,20 @@ class Component:
         c.pkg_list = self.pkg_list
         c.table_list = self.table_list
         c.has_data_sheet = self.has_data_sheet
-        
+
+        for p in self.pins:
+            cloned_pin = p.shallow_clone(c, map)
+            c.pins.append(cloned_pin)
+            
         map[self] = c
         return c
         
     def deepclone(self, model, map):
         c = map[self]
-        for p in self.pins:
-            cloned_pin = p.deepclone(c, map)
-            assert cloned_pin != None
-            c.pins.append(cloned_pin)
+        for ix in range(0, len(self.pins)):
+            orig = self.pins[ix]
+            clone = c.pins[ix]
+            clone.shallow_clone(orig, map)
         c.outline = self.outline.deepclone(self, map)
         
         
