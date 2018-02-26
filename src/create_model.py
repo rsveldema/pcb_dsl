@@ -134,14 +134,14 @@ def process_dimensions(comp, dim_prop_list):
         if dim.layers != None:
             comp.layers = constant_fold_expr(model, dim.layers)
 
-    if comp.width != None and comp.height != None:
+    if not comp.has_data_sheet:
         sx = Dimension(0, "cm")
         sy = Dimension(0, "cm")
-        print("DIM["+comp.name+"], width = "+ str(comp.width) + ", height "+ str(comp.height))
         if comp.component_type != None:
             pkg = findKnownPackage(comp.component_type)
             pkg.create_outline(comp)
-        else: 
+        else:
+            print("COMPONENT "+ comp.name + " has no assigned type yet")
             comp.outline.addRect(Point(sx, sy, comp.layers),
                                  Point(comp.width, comp.height, comp.layers))
 
@@ -163,11 +163,14 @@ def add_datasheet_props(comp, ctxt):
         for p in ctxt.component_property():                    
             process_datasheet_prop(comp, p.datasheet_prop())
 
-def add_pins(comp, props):
+def preprocess_component(model, comp, props):
+    model.current_component = comp
     for p in props:
+        if len(p.datasheet_prop()) > 0:
+            comp.has_data_sheet = True
         if p.component_type != None:
             comp.component_type = destringify(p.component_type.text)
-            print("SAW COMPONENT TYPE: "+ comp.component_type)
+            #print("SAW COMPONENT TYPE: "+ comp.component_type)
             
     for p in props:
         if p.pin_name() != None:
@@ -219,8 +222,7 @@ class ModelListener(dslListener):
         #print("EXAMINE COMPONENT: " + str(names))
         if len(names) == 1:
             comp = Component(self.model, str(names[0]))
-            self.model.current_component = comp
-            add_pins(comp, ctxt.component_property())
+            preprocess_component(self.model, comp, ctxt.component_property())
             self.model.components.append(comp)
 
             add_dimensions(comp, ctxt)
@@ -231,8 +233,7 @@ class ModelListener(dslListener):
             count = self.model.constants[limit]
             for i in range(0, count):
                 comp = Component(self.model, str(names[0]) + COMPONENT_INDEX_STRING + str(i))
-                self.model.current_component = comp
-                add_pins(comp, ctxt.component_property())
+                preprocess_component(self.model, comp, ctxt.component_property())
                 self.model.components.append(comp)
 
                 if ctxt.component_property() != None:

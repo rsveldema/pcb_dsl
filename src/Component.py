@@ -17,7 +17,8 @@ class Component:
         self.pkg_list = []
         self.table_list = []
         self.pins = []
-
+        self.has_data_sheet = False
+        
     def resolve_length(self, name):
         if name == "pins":
             return len(self.pins)

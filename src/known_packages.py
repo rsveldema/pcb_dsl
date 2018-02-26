@@ -105,7 +105,28 @@ def create_two_row_pin_header(config, comp):
         p.outline.addRect(pos, end)
     
 
-packages = [KnownPackageInfo("single row pin header",            
+packages = [KnownPackageInfo("ground",            
+                             Dimension(2.35, "mm"), # w
+                             Dimension(2.35, "mm"), # h
+                             Dimension(0, "mm"), # pin-len
+                             Dimension(0, "mm"), # pin-dist
+                             Dimension(0, "mm"), # pin-width
+                             create_single_row_pin_header),
+            KnownPackageInfo("SMD condensator",            
+                             Dimension(2.35, "mm"), # w
+                             Dimension(2.35, "mm"), # h
+                             Dimension(0, "mm"), # pin-len
+                             Dimension(0, "mm"), # pin-dist
+                             Dimension(0, "mm"), # pin-width
+                             create_single_row_pin_header),
+            KnownPackageInfo("SMD resistor",            
+                             Dimension(2.35, "mm"), # w
+                             Dimension(2.35, "mm"), # h
+                             Dimension(0, "mm"), # pin-len
+                             Dimension(0, "mm"), # pin-dist
+                             Dimension(0, "mm"), # pin-width
+                             create_single_row_pin_header),
+            KnownPackageInfo("single row pin header",            
                              Dimension(2.35, "mm"), # w
                              Dimension(2.35, "mm"), # h
                              Dimension(0, "mm"), # pin-len

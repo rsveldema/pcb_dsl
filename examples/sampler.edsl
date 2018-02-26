@@ -41,12 +41,14 @@ component analog_connector {
 
 
 component AGND {
+  type:	 "ground";
   pin GND {
     analog_ground;
   }
 }
 
 component DGND {
+  type:	 "ground";
   pin GND {
     digital_ground;
   }
@@ -76,6 +78,7 @@ component fpga_connector {
 
 component R[x:ADC_BITS] {
  value: 20 ohm;
+ type: "SMD resistor";
   pin IN {
     input;
   }
@@ -86,6 +89,7 @@ component R[x:ADC_BITS] {
 
 component R5K_1 {
  value: 5000 ohm;
+ type: "SMD resistor";
    pin IN {
     input;
   }
@@ -96,6 +100,7 @@ component R5K_1 {
 
 component R5K_2 {
  value: 5000 ohm;
+ type: "SMD resistor";
    pin IN {
     input;
   }
@@ -106,22 +111,26 @@ component R5K_2 {
 
 component C_01_uF_1 {
   value: 0.1 uF;
+  type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
 }
 component C_10_uF_1 {
   value: 10 uF;
+  type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
 }
 
 component C_01_uF_2 {
   value: 0.1 uF;
+  type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
 }
 component C_10_uF_2 {
   value: 10 uF;
+  type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
 }
@@ -129,21 +138,25 @@ component C_10_uF_2 {
 
 component C_01_uF_3 {
   value: 0.1 uF;
+  type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
 }
 component C_10_uF_3 {
   value: 10 uF;
+  type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
 }
 component C_01_uF_4 {
   value: 0.1 uF;
+  type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
 }
 component C_01_uF_5 {
   value: 0.1 uF;
+  type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
 }
@@ -153,21 +166,25 @@ component C_01_uF_5 {
 
 component C_01_uF_6 {
   value: 0.1 uF;
+  type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
 }
 component C_10_uF_7 {
   value: 10 uF;
+  type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
 }
 component C_01_uF_8 {
   value: 0.1 uF;
+  type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
 }
 component C_01_uF_9 {
   value: 0.1 uF;
+  type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
 }
