@@ -143,7 +143,10 @@ class Outline:
         self.addLayerLine(e.x, s.y, e.x, e.y)
         self.addLayerLine(s.x, e.y, e.x, e.y)
         self.center = s.average(e)
+
         
+    def drawLineSVG(self, dwg, other):
+        draw_line(dwg, self.center, other.center)
         
     def writeSVG(self, dwg):
         #print("writing " + self.parent.name + " with " + str(len(self.lines)));

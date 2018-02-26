@@ -114,13 +114,8 @@ def process_location(comp, loc_prop_list):
         sx = constant_fold_expr(model, loc.expr()[0])
         sy = constant_fold_expr(model, loc.expr()[1])
 
-        # no 'to' given,
-        comp.fixed_position = Point(sx, sy, 0)
-        
-        print("transposing["+comp.name+"]: " + str(comp.fixed_position))
-        print("transposing before: " + str(comp.outline))
+        comp.fixed_position = Point(sx, sy, 0)        
         comp.transpose(comp.fixed_position)
-        print("transposing after: " + str(comp.outline))
         
         
 def process_dimensions(comp, dim_prop_list):

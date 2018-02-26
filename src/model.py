@@ -24,12 +24,8 @@ class Model:
 
     def writeSVG(self, filename):
         dwg = svgwrite.Drawing(filename, profile='tiny')
-        
-        #dwg.add(dwg.text('Test', insert=(10, 10.2), fill='red'))
-        
         for c in self.components:
             c.writeSVG(dwg)
-
         dwg.save()        
 
     def writeDot(self, filename):

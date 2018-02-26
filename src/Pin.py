@@ -12,9 +12,6 @@ class Pin:
         self.description = ""
         self.id = get_unique_id()
 
-    def writeSVG(self, dwg):
-        self.outline.writeSVG(dwg)
-        
     def add_connection(self, to_pin):
         self.connections.append(to_pin)
 
@@ -26,7 +23,13 @@ class Pin:
 
     def transpose(self, pos):
         self.outline.transpose(pos)
-
+        
+    def writeSVG(self, dwg):
+        self.outline.writeSVG(dwg)
+        for c in self.connections:
+            self.outline.drawLineSVG(dwg, c.outline)
+            
+        
     def writeDotFile(self, fp):
         k = self.getDotID()
         fp.write(k + "[label=\""+self.name+"\"];\n")
