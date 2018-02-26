@@ -15,6 +15,20 @@ class Model:
         self.constants={}
         self.components = []
 
+    def deepclone(self):
+        m = Model()
+        m.constants = self.constants
+
+        map = {}
+        for comp in self.components:
+            c = comp.shallow_clone(m, map)
+            m.components.append(c)
+        
+        for comp in self.components:
+            comp.deepclone(m, map)
+
+        return m
+
     def find_component(self, name):
         for c in self.components:
             if c.name == name:

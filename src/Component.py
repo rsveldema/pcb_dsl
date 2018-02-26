@@ -18,6 +18,30 @@ class Component:
         self.table_list = []
         self.pins = []
         self.has_data_sheet = False
+
+    def shallow_clone(self, model, map):
+        c = Component(model, self.name)
+
+        c.fixed_position = self.fixed_position
+        c.width = self.width
+        c.height = self.height
+        c.layers = self.layers
+        c.component_type = self.component_type
+        c.id = self.id
+        c.pkg_list = self.pkg_list
+        c.table_list = self.table_list
+        c.has_data_sheet = self.has_data_sheet
+        
+        map[self] = c
+        return c
+        
+    def deepclone(self, model, map):
+        c = map[self]
+        for p in self.pins:
+            cloned_pin = p.deep_clone(c, map)
+            c.pins.append(cloned_pin)
+        c.outline = self.outline.deepclone(self, map)
+        
         
     def resolve_length(self, name):
         if name == "pins":

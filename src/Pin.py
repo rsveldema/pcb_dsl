@@ -12,6 +12,14 @@ class Pin:
         self.description = ""
         self.id = get_unique_id()
 
+
+    def deepclone(self, comp, map):
+        c = Pin(comp, self.name)
+        c.description = self.description
+        c.mode = self.mode
+        c.id = self.id
+        c.outline = self.outline.deepclone(c, map)
+
     def add_connection(self, to_pin):
         self.connections.append(to_pin)
 
