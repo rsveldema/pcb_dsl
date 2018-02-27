@@ -221,7 +221,7 @@ class ModelListener(dslListener):
         names = ctxt.object_name().ID()
         #print("EXAMINE COMPONENT: " + str(names))
         if len(names) == 1:
-            comp = Component(self.model, str(names[0]))
+            comp = Component(self.model, str(names[0]), False)
             preprocess_component(self.model, comp, ctxt.component_property())
             self.model.components.append(comp)
 
@@ -232,7 +232,7 @@ class ModelListener(dslListener):
             limit = str(names[2])
             count = self.model.constants[limit]
             for i in range(0, count):
-                comp = Component(self.model, str(names[0]) + COMPONENT_INDEX_STRING + str(i))
+                comp = Component(self.model, str(names[0]) + COMPONENT_INDEX_STRING + str(i), False)
                 preprocess_component(self.model, comp, ctxt.component_property())
                 self.model.components.append(comp)
 

@@ -1,8 +1,8 @@
 from model import Model
 import time
 
-POPULATION_SIZE_PLACEMENT = 5
-POPULATION_SIZE_ROUTING   = 2
+POPULATION_SIZE_PLACEMENT = 1
+POPULATION_SIZE_ROUTING   = 1
 
 
 
@@ -62,6 +62,8 @@ def create_initial_generation(model):
 
             random_routed = random_placed.random_route()
             inner.add(random_routed)
+
+            random_routed.writeSVG("random_routed.svg")
     return p
 
 def optimize_model(model, time_limit_secs):

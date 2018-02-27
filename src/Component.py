@@ -15,8 +15,9 @@ def revector_connections_to_router(routers, router, model, from_pin):
 
 
 class Component:
-    def __init__(self, model, name):
+    def __init__(self, model, name, is_router):
         self.model = model
+        self.is_router = is_router
         self.current_pos = Point(Dimension(0, "mm"), Dimension(0, "mm"), 0)
         self.fixed_position = None
         self.width = None
@@ -39,8 +40,12 @@ class Component:
         print("failed to find pin " + str(id))
         failed_to_find_pin();
 
-    def random_route(self, model):
+    def random_route(self, model):        
         for p in self.pins:
+            print("adding stuff for pin " + str(p.name) + " for " + p.component.name)
+            if p.connections == None or len(p.connections) == 0:
+                continue
+            
             routers = {}
             routers[self] = self
             last = None
@@ -60,7 +65,7 @@ class Component:
             
 
     def shallow_clone(self, model, map):
-        c = Component(model, self.name)
+        c = Component(model, self.name, self.is_router)
 
         c.fixed_position = self.fixed_position
         c.width = self.width

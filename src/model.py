@@ -22,12 +22,24 @@ class Model:
         self.WIRE_WIDTH = Dimension(0.1, "mm")
 
     def create_router(self):
-        comp = Component(self, get_new_routing_name())
+        print("creating router")
+        comp = Component(self, get_new_routing_name(), True)
         comp.type = "router"
         comp.width  = self.WIRE_WIDTH
         comp.height = self.WIRE_WIDTH
         self.components.append(comp)
         pin = comp.add_pin("x")
+
+        s = Point(Dimension(0, "mm"),
+                  Dimension(0, "mm"),
+                  0)
+
+        e = Point(comp.width,
+                  comp.height,
+                  0)
+
+        comp.outline.addRect(s, e)
+        pin.outline.addRect(s, e)
         return comp
         
     # move components in the given range
@@ -41,12 +53,12 @@ class Model:
                         mw, mh)
                 p.transpose(dir)
                 #p.rotate()
-        self.writeSVG("random_loc.svg")
 
 
     def do_random_route(self):
         for c in self.components:
-            c.random_route(self)
+            if not c.is_router:
+                c.random_route(self)
         
     def random_route(self):
         p = self.deepclone()
