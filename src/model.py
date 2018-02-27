@@ -12,8 +12,26 @@ from phys import Outline,Point,Dimension
 
 class Model:
     def __init__(self):
-        self.constants={}
+        self.constants  = {}
         self.components = []
+
+    # move components in the given range
+    def random_move_components(self, w, h):
+        (mw,mh) = self.get_board_size()
+        for p in self.components:
+            if p.fixed_position == None:
+                dir = p.current_pos.add(w.random(), h.random())
+                dir.cap(Dimension(0, "mm"),
+                        Dimension(0, "mm"),
+                        mw, mh)
+                p.transpose(dir)
+                #p.rotate()
+        self.writeSVG("random_loc.svg")
+
+                
+    def get_board_size(self):
+        p = self.find_component("board")
+        return (p.width, p.height)
 
     def deepclone(self):
         m = Model()
@@ -50,3 +68,7 @@ class Model:
         fp.write("}");
         fp.close()
 
+    def is_better_than(m):
+        if m == None:
+            return True
+        return False

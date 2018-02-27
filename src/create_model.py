@@ -159,6 +159,13 @@ def add_datasheet_props(comp, ctxt):
             process_datasheet_prop(comp, p.datasheet_prop())
 
 def preprocess_component(model, comp, props):
+
+    if comp.name == "board":
+        comp.fixed_position = Point(Dimension(0, "mm"),
+                                    Dimension(0, "mm"),
+                                    0)
+                                    
+    
     model.current_component = comp
     for p in props:
         if len(p.datasheet_prop()) > 0:

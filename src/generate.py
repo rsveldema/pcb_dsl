@@ -6,6 +6,7 @@ from dslLexer import dslLexer
 from dslParser import dslParser
 from dslListener import dslListener
 from create_model import read_model
+from optimizer import optimize_model
 
 def Usage():
     print("USAGE: xxx.edsl");
@@ -49,3 +50,11 @@ model.writeSVG("model.svg")
 
 clone = model.deepclone()
 clone.writeSVG("clone.svg")
+
+time_limit_secs = 60
+opt = optimize_model(model, time_limit_secs)
+if opt != None:
+    opt.writeSVG("final.svg")
+else:
+    print("optimized failed to create a good model")
+

@@ -1,5 +1,5 @@
 from svgwrite import cm, mm
-
+from utils import ranged_random
 
 #svgwrite.rgb(10, 10, 16, '%')
 
@@ -26,6 +26,10 @@ class Point:
         self.y = y.deepclone()
         self.layer = layer
 
+    def cap(self, startx, starty, endx, endy):
+        self.x.cap(startx, endx)
+        self.y.cap(starty, endy)
+        
     def deepclone(self):
         return Point(self.x.deepclone(), self.y.deepclone(), self.layer)
         
@@ -33,9 +37,7 @@ class Point:
         return Point(self.x.add(x), self.y.add(y), self.layer)
         
     def transpose(self, pos):
-        return Point(self.x.add(pos.x),
-                     self.y.add(pos.y),
-                     self.layer)
+        return self.add(pos.x, pos.y)
 
     def average(self, pt):
         return Point(self.x.average(pt.x),
@@ -73,6 +75,18 @@ class Dimension:
         else:
             self.unit = unit
 
+    
+    def cap(self, s, e):
+        if self.asMM() < s.asMM():
+            self.value = s.asMM()
+            self.unit = "mm"
+        if self.asMM() > e.asMM():
+            self.value = e.asMM()
+            self.unit = "mm"
+            
+    def random(self):
+        return Dimension(ranged_random(-self.value, self.value), self.unit) 
+            
     def deepclone(self):
         return Dimension(self.value, self.unit)
 
@@ -107,7 +121,10 @@ class Dimension:
 
     def mul(self, value):
         return Dimension(self.asMM() * value, "mm")
-        
+
+    def div(self, value):
+        return Dimension(self.asMM() / value, "mm")
+
     def svg(self):
         if self.unit == "mm":
             return self.value * mm

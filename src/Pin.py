@@ -22,7 +22,7 @@ class Pin:
         return c
 
     def deepclone(self, orig, map):
-        print("adding connections for " + str(len(orig.connections)))
+        #print("adding connections for " + str(len(orig.connections)))
         for p in orig.connections:
             new_comp = map[p.component]
             new_pin = new_comp.find_pin_by_id(p.id)

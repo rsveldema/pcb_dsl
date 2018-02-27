@@ -6,6 +6,7 @@ from known_packages import findKnownPackage
 class Component:
     def __init__(self, model, name):
         self.model = model
+        self.current_pos = Point(Dimension(0, "mm"), Dimension(0, "mm"), 0)
         self.fixed_position = None
         self.width = None
         self.height = None
@@ -62,6 +63,7 @@ class Component:
         unknown_constant_fold()
         
     def transpose(self, pos):
+        self.current_pos = self.current_pos.transpose(pos)
         self.outline.transpose(pos)
         for p in self.pins:
             p.transpose(pos)

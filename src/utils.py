@@ -1,7 +1,13 @@
+import random
 
 __uniq=0
 
-
+""" 
+Return a random value from min...max
+For example, from -123 to +42
+"""
+def ranged_random(min, max):
+    return random.randrange(min, max)
 
 def destringify(s):
     #print("string ----- " + s)
