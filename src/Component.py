@@ -52,7 +52,7 @@ class Component:
         for ix in range(0, len(self.pins)):
             orig = self.pins[ix]
             clone = c.pins[ix]
-            clone.shallow_clone(orig, map)
+            clone.deepclone(orig, map)
         c.outline = self.outline.deepclone(self, map)
         
         
