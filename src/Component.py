@@ -3,6 +3,17 @@ from utils import get_unique_id,normalize,valid_pin_name
 from Pin import Pin
 from known_packages import findKnownPackage
 
+
+def revector_connections_to_router(routers, router, model, from_pin):
+    # see if there is another component that has a link to our pin:
+    #print("revector ")
+    for comp in model.components:
+        if not comp in routers:
+            for other_pin in comp.pins:
+                other_pin.revector(from_pin, router.pins[0])
+                
+
+
 class Component:
     def __init__(self, model, name):
         self.model = model
@@ -27,6 +38,26 @@ class Component:
                 return p
         print("failed to find pin " + str(id))
         failed_to_find_pin();
+
+    def random_route(self, model):
+        for p in self.pins:
+            routers = {}
+            routers[self] = self
+            last = None
+            for k in range(0, model.num_bends_per_route):
+                router = model.create_router()
+                routers[router] = router
+
+                if last == None:
+                    router.pins[0].connections = p.connections
+                    p.add_connection(router.pins[0])
+                else:
+                    last.pins[0].add_connection(router.pins[0])
+                
+                last = router;
+
+            revector_connections_to_router(routers, router, model, p)
+            
 
     def shallow_clone(self, model, map):
         c = Component(model, self.name)
@@ -83,7 +114,6 @@ class Component:
             #print("PIN COMPARE: " + p.name + " VS " + name)
             if p.name == name:
                 return p
-
         print("failed to find pin " + name + " in component " + self.name)
         not_found()
 

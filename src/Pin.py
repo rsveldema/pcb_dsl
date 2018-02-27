@@ -13,6 +13,13 @@ class Pin:
         self.id = get_unique_id()
 
 
+    def revector(self, from_pin, to_pin):
+        for ix in range(0, len(self.connections)):
+            p = self.connections[ix]
+            if p == from_pin:
+                self.connections[ix] = to_pin
+
+
     def shallow_clone(self, comp, map):
         c = Pin(comp, self.name)
         c.description = self.description
@@ -44,8 +51,7 @@ class Pin:
         self.outline.writeSVG(dwg)
         for c in self.connections:
             self.outline.drawLineSVG(dwg, c.outline)
-            
-        
+                    
     def writeDotFile(self, fp):
         k = self.getDotID()
         fp.write(k + "[label=\""+self.name+"\"];\n")

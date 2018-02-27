@@ -8,13 +8,28 @@ import sys
 import svgwrite
 from Component import Component
 from phys import Outline,Point,Dimension
+from utils import get_unique_id
+
+def get_new_routing_name():
+    return "route_" + str(get_unique_id())
 
 
 class Model:
     def __init__(self):
         self.constants  = {}
         self.components = []
+        self.num_bends_per_route = 3
+        self.WIRE_WIDTH = Dimension(0.1, "mm")
 
+    def create_router(self):
+        comp = Component(self, get_new_routing_name())
+        comp.type = "router"
+        comp.width  = self.WIRE_WIDTH
+        comp.height = self.WIRE_WIDTH
+        self.components.append(comp)
+        pin = comp.add_pin("x")
+        return comp
+        
     # move components in the given range
     def random_move_components(self, w, h):
         (mw,mh) = self.get_board_size()
@@ -27,6 +42,16 @@ class Model:
                 p.transpose(dir)
                 #p.rotate()
         self.writeSVG("random_loc.svg")
+
+
+    def do_random_route(self):
+        for c in self.components:
+            c.random_route(self)
+        
+    def random_route(self):
+        p = self.deepclone()
+        p.do_random_route()
+        return p
 
                 
     def get_board_size(self):

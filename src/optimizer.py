@@ -1,8 +1,9 @@
 from model import Model
 import time
 
-POPULATION_SIZE_PLACEMENT = 100
-POPULATION_SIZE_ROUTING   = 100
+POPULATION_SIZE_PLACEMENT = 5
+POPULATION_SIZE_ROUTING   = 2
+
 
 
 class Generation:
@@ -10,12 +11,13 @@ class Generation:
         self.models = []
 
     def add(self, m):
-        self.models.add(m)
+        self.models.append(m)
 
     def optimize(self, iteration):
         for model in self.models:
             (w,h) = model.get_board_size()
-            model.random_move_components(w.div(iteration), h.div(iteration))
+            model.random_move_components(w.div(iteration),
+                                         h.div(iteration))
 
     def find_best(self):
         best = None
@@ -51,7 +53,7 @@ def create_initial_generation(model):
     for i in range(0, POPULATION_SIZE_PLACEMENT):
         nested = NestedGeneration()
 
-        random_placed = model.deepclone()
+        random_placed = model.deepclone()        
         random_placed.random_move_components(w, h)
             
         for j in range(0, POPULATION_SIZE_ROUTING):
@@ -63,13 +65,19 @@ def create_initial_generation(model):
     return p
 
 def optimize_model(model, time_limit_secs):
+    print("creating initial population")
     nested = create_initial_generation(model)
+    print("DONE: starting optimization process")
 
     iteration = 0
-    end = time.time() + time_limit_secs
+    old = now = time.time()
+    end = now + time_limit_secs
     while now < end:
         nested.optimize(iteration)
         now = time.time()
+        if int(now) != int(old):
+            old = now
+            print("left: " + str(int(end - now)) + " secs, done " + str(iteration))
         iteration += 1
         
     return nested.find_best()
