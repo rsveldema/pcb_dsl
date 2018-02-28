@@ -1,5 +1,6 @@
 from svgwrite import cm, mm
 from utils import ranged_random
+import math
 
 #svgwrite.rgb(10, 10, 16, '%')
 
@@ -25,6 +26,18 @@ class Point:
         self.x = x.deepclone()
         self.y = y.deepclone()
         self.layer = layer
+
+    def distance(self, other):
+        x1 = self.x.asMM()
+        x2 = other.x.asMM()
+        
+        y1 = self.y.asMM()
+        y2 = other.y.asMM()
+
+        dx = x2 - x1
+        dy = y2 - y1
+
+        return math.sqrt((dx*dx) + (dy*dy))
 
     def cap(self, startx, starty, endx, endy):
         self.x.cap(startx, endx)
@@ -85,7 +98,8 @@ class Dimension:
             self.unit = "mm"
             
     def random(self):
-        return Dimension(ranged_random(-self.value, self.value), self.unit) 
+        v = self.asMM()
+        return Dimension(ranged_random(-int(v), int(v)), "mm") 
             
     def deepclone(self):
         return Dimension(self.value, self.unit)
@@ -144,6 +158,9 @@ class Outline:
         self.lines = []
         self.parent = parent # either component or pin
         self.center = None
+        
+    def distance(self, other):
+        return self.center.distance(other.center)
 
     def deepclone(self, parent, map):
         c = Outline(parent)

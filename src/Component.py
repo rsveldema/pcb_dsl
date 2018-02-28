@@ -32,6 +32,11 @@ class Component:
         self.pins = []
         self.has_data_sheet = False
 
+    def sum_connection_lengths(self):
+        sum = 0.0
+        for p in self.pins:
+            sum += p.sum_connection_lengths()
+        return sum
 
     def find_pin_by_id(self, id):
         for p in self.pins:
@@ -42,7 +47,7 @@ class Component:
 
     def random_route(self, model):        
         for p in self.pins:
-            print("adding stuff for pin " + str(p.name) + " for " + p.component.name)
+            #print("adding stuff for pin " + str(p.name) + " for " + p.component.name)
             if p.connections == None or len(p.connections) == 0:
                 continue
             

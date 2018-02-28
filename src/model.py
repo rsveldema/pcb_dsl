@@ -22,7 +22,7 @@ class Model:
         self.WIRE_WIDTH = Dimension(0.1, "mm")
 
     def create_router(self):
-        print("creating router")
+        #print("creating router")
         comp = Component(self, get_new_routing_name(), True)
         comp.type = "router"
         comp.width  = self.WIRE_WIDTH
@@ -105,7 +105,20 @@ class Model:
         fp.write("}");
         fp.close()
 
-    def is_better_than(m):
-        if m == None:
+    def sum_connection_lengths(self):
+        sum = 0.0
+        for c in self.components:
+            sum += c.sum_connection_lengths()
+        return sum
+
+    def is_better_than(self, other):
+        if other == None:
             return True
+
+        my_len     =  self.sum_connection_lengths()
+        other_len  = other.sum_connection_lengths()
+
+        if my_len < other_len:
+            return True
+        
         return False

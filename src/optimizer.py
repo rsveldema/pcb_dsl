@@ -47,12 +47,10 @@ class NestedGeneration:
 
 
 def create_initial_generation(model):
-    p = NestedGeneration()
     (w,h) = model.get_board_size()
-    
-    for i in range(0, POPULATION_SIZE_PLACEMENT):
-        nested = NestedGeneration()
 
+    nested = NestedGeneration()
+    for i in range(0, POPULATION_SIZE_PLACEMENT):
         random_placed = model.deepclone()        
         random_placed.random_move_components(w, h)
             
@@ -64,20 +62,26 @@ def create_initial_generation(model):
             inner.add(random_routed)
 
             random_routed.writeSVG("random_routed.svg")
-    return p
+    return nested
 
 def optimize_model(model, time_limit_secs):
     print("creating initial population")
     nested = create_initial_generation(model)
     print("DONE: starting optimization process")
 
-    iteration = 0
+    iteration = 1
     old = now = time.time()
     end = now + time_limit_secs
     while now < end:
-        nested.optimize(iteration)
+        nested.optimize(iteration)        
         now = time.time()
-        if int(now) != int(old):
+        if int(now) != int(old):            
+            best = nested.find_best()
+            if best != None:
+                best.writeSVG("best-iteration-"+str(iteration)+".svg")
+            else:
+                print("no best found?")
+
             old = now
             print("left: " + str(int(end - now)) + " secs, done " + str(iteration))
         iteration += 1

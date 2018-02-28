@@ -12,7 +12,13 @@ class Pin:
         self.description = ""
         self.id = get_unique_id()
 
+    def sum_connection_lengths(self):
+        sum = 0.0
+        for other_pin in self.connections:
+            sum += self.outline.distance(other_pin.outline)
+        return sum
 
+    
     def revector(self, from_pin, to_pin):
         for ix in range(0, len(self.connections)):
             p = self.connections[ix]
