@@ -21,20 +21,19 @@ class Model:
         self.num_bends_per_route = 3
         self.WIRE_WIDTH = Dimension(0.1, "mm")
 
-    def create_router(self):
+    def create_router(self, mw, mh):
         #print("creating router")
         comp = Component(self, get_new_routing_name(), True)
         comp.type = "router"
         comp.width  = self.WIRE_WIDTH
         comp.height = self.WIRE_WIDTH
         self.components.append(comp)
-        pin_in = comp.add_pin("in")
+        pin_in  = comp.add_pin("in")
         pin_out = comp.add_pin("out")
 
-        s = Point(Dimension(0, "mm"),
-                  Dimension(0, "mm"),
+        s = Point(mw.div(2), #Dimension(0, "mm"),
+                  mh.div(2), #Dimension(0, "mm"),
                   0)                               
-
         e = s.add(comp.width,
                   comp.height)
 
@@ -46,21 +45,21 @@ class Model:
     # move components in the given range
     def random_move_components(self, w, h):
         (mw,mh) = self.get_board_size()
-        for p in self.components:
-            if p.fixed_position == None:
-                dir = p.current_pos.add(w.random(), h.random())
-                p.transpose(dir)
-                #p.rotate()
+        for comp in self.components:
+            if comp.fixed_position == None:
+                dir = Point(w.random(), h.random(), comp.layers)
+                comp.transpose(dir, mw, mh)
+                #comp.rotate()
 
 
-    def do_random_route(self):
+    def do_random_route(self, mw, mh):
         for c in self.components:
             if not c.is_router:
-                c.random_route(self)
+                c.random_route(self, mw, mh)
         
-    def random_route(self):
+    def random_route(self, mw, mh):
         p = self.deepclone()
-        p.do_random_route()
+        p.do_random_route(mw, mh)
         return p
 
                 

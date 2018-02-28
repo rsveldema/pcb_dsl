@@ -48,9 +48,12 @@ class Point:
         
     def add(self, x, y):
         return Point(self.x.add(x), self.y.add(y), self.layer)
-        
-    def transpose(self, pos):
-        return self.add(pos.x, pos.y)
+
+    def clip(self, mw, mh):
+        return Point(self.x.clip(mw), self.y.clip(mh), self.layer)
+    
+    def transpose(self, pos, mw, mh):
+        return self.add(pos.x, pos.y).clip(mw, mh)
 
     def average(self, pt):
         return Point(self.x.average(pt.x),
@@ -69,9 +72,9 @@ class LayerLine:
     def deepclone(self):
         return LayerLine(self.f.deepclone(), self.t.deepclone())
 
-    def transpose(self, pos):
-        self.f = self.f.transpose(pos)
-        self.t = self.t.transpose(pos)
+    def transpose(self, pos, mw, mh):
+        self.f = self.f.transpose(pos, mw, mh)
+        self.t = self.t.transpose(pos, mw, mh)
 
     def __repr__(self):
         return "line(" + str(self.f) + " -> " + str(self.t) + ")"
@@ -133,6 +136,17 @@ class Dimension:
     def add(self, value):
         return Dimension(self.asMM() + value.asMM(), "mm")
 
+    def clip(self, value):
+        if value == None:
+            return self
+        
+        if self.value < 0:
+            return Dimension(0, "mm")
+
+        if self.asMM() > value.asMM():
+            return value
+        return self
+    
     def mul(self, value):
         return Dimension(self.asMM() * value, "mm")
 
@@ -169,11 +183,11 @@ class Outline:
             c.lines.append(p.deepclone())
         return c
         
-    def transpose(self, pos):
+    def transpose(self, pos, mw, mh):
         for p in self.lines:
-            p.transpose(pos)
+            p.transpose(pos, mw, mh)
         if self.center != None:
-            self.center = self.center.transpose(pos)
+            self.center = self.center.transpose(pos, mw, mh)
 
     def addLayerLine(self, sx, sy, ex, ey):
         self.lines.append(LayerLine(Point(sx, sy, 0), Point(ex, ey, 0)))

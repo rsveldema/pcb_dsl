@@ -16,11 +16,10 @@ class Generation:
 
     def optimize(self, iteration):
         for model in self.models:
-            #(w,h) = model.get_board_size()
-            w = Dimension(1, "cm")
-            h = Dimension(1, "cm")
-            model.random_move_components(w.div(iteration),
-                                         h.div(iteration))
+            (mw,mh) = model.get_board_size()
+            w = Dimension(1.0, "cm")
+            h = Dimension(1.0, "cm")
+            model.random_move_components(w, h) #w.div(iteration), h.div(iteration))
 
     def find_best(self):
         best = None
@@ -60,7 +59,7 @@ def create_initial_generation(model):
             inner = Generation()
             nested.add(inner)
 
-            random_routed = random_placed.random_route()
+            random_routed = random_placed.random_route(w, h)
             random_routed.random_move_components(w, h)
             inner.add(random_routed)
 
@@ -76,12 +75,14 @@ def optimize_model(model, time_limit_secs):
     old = now = time.time()
     end = now + time_limit_secs
     while now < end:
-        nested.optimize(iteration)        
+        nested.optimize(iteration)
         now = time.time()
-        if int(now) != int(old):            
+        if int(now) != int(old):
             best = nested.find_best()
+            
             if best != None:
-                best.writeSVG("best-iteration-"+str(iteration)+".svg")
+                #best.writeSVG("best-iteration-"+str(iteration)+".svg")
+                pass
             else:
                 print("no best found?")
 

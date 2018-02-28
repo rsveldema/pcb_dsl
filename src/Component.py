@@ -45,17 +45,17 @@ class Component:
         print("failed to find pin " + str(id))
         failed_to_find_pin();
 
-    def random_route(self, model):        
+    def random_route(self, model, mw, mh):
         for p in self.pins:
             #print("adding stuff for pin " + str(p.name) + " for " + p.component.name)
-            if p.connections == None or len(p.connections) == 0:
+            if len(p.connections) == 0:
                 continue
             
             routers = {}
             routers[self] = self
             last = None
             for k in range(0, model.num_bends_per_route):
-                router = model.create_router()
+                router = model.create_router(mw, mh)
                 routers[router] = router
 
                 if last == None:
@@ -103,11 +103,11 @@ class Component:
             return len(self.pins)
         unknown_constant_fold()
         
-    def transpose(self, pos):
-        self.current_pos = self.current_pos.transpose(pos)
-        self.outline.transpose(pos)
+    def transpose(self, pos, mw, mh):
+        self.current_pos = self.current_pos.transpose(pos, mw, mh)
+        self.outline.transpose(pos, mw, mh)
         for p in self.pins:
-            p.transpose(pos)
+            p.transpose(pos, mw, mh)
         
     def create_outline(self):
         p = findKnownPackage(self.component_type)

@@ -50,8 +50,8 @@ class Pin:
     def getDotID(self):
         return self.component.getDotID() +  "___PIN_" + str(self.id)
 
-    def transpose(self, pos):
-        self.outline.transpose(pos)
+    def transpose(self, pos, mw, mh):
+        self.outline.transpose(pos, mw, mh)
         
     def writeSVG(self, dwg):
         self.outline.writeSVG(dwg)
