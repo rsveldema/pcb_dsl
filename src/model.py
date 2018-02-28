@@ -21,7 +21,7 @@ class Model:
         self.num_bends_per_route = 3
         self.WIRE_WIDTH = Dimension(0.1, "mm")
 
-    def create_router(self, mw, mh):
+    def create_router(self):
         #print("creating router")
         comp = Component(self, get_new_routing_name(), True)
         comp.type = "router"
@@ -31,16 +31,23 @@ class Model:
         pin_in  = comp.add_pin("in")
         pin_out = comp.add_pin("out")
 
-        s = Point(mw.div(2), #Dimension(0, "mm"),
-                  mh.div(2), #Dimension(0, "mm"),
-                  0)                               
+        s = Point(Dimension(0, "mm"),
+                  Dimension(0, "mm"), 0)
         e = s.add(comp.width,
-                  comp.height)
+                    comp.height)
 
         comp.outline.addRect(s, e)
         pin_in.outline.addRect(s, e)
         pin_out.outline.addRect(s, e)
         return comp
+
+    def findComponentAt(self, f, t):
+        for p in self.components:
+            if p.is_board:
+                pass
+            elif p.overlaps(f, t):
+                return p
+        return None
         
     # move components in the given range
     def random_move_components(self, w, h):
@@ -48,18 +55,31 @@ class Model:
         for comp in self.components:
             if comp.fixed_position == None:
                 dir = Point(w.random(), h.random(), comp.layers)
-                comp.transpose(dir, mw, mh)
+                print("DIR TO PLACE: " + str(dir) + "  where comp ["+comp.name+"] at " + str(comp.outline.center))
+                if not comp.transpose(self, dir, mw, mh):
+                    pass
+                #comp.rotate()
+
+    # move components in the given range
+    def initial_random_move_components(self, w, h):
+        (mw,mh) = self.get_board_size()
+        for comp in self.components:
+            if comp.fixed_position == None and not comp.is_router:
+                dir = Point(w.abs_random(), h.abs_random(), comp.layers)
+                print("INITIAL_DIR TO PLACE: " + str(dir) + "  where comp ["+comp.name+"] at " + str(comp.outline.center))
+                if not comp.transpose(self, dir, mw, mh):
+                    pass
                 #comp.rotate()
 
 
-    def do_random_route(self, mw, mh):
+    def do_place_routing_components(self, mw, mh):
         for c in self.components:
             if not c.is_router:
-                c.random_route(self, mw, mh)
+                c.place_routing_components(self, mw, mh)
         
-    def random_route(self, mw, mh):
+    def place_routing_components(self, mw, mh):
         p = self.deepclone()
-        p.do_random_route(mw, mh)
+        p.do_place_routing_components(mw, mh)
         return p
 
                 

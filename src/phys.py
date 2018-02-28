@@ -49,11 +49,18 @@ class Point:
     def add(self, x, y):
         return Point(self.x.add(x), self.y.add(y), self.layer)
 
+    def sub(self, x, y):
+        return Point(self.x.sub(x), self.y.sub(y), self.layer)
+
     def clip(self, mw, mh):
         return Point(self.x.clip(mw), self.y.clip(mh), self.layer)
+
+
+    def clip_add(self, x, y, mw, mh):
+        return Point(self.x.clip_add(x, mw), self.y.clip_add(y, mh), self.layer)
     
     def transpose(self, pos, mw, mh):
-        return self.add(pos.x, pos.y).clip(mw, mh)
+        return self.clip_add(pos.x, pos.y, mw, mh)
 
     def average(self, pt):
         return Point(self.x.average(pt.x),
@@ -102,7 +109,11 @@ class Dimension:
             
     def random(self):
         v = self.asMM()
-        return Dimension(ranged_random(-int(v), int(v)), "mm") 
+        return Dimension(ranged_random(-int(v), int(v)), "mm")
+
+    def abs_random(self):
+        v = self.asMM()
+        return Dimension(ranged_random(0, int(v)), "mm") 
             
     def deepclone(self):
         return Dimension(self.value, self.unit)
@@ -136,6 +147,21 @@ class Dimension:
     def add(self, value):
         return Dimension(self.asMM() + value.asMM(), "mm")
 
+
+    def sub(self, value):
+        return Dimension(self.asMM() - value.asMM(), "mm")
+
+    def clip_add(self, value, mv):
+        k = self.asMM() + value.asMM()
+        if k < 0:
+            k = 0
+        elif mv != None:
+            m = mv.asMM()
+            if k > m:
+                k = m
+        
+        return Dimension(k, "mm")
+
     def clip(self, value):
         if value == None:
             return self
@@ -146,6 +172,7 @@ class Dimension:
         if self.asMM() > value.asMM():
             return value
         return self
+
     
     def mul(self, value):
         return Dimension(self.asMM() * value, "mm")
@@ -199,6 +226,19 @@ class Outline:
         self.addLayerLine(s.x, e.y, e.x, e.y)
         self.center = s.average(e)
 
+    # todo: create a better test later.
+    def overlaps(self, f, t):
+        radius = self.center.distance(self.lines[0].f)
+        fd = self.center.distance(f)
+        td = self.center.distance(t)
+
+        if fd < radius:
+            return True
+
+        if td < radius:
+            return True
+
+        return False
         
     def drawLineSVG(self, dwg, other):
         draw_line(dwg, self.center, other.center)

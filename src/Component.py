@@ -18,6 +18,7 @@ class Component:
     def __init__(self, model, name, is_router):
         self.model = model
         self.is_router = is_router
+        self.is_board = name == "board"
         self.current_pos = Point(Dimension(0, "mm"), Dimension(0, "mm"), 0)
         self.fixed_position = None
         self.width = None
@@ -45,7 +46,7 @@ class Component:
         print("failed to find pin " + str(id))
         failed_to_find_pin();
 
-    def random_route(self, model, mw, mh):
+    def place_routing_components(self, model, mw, mh):
         for p in self.pins:
             #print("adding stuff for pin " + str(p.name) + " for " + p.component.name)
             if len(p.connections) == 0:
@@ -55,7 +56,7 @@ class Component:
             routers[self] = self
             last = None
             for k in range(0, model.num_bends_per_route):
-                router = model.create_router(mw, mh)
+                router = model.create_router()
                 routers[router] = router
 
                 if last == None:
@@ -102,12 +103,24 @@ class Component:
         if name == "pins":
             return len(self.pins)
         unknown_constant_fold()
+
+    def overlaps(self, f, t):
+        return self.outline.overlaps(f, t)
         
-    def transpose(self, pos, mw, mh):
-        self.current_pos = self.current_pos.transpose(pos, mw, mh)
-        self.outline.transpose(pos, mw, mh)
+    def transpose(self, model, dir, mw, mh):
+        newpos = self.current_pos.transpose(dir, mw, mh)
+        
+        if model != None:
+            comp = model.findComponentAt(newpos, newpos.add(mw, mh))
+            if comp != None and comp != self:
+                print("comp overlap: " + comp.name + " with " + self.name)
+                return False        
+
+        self.current_pos = newpos
+        self.outline.transpose(dir, mw, mh)
         for p in self.pins:
-            p.transpose(pos, mw, mh)
+            p.transpose(dir, mw, mh)
+        return True
         
     def create_outline(self):
         p = findKnownPackage(self.component_type)

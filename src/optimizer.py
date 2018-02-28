@@ -58,9 +58,10 @@ def create_initial_generation(model):
         for j in range(0, POPULATION_SIZE_ROUTING):
             inner = Generation()
             nested.add(inner)
-
-            random_routed = random_placed.random_route(w, h)
-            random_routed.random_move_components(w, h)
+            
+            random_routed = random_placed.place_routing_components(w, h)
+            
+            random_routed.initial_random_move_components(w, h)
             inner.add(random_routed)
 
             random_routed.writeSVG("random_routed.svg")
@@ -81,7 +82,7 @@ def optimize_model(model, time_limit_secs):
             best = nested.find_best()
             
             if best != None:
-                #best.writeSVG("best-iteration-"+str(iteration)+".svg")
+                best.writeSVG("best-iteration-"+str(iteration)+".svg")
                 pass
             else:
                 print("no best found?")
