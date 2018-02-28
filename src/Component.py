@@ -59,8 +59,8 @@ class Component:
                 routers[router] = router
 
                 if last == None:
-                    router.pins[0].connections = p.connections
-                    p.add_connection(router.pins[0])
+                    router.pins[1].connections = p.connections
+                    p.connections = [router.pins[0]]
                 else:
                     last.pins[0].add_connection(router.pins[0])
                 

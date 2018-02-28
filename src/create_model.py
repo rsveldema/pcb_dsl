@@ -114,7 +114,7 @@ def process_location(comp, loc_prop_list):
         sx = constant_fold_expr(model, loc.expr()[0])
         sy = constant_fold_expr(model, loc.expr()[1])
 
-        comp.fixed_position = Point(sx, sy, 0)        
+        comp.current_position = comp.fixed_position = Point(sx, sy, 0)        
         comp.transpose(comp.fixed_position)
         
         

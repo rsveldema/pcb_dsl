@@ -1,5 +1,6 @@
 from model import Model
 import time
+from phys import Dimension
 
 POPULATION_SIZE_PLACEMENT = 1
 POPULATION_SIZE_ROUTING   = 1
@@ -15,7 +16,9 @@ class Generation:
 
     def optimize(self, iteration):
         for model in self.models:
-            (w,h) = model.get_board_size()
+            #(w,h) = model.get_board_size()
+            w = Dimension(1, "cm")
+            h = Dimension(1, "cm")
             model.random_move_components(w.div(iteration),
                                          h.div(iteration))
 
@@ -51,14 +54,14 @@ def create_initial_generation(model):
 
     nested = NestedGeneration()
     for i in range(0, POPULATION_SIZE_PLACEMENT):
-        random_placed = model.deepclone()        
-        random_placed.random_move_components(w, h)
+        random_placed = model.deepclone()
             
         for j in range(0, POPULATION_SIZE_ROUTING):
             inner = Generation()
             nested.add(inner)
 
             random_routed = random_placed.random_route()
+            random_routed.random_move_components(w, h)
             inner.add(random_routed)
 
             random_routed.writeSVG("random_routed.svg")

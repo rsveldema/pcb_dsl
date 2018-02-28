@@ -28,18 +28,19 @@ class Model:
         comp.width  = self.WIRE_WIDTH
         comp.height = self.WIRE_WIDTH
         self.components.append(comp)
-        pin = comp.add_pin("x")
+        pin_in = comp.add_pin("in")
+        pin_out = comp.add_pin("out")
 
         s = Point(Dimension(0, "mm"),
                   Dimension(0, "mm"),
-                  0)
+                  0)                               
 
-        e = Point(comp.width,
-                  comp.height,
-                  0)
+        e = s.add(comp.width,
+                  comp.height)
 
         comp.outline.addRect(s, e)
-        pin.outline.addRect(s, e)
+        pin_in.outline.addRect(s, e)
+        pin_out.outline.addRect(s, e)
         return comp
         
     # move components in the given range
@@ -48,9 +49,6 @@ class Model:
         for p in self.components:
             if p.fixed_position == None:
                 dir = p.current_pos.add(w.random(), h.random())
-                dir.cap(Dimension(0, "mm"),
-                        Dimension(0, "mm"),
-                        mw, mh)
                 p.transpose(dir)
                 #p.rotate()
 
