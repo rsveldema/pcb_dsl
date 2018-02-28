@@ -63,7 +63,7 @@ class Component:
                     router.pins[1].connections = p.connections
                     p.connections = [router.pins[0]]
                 else:
-                    last.pins[0].add_connection(router.pins[0])
+                    last.pins[1].add_connection(router.pins[0])
                 
                 last = router;
 

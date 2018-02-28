@@ -64,7 +64,7 @@ class Model:
     def initial_random_move_components(self, w, h):
         (mw,mh) = self.get_board_size()
         for comp in self.components:
-            if comp.fixed_position == None and not comp.is_router:
+            if comp.fixed_position == None:
                 dir = Point(w.abs_random(), h.abs_random(), comp.layers)
                 print("INITIAL_DIR TO PLACE: " + str(dir) + "  where comp ["+comp.name+"] at " + str(comp.outline.center))
                 if not comp.transpose(self, dir, mw, mh):
