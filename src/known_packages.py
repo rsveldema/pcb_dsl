@@ -1,4 +1,4 @@
-from phys import Dimension,Point
+from phys import Point
 
 
 class KnownPackageInfo:
@@ -18,9 +18,7 @@ class KnownPackageInfo:
 def create_common_box(config, comp):
     comp.width  = config.w
     comp.height = config.h
-    pos = Point(Dimension(0, "cm"),
-                Dimension(0, "cm"),
-                0)
+    pos = Point(0, 0, 0)
     end = pos.add(comp.width,
                   comp.height)
     comp.outline.addRect(pos,
@@ -57,11 +55,9 @@ def create_pins_RS28(config, comp):
 
 
 def create_single_row_pin_header(config, comp):
-    comp.width  = config.w.mul(1)
-    comp.height = config.h.mul(len(comp.pins))
-    pos = Point(Dimension(0, "cm"),
-                Dimension(0, "cm"),
-                0)
+    comp.width  = config.w
+    comp.height = config.h * len(comp.pins)
+    pos = Point(0, 0, 0)
     end = pos.add(comp.width,
                   comp.height)
     comp.outline.addRect(pos,
@@ -70,8 +66,8 @@ def create_single_row_pin_header(config, comp):
     for ix in range(0, np):
         p = comp.pins[ix]
         
-        x = Dimension(0, "cm")
-        y = config.h.mul(ix)
+        x = 0
+        y = config.h * ix
 
         pos = Point(x, y, 0)
         end = pos.add(config.w, config.h)
@@ -82,9 +78,7 @@ def create_single_row_pin_header(config, comp):
 def create_two_row_pin_header(config, comp):
     comp.width  = config.w.mul(2)
     comp.height = config.h.mul(len(comp.pins)/2)
-    pos = Point(Dimension(0, "cm"),
-                Dimension(0, "cm"),
-                0)
+    pos = Point(0, 0, 0)
     end = pos.add(comp.width,
                   comp.height)
     comp.outline.addRect(pos,
@@ -106,46 +100,36 @@ def create_two_row_pin_header(config, comp):
     
 
 packages = [KnownPackageInfo("ground",            
-                             Dimension(2.35, "mm"), # w
-                             Dimension(2.35, "mm"), # h
-                             Dimension(0, "mm"), # pin-len
-                             Dimension(0, "mm"), # pin-dist
-                             Dimension(0, "mm"), # pin-width
+                             2.35, # w
+                             2.35, # h
+                             0, 0, 0,
                              create_single_row_pin_header),
             KnownPackageInfo("SMD condensator",            
-                             Dimension(2.35, "mm"), # w
-                             Dimension(2.35, "mm"), # h
-                             Dimension(0, "mm"), # pin-len
-                             Dimension(0, "mm"), # pin-dist
-                             Dimension(0, "mm"), # pin-width
+                             2.35, # w
+                             2.35, # h
+                             0, 0, 0,
                              create_single_row_pin_header),
             KnownPackageInfo("SMD resistor",            
-                             Dimension(2.35, "mm"), # w
-                             Dimension(2.35, "mm"), # h
-                             Dimension(0, "mm"), # pin-len
-                             Dimension(0, "mm"), # pin-dist
-                             Dimension(0, "mm"), # pin-width
+                             2.35, # w
+                             2.35, # h
+                             0, 0, 0,
                              create_single_row_pin_header),
             KnownPackageInfo("single row pin header",            
-                             Dimension(2.35, "mm"), # w
-                             Dimension(2.35, "mm"), # h
-                             Dimension(0, "mm"), # pin-len
-                             Dimension(0, "mm"), # pin-dist
-                             Dimension(0, "mm"), # pin-width
+                             2.35, # w
+                             2.35, # h
+                             0, 0, 0,
                              create_single_row_pin_header),
            KnownPackageInfo("two row pin header",            
-                             Dimension(2.35, "mm"), # w
-                             Dimension(2.35, "mm"), # h
-                             Dimension(0, "mm"), # pin-len
-                             Dimension(0, "mm"), # pin-dist
-                             Dimension(0, "mm"), # pin-width
-                             create_two_row_pin_header),
+                            2.35, # w
+                            2.35, # h
+                            0, 0, 0,
+                            create_two_row_pin_header),
             KnownPackageInfo("RS-28",
-                             Dimension(5.38, "mm"), # w
-                             Dimension(10.34, "mm"), # h
-                             Dimension(1.26, "mm"), # pin-len
-                             Dimension(0.65, "mm"), # pin-dist
-                             Dimension(0.38, "mm"),# pin-width
+                             5.38, # w
+                             10.34, # h
+                             1.26, # pin-len
+                             0.65, # pin-dist
+                             0.38,# pin-width
                              create_pins_RS28)] 
 
 

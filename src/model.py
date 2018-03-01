@@ -8,18 +8,23 @@ import sys
 import random
 import svgwrite
 from Component import Component
-from phys import Outline,Point,Dimension
+from phys import Outline,Point
 from utils import get_unique_id
 
 def get_new_routing_name():
     return "route_" + str(get_unique_id())
 
+def abs_random(max):
+    return random.randrange(0, max)
+
+def nat_random(max):
+    return random.randrange(-max, max)
 
 class Model:
     def __init__(self):
         self.constants  = {}
         self.components = []
-        self.WIRE_WIDTH = Dimension(0.1, "mm")
+        self.WIRE_WIDTH = 0.1
 
     def create_router(self):
         #print("creating router")
@@ -31,10 +36,9 @@ class Model:
         pin_in  = comp.add_pin("in")
         pin_out = comp.add_pin("out")
 
-        s = Point(Dimension(0, "mm"),
-                  Dimension(0, "mm"), 0)
+        s = Point(0, 0, 0)
         e = s.add(comp.width,
-                    comp.height)
+                  comp.height)
 
         comp.outline.addRect(s, e)
         pin_in.outline.addRect(s, e)
@@ -60,22 +64,22 @@ class Model:
         (mw,mh) = self.get_board_size()
         for comp in self.components:
             if comp.fixed_position == None:
-                dir = Point(w.random(), h.random(), comp.layers)
+                dir = Point(nat_random(w), nat_random(h), comp.layers)
                 #print("DIR TO PLACE: " + str(dir) + "  where comp ["+comp.name+"] at " + str(comp.outline.center))
-                if not comp.transpose(self, dir, mw, mh):
-                    pass
-                #comp.rotate()
+                if comp.can_transpose(dir, mw, mh):
+                    comp.transpose(dir)
+                    #comp.rotate()
 
     # move components in the given range
     def initial_random_move_components(self, w, h):
         (mw,mh) = self.get_board_size()
         for comp in self.components:
             if comp.fixed_position == None:
-                dir = Point(w.abs_random(), h.abs_random(), comp.layers)
-                print("INITIAL_DIR TO PLACE: " + str(dir) + "  where comp [" + comp.name+"] at " + str(comp.outline.center))
-                if not comp.transpose(self, dir, mw, mh):
-                    pass
-                #comp.rotate()
+                dir = Point(abs_random(w), abs_random(h), comp.layers)
+                print("INITIAL_DIR TO PLACE: " + str(dir) + "  where comp [" + comp.name+"] at " + str(comp.outline.center()))
+                if comp.can_transpose(dir, mw, mh):
+                    comp.transpose(dir)
+                    #comp.rotate()
 
 
     def do_place_routing_components(self, mw, mh):

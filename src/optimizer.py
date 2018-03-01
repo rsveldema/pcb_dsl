@@ -1,6 +1,5 @@
 from model import Model
 import time
-from phys import Dimension
 import random
 
 
@@ -36,8 +35,8 @@ class Generation:
         for model in self.models:
             if self.should_mutate():
                 (mw,mh) = model.get_board_size()
-                w = Dimension(1.0, "cm")
-                h = Dimension(1.0, "cm")
+                w = 10
+                h = 10
                 model.random_move_components(w, h) #w.div(iteration), h.div(iteration))
             if self.should_crossover():
                 k = random.randrange(0, len(self.models))
@@ -61,8 +60,8 @@ class Generation:
             
         for i in range(0,  POPULATION_GROUP_SIZE - len(best)):
             m = best[i % len(best)][1].deepclone()
-            w = Dimension(0.5, "cm")
-            h = Dimension(0.5, "cm")
+            w = 5
+            h = 5
             m.random_move_components(w, h) #w.div(iteration), h.div(iteration))
             self.models.append(m)
 
@@ -102,11 +101,11 @@ class NestedGeneration:
 
 def create_initial_generation(model):
     (w,h) = model.get_board_size()
-
-    random_placed = model.deepclone()
-    random_routed = random_placed.place_routing_components(w, h)            
+    start_model = model.deepclone()
+    random_routed = start_model.place_routing_components(w, h)
     random_routed.writeSVG("random_routed.svg")
-                
+    random_routed.writeDot("random_routed.dot")
+    
     nested = NestedGeneration()
     for i in range(0, POPULATION_NUM_GROUPS):
         inner = Generation(i)

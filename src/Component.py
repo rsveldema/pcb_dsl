@@ -1,4 +1,4 @@
-from phys import Outline,Dimension,Point
+from phys import Outline,Point
 from utils import get_unique_id,normalize,valid_pin_name
 from Pin import Pin
 from known_packages import findKnownPackage
@@ -21,7 +21,6 @@ class Component:
         self.model = model
         self.is_router = is_router
         self.is_board = name == "board"
-        self.current_pos = Point(Dimension(0, "mm"), Dimension(0, "mm"), 0)
         self.fixed_position = None
         self.width = None
         self.height = None
@@ -39,6 +38,8 @@ class Component:
         k = self.outline
         self.outline  = other.outline
         other.outline = k
+        self.outline.xparent = self
+        other.outline.xparent = other
 
     def sum_connection_lengths(self):
         sum = 0.0
@@ -114,14 +115,19 @@ class Component:
 
     def overlaps(self, f, t):
         return self.outline.overlaps(f, t)
-        
-    def transpose(self, model, dir, mw, mh):
-        newpos = self.current_pos.transpose(dir, mw, mh)
-        self.current_pos = newpos
-        self.outline.transpose(dir, mw, mh)
+
+    def can_transpose(self, dir, mw, mh):
+        if not self.outline.can_transpose(dir, mw, mh):
+            return False        
         for p in self.pins:
-            p.transpose(dir, mw, mh)
+            if not p.can_transpose(dir, mw, mh):
+                return False
         return True
+            
+    def transpose(self, dir):
+        self.outline.transpose(dir)
+        for p in self.pins:
+            p.transpose(dir)
         
     def create_outline(self):
         p = findKnownPackage(self.component_type)

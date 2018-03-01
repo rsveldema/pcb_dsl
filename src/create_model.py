@@ -2,7 +2,7 @@ from dslListener import dslListener
 from antlr4 import *
 from utils import destringify
 from model import Model,Component
-from phys import Dimension,Point
+from phys import Point
 from datasheets import process_datasheet_prop
 from known_packages import findKnownPackage
 
@@ -48,10 +48,18 @@ def constant_fold_primary(model, p):
         return constant_fold_expr(p.expr())
     if p.access() != None:
         return constant_fold_access(model, p.access())
-    if p.unit != None:
-        return Dimension(p.n, p.unit())
-    print("unrecognized primary expr: " + str(p))
-    unimpl()
+    
+    unit = str(p.unit().name.text)
+    value = float(p.n.text)
+    if unit == "cm":
+        return value * 10
+    if unit == "mm":
+        return value;
+    if unit == "layer":
+        return value
+
+    print("don't know: " + unit)
+    unimpl();
 
 def constant_fold_expr(model, expr):
     p = expr.primary()
@@ -62,7 +70,15 @@ def constant_fold_expr(model, expr):
     else:
         right = constant_fold_primary(model, p[1])        
         operand = expr.op().operand.text;
-        return right.constant_fold(operand, left)
+        if operand == "+":
+            return left + right
+        if operand == "*":
+            return left * right
+        if operand == "/":
+            return left / right
+        if operand == "%":
+            return left % right
+        unimplemented()
 
 
 class ModelVar:
@@ -114,8 +130,8 @@ def process_location(comp, loc_prop_list):
         sx = constant_fold_expr(model, loc.expr()[0])
         sy = constant_fold_expr(model, loc.expr()[1])
 
-        comp.current_position = comp.fixed_position = Point(sx, sy, 0)        
-        comp.transpose(None, comp.fixed_position, None, None)
+        comp.fixed_position = Point(sx, sy, 0)        
+        comp.transpose(comp.fixed_position)
         
         
 def process_dimensions(comp, dim_prop_list):
@@ -130,8 +146,8 @@ def process_dimensions(comp, dim_prop_list):
             comp.layers = constant_fold_expr(model, dim.layers)
 
     if not comp.has_data_sheet:
-        sx = Dimension(0, "cm")
-        sy = Dimension(0, "cm")
+        sx = 0
+        sy = 0
         if comp.component_type != None:
             pkg = findKnownPackage(comp.component_type)
             pkg.create_outline(comp)
@@ -160,9 +176,7 @@ def add_datasheet_props(comp, ctxt):
 
 def preprocess_component(model, comp, props):
     if comp.name == "board":
-        comp.fixed_position = Point(Dimension(0, "mm"),
-                                    Dimension(0, "mm"),
-                                    0)
+        comp.fixed_position = Point(0, 0, 0)
     
     model.current_component = comp
     for p in props:
