@@ -226,9 +226,13 @@ class Outline:
         self.addLayerLine(s.x, e.y, e.x, e.y)
         self.center = s.average(e)
 
+    def getRadius(self):
+        radius = self.center.distance(self.lines[0].f)
+        return radius
+        
     # todo: create a better test later.
     def overlaps(self, f, t):
-        radius = self.center.distance(self.lines[0].f)
+        radius = self.getRadius()
         fd = self.center.distance(f)
         td = self.center.distance(t)
 

@@ -3,6 +3,8 @@ from utils import get_unique_id,normalize,valid_pin_name
 from Pin import Pin
 from known_packages import findKnownPackage
 
+NUM_BENDS_PER_ROUTE     = 2
+
 
 def revector_connections_to_router(routers, router, model, from_pin):
     # see if there is another component that has a link to our pin:
@@ -33,6 +35,11 @@ class Component:
         self.pins = []
         self.has_data_sheet = False
 
+    def crossover(self, other):
+        k = self.outline
+        self.outline  = other.outline
+        other.outline = k
+
     def sum_connection_lengths(self):
         sum = 0.0
         for p in self.pins:
@@ -55,7 +62,7 @@ class Component:
             routers = {}
             routers[self] = self
             last = None
-            for k in range(0, model.num_bends_per_route):
+            for k in range(0, NUM_BENDS_PER_ROUTE):
                 router = model.create_router()
                 routers[router] = router
 
@@ -63,7 +70,8 @@ class Component:
                     router.pins[1].connections = p.connections
                     p.connections = [router.pins[0]]
                 else:
-                    last.pins[1].add_connection(router.pins[0])
+                    router.pins[1].connections = last.pins[1].connections
+                    last.pins[1].connections = [ router.pins[0] ]
                 
                 last = router;
 

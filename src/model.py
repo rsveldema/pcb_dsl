@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from antlr4 import *
 import os
 import sys
+import random
 import svgwrite
 from Component import Component
 from phys import Outline,Point,Dimension
@@ -18,7 +19,6 @@ class Model:
     def __init__(self):
         self.constants  = {}
         self.components = []
-        self.num_bends_per_route = 1
         self.WIRE_WIDTH = Dimension(0.1, "mm")
 
     def create_router(self):
@@ -41,6 +41,19 @@ class Model:
         pin_out.outline.addRect(s, e)
         return comp
 
+    
+    def crossover(self, other):
+        size = len(self.components)
+        ix = random.randrange(0, size)
+
+        c1 = self.components[ix]
+        c2 = other.components[ix]
+
+        assert c1.id == c2.id
+        assert c1.name == c2.name
+        
+        c1.crossover(c2)
+
         
     # move components in the given range
     def random_move_components(self, w, h):
@@ -59,7 +72,7 @@ class Model:
         for comp in self.components:
             if comp.fixed_position == None:
                 dir = Point(w.abs_random(), h.abs_random(), comp.layers)
-                print("INITIAL_DIR TO PLACE: " + str(dir) + "  where comp ["+comp.name+"] at " + str(comp.outline.center))
+                print("INITIAL_DIR TO PLACE: " + str(dir) + "  where comp [" + comp.name+"] at " + str(comp.outline.center))
                 if not comp.transpose(self, dir, mw, mh):
                     pass
                 #comp.rotate()
@@ -124,12 +137,19 @@ class Model:
     def count_overlaps(self):
         c = 0
         for p1 in self.components:
+            if p1.is_board:
+                continue
             for p2 in self.components:
+                if p2.is_board:
+                    continue
                 if p1 != p2:
-                    if p1.overlaps(p2):
-                        print("overlap of " + str(p1) + " with " + str(p2))
+                    d = p1.outline.distance(p2.outline)
+                    radius = p1.outline.getRadius()
+                    if d < radius:
+                        print("overlap of " + str(p1.name) + " with " + str(p2.name) + " --- " + str(d) + " radius = " + str(radius))
                         c += 1
         return c
+
 
     # the lower the better
     def score(self):

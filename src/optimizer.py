@@ -1,26 +1,78 @@
 from model import Model
 import time
 from phys import Dimension
+import random
 
-POPULATION_SIZE_PLACEMENT = 1
-POPULATION_SIZE_ROUTING   = 1
 
+POPULATION_NUM_GROUPS =  1
+POPULATION_GROUP_SIZE = 10
+
+SELECTION_FILTER_SIZE   = int(0.3 * POPULATION_GROUP_SIZE)
+CROSSOVER_PROBABILITY   = int(0.8 * POPULATION_GROUP_SIZE)
+MUTATION_PROBABILTY     = int(0.2 * POPULATION_GROUP_SIZE)
 
 
 class Generation:
-    def __init__(self):
+    def __init__(self, group_id):
         self.models = []
-
+        self.group_id = group_id
+        
     def add(self, m):
         self.models.append(m)
 
-    def optimize(self, iteration):
-        for model in self.models:
-            (mw,mh) = model.get_board_size()
-            w = Dimension(1.0, "cm")
-            h = Dimension(1.0, "cm")
-            model.random_move_components(w, h) #w.div(iteration), h.div(iteration))
+    def should_mutate(self):        
+        k = random.randrange(0, POPULATION_GROUP_SIZE)
+        if k < MUTATION_PROBABILTY:
+            return True
+        return False
 
+    def should_crossover(self):
+        k = random.randrange(0, POPULATION_GROUP_SIZE)
+        if k < CROSSOVER_PROBABILITY:
+            return True
+        return False
+
+    def change(self, iteration):
+        for model in self.models:
+            if self.should_mutate():
+                (mw,mh) = model.get_board_size()
+                w = Dimension(1.0, "cm")
+                h = Dimension(1.0, "cm")
+                model.random_move_components(w, h) #w.div(iteration), h.div(iteration))
+            if self.should_crossover():
+                k = random.randrange(0, len(self.models))
+                other = self.models[k]
+                if other != model:
+                    model.crossover(other)
+
+    def selection(self, iteration):
+        scores = []
+        for model in self.models:
+            score = model.score()
+            tuple = (score, model)
+            scores.append( tuple )
+
+        s = sorted(scores, key=lambda v : v[0])
+        best = s[0:SELECTION_FILTER_SIZE]
+        #print("picked "+ str(len(best)) + " of " + str(len(self.models)))
+        self.models = []
+        for p in best:
+            self.models.append(p[1])
+            
+        for i in range(0,  POPULATION_GROUP_SIZE - len(best)):
+            m = best[i % len(best)][1].deepclone()
+            w = Dimension(0.5, "cm")
+            h = Dimension(0.5, "cm")
+            m.random_move_components(w, h) #w.div(iteration), h.div(iteration))
+            self.models.append(m)
+
+        best[0][1].writeSVG("group-best-" + str(iteration) + ".svg")
+
+        
+    def optimize(self, iteration):
+        self.change(iteration)
+        self.selection(iteration)
+        
     def find_best(self):
         best = None
         for m in self.models:
@@ -51,20 +103,19 @@ class NestedGeneration:
 def create_initial_generation(model):
     (w,h) = model.get_board_size()
 
+    random_placed = model.deepclone()
+    random_routed = random_placed.place_routing_components(w, h)            
+    random_routed.writeSVG("random_routed.svg")
+                
     nested = NestedGeneration()
-    for i in range(0, POPULATION_SIZE_PLACEMENT):
-        random_placed = model.deepclone()
+    for i in range(0, POPULATION_NUM_GROUPS):
+        inner = Generation(i)
+        nested.add(inner)
             
-        for j in range(0, POPULATION_SIZE_ROUTING):
-            inner = Generation()
-            nested.add(inner)
-            
-            random_routed = random_placed.place_routing_components(w, h)
-            
-            random_routed.initial_random_move_components(w, h)
-            inner.add(random_routed)
-
-            random_routed.writeSVG("random_routed.svg")
+        for j in range(0, POPULATION_GROUP_SIZE):
+            clone = random_routed.deepclone()
+            clone.initial_random_move_components(w, h)
+            inner.add(clone)
     return nested
 
 def optimize_model(model, time_limit_secs):
