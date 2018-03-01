@@ -18,7 +18,7 @@ class Model:
     def __init__(self):
         self.constants  = {}
         self.components = []
-        self.num_bends_per_route = 3
+        self.num_bends_per_route = 1
         self.WIRE_WIDTH = Dimension(0.1, "mm")
 
     def create_router(self):
@@ -41,13 +41,6 @@ class Model:
         pin_out.outline.addRect(s, e)
         return comp
 
-    def findComponentAt(self, f, t):
-        for p in self.components:
-            if p.is_board:
-                pass
-            elif p.overlaps(f, t):
-                return p
-        return None
         
     # move components in the given range
     def random_move_components(self, w, h):
@@ -55,7 +48,7 @@ class Model:
         for comp in self.components:
             if comp.fixed_position == None:
                 dir = Point(w.random(), h.random(), comp.layers)
-                print("DIR TO PLACE: " + str(dir) + "  where comp ["+comp.name+"] at " + str(comp.outline.center))
+                #print("DIR TO PLACE: " + str(dir) + "  where comp ["+comp.name+"] at " + str(comp.outline.center))
                 if not comp.transpose(self, dir, mw, mh):
                     pass
                 #comp.rotate()
@@ -128,14 +121,27 @@ class Model:
             sum += c.sum_connection_lengths()
         return sum
 
+    def count_overlaps(self):
+        c = 0
+        for p1 in self.components:
+            for p2 in self.components:
+                if p1 != p2:
+                    if p1.overlaps(p2):
+                        print("overlap of " + str(p1) + " with " + str(p2))
+                        c += 1
+        return c
+
+    # the lower the better
+    def score(self):
+        my_num_overlaps    = self.count_overlaps()
+        my_len     =  self.sum_connection_lengths()
+        s = (my_num_overlaps * 100) + (my_len * 2)
+        return s
+        
     def is_better_than(self, other):
         if other == None:
             return True
 
-        my_len     =  self.sum_connection_lengths()
-        other_len  = other.sum_connection_lengths()
-
-        if my_len < other_len:
-            return True
-        
-        return False
+        s1 = self.score()
+        s2 = other.score()
+        return s1 < s2

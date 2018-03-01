@@ -109,13 +109,6 @@ class Component:
         
     def transpose(self, model, dir, mw, mh):
         newpos = self.current_pos.transpose(dir, mw, mh)
-        
-        if model != None:
-            comp = model.findComponentAt(newpos, newpos.add(mw, mh))
-            if comp != None and comp != self:
-                print("comp overlap: " + comp.name + " with " + self.name)
-                return False        
-
         self.current_pos = newpos
         self.outline.transpose(dir, mw, mh)
         for p in self.pins:

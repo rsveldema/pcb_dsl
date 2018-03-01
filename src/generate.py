@@ -51,7 +51,7 @@ model.writeSVG("model.svg")
 clone = model.deepclone()
 clone.writeSVG("clone.svg")
 
-time_limit_secs = 60
+time_limit_secs = 5
 opt = optimize_model(model, time_limit_secs)
 if opt != None:
     opt.writeSVG("final.svg")

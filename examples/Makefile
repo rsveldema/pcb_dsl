@@ -2,7 +2,8 @@
 
 
 all: clean
-	python3 ../src/generate.py sampler.edsl
+	#python3  -m cProfile ../src/generate.py sampler.edsl
+	python3 ../src/generate.py sampler1.edsl
 	dot -Tpdf model.dot > model.pdf
 
 
