@@ -1,0 +1,26 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
+SET (CMAKE_CXX_STANDARD 14)
+LIST( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake )
+
+project (pcb_dsl)
+
+# set variable pointing to the antlr tool that supports C++
+set(ANTLR4CPP_JAR_LOCATION ${PROJECT_SOURCE_DIR}/thirdparty/antlr/antlr4-4.5.4-SNAPSHOT.jar)
+
+
+include( ./cmake/ExternalAntlr4Cpp.cmake )
+
+include_directories( ${ANTLR4CPP_INCLUDE_DIRS} )
+link_directories( ${ANTLR4CPP_LIBS} )
+message(STATUS "Found antlr4cpp libs: ${ANTLR4CPP_LIBS} and includes: ${ANTLR4CPP_INCLUDE_DIRS} ")
+
+# Call macro to add lexer and grammar to your build dependencies.
+antlr4cpp_process_grammar(pcbgen
+	  antlrcpp
+	${CMAKE_CURRENT_SOURCE_DIR}/dsl.antlr4)
+
+include_directories(${antlr4cpp_include_dirs_antlrcpptest})
+include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
+
+add_executable(pcbgen main.cc ${antlr4cpp_src_files_antlrcpp})
+add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
