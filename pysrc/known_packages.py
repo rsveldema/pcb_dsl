@@ -37,15 +37,15 @@ def create_pins_RS28(config, comp):
         
         mid = len(comp.pins)/2
         
-        k = comp.height.mul(1.0/mid)
-        starty = k.mul(0.25) #self.pin_dist.mul(0.5)
+        k = comp.height / mid
+        starty = k * 0.25 #self.pin_dist.mul(0.5)
         if ix >= mid:
             x = comp.width
-            y = starty.add(k.mul((np-1) - ix))
+            y = starty + k * ((np-1) - ix)
         else:
             #print(">>>> " + str(ix))
-            x = config.pin_len.mul(-1)                
-            y = starty.add(k.mul(ix))
+            x = config.pin_len * -1
+            y = starty + (k * ix)
             
         pos = Point(x, y, 0)
         end = pos.add(config.pin_len, config.pin_width)
@@ -76,8 +76,8 @@ def create_single_row_pin_header(config, comp):
         p.outline.addRect(pos, end)
 
 def create_two_row_pin_header(config, comp):
-    comp.width  = config.w.mul(2)
-    comp.height = config.h.mul(len(comp.pins)/2)
+    comp.width  = config.w * 2
+    comp.height = config.h * (len(comp.pins)/2)
     pos = Point(0, 0, 0)
     end = pos.add(comp.width,
                   comp.height)
@@ -89,8 +89,8 @@ def create_two_row_pin_header(config, comp):
 
         ix1 = (ix % 2)
         ix2 = int(ix / 2)        
-        x = config.w.mul(ix1)
-        y = config.h.mul(ix2)
+        x = config.w * (ix1)
+        y = config.h * (ix2)
 
         pos = Point(x, y, 0)
         end = pos.add(config.w, config.h)

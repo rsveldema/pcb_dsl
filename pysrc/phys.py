@@ -12,14 +12,13 @@ def draw_line(dwg, from_pos, to_pos):
     layer = from_pos.layer
     dwg.add(dwg.line( (x,y), (ex, ey), 
                       stroke_width = "1",
-                      stroke='green'))   
-
+                      stroke='green'))
 
 no_displayed_required = ["board"]
 
 
 def grid(v):
-    return int(v)
+    return int(v * 100) / 100
 
 
 def can_add_without_clip(v1, v2, max):
@@ -36,8 +35,8 @@ def can_add_without_clip(v1, v2, max):
 """
 class Point:
     def __init__(self, x, y, layer):
-        self.x = x
-        self.y = y
+        self.x = grid(x)
+        self.y = grid(y)
         self.layer = layer
 
     def distance(self, other):
@@ -51,10 +50,6 @@ class Point:
         dy = y2 - y1
 
         return math.sqrt((dx*dx) + (dy*dy))
-
-    def cap(self, startx, starty, endx, endy):
-        self.x.cap(startx, endx)
-        self.y.cap(starty, endy)
         
     def deepclone(self):
         return Point(self.x, self.y, self.layer)
@@ -65,13 +60,6 @@ class Point:
     def sub(self, x, y):
         return Point(self.x - x, self.y - y, self.layer)
 
-    def clip(self, mw, mh):
-        return Point(self.x.clip(mw), self.y.clip(mh), self.layer)
-
-
-    def clip_add(self, x, y, mw, mh):
-        return Point(self.x.clip_add(x, mw), self.y.clip_add(y, mh), self.layer)
-
     def can_add_without_clip(self, x, y, mw, mh):
         return can_add_without_clip(self.x, x, mw) and can_add_without_clip(self.y, y, mh)
     
@@ -80,11 +68,6 @@ class Point:
 
     def can_transpose(self, dir, mw, mh):
         return self.can_add_without_clip(dir.x, dir.y, mw, mh)
-
-    def average(self, pt):
-        return Point(self.x.average(pt.x),
-                     self.y.average(pt.y),
-                     self.layer)
 
     def __repr__(self):
         return "(" + str(self.x) + "," + str(self.y) + ")"
@@ -189,11 +172,11 @@ class Outline:
         name = self.xparent.name
         if  name != None and not (name in no_displayed_required):
             c = self.lines[0].f #self.center()
-            x = c.x * mm
-            y = c.y * mm
+
             #print("pos["+name+"] = "  + str(x) + ","+str(y) + " ==> "+ self.parent.name + ", UL="+str(self.lines[0].f)+ "LL="+str(self.lines[0].t))
             
-            dwg.add(dwg.text(name, (x,y),
+            dwg.add(dwg.text(name,
+                             (c.x * mm, c.y *mm),
                              stroke='red',
                              stroke_width = "0.1",
                              font_size="2px"))

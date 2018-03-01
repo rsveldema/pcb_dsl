@@ -169,6 +169,11 @@ class Component:
 
     def writeSVG(self, dwg):        
         self.outline.writeSVG(dwg)
+        
+        if self.is_router:
+            assert len(self.pins) > 0
+            assert len(self.pins[len(self.pins)-1].connections) > 0
+            
         for p in self.pins:
             p.writeSVG(dwg)
         
