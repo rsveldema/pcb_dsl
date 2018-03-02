@@ -1,4 +1,5 @@
 
+
 component board {
   dimensions {
   width: 10 cm;

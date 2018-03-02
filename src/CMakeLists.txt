@@ -27,7 +27,7 @@ antlr4cpp_process_grammar(pcbgen
 include_directories(${antlr4cpp_include_dirs_antlrcpptest})
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
-add_executable(pcbgen main.cc dslBaseListener.cpp dslListener.cpp dslLexer.cpp	dslParser.cpp create_model.cc model.cc datasheet.cc database.cc)
+add_executable(pcbgen main.cc dslBaseListener.cpp dslListener.cpp dslLexer.cpp	dslParser.cpp create_model.cc model.cc datasheet.cc known_packages.cc)
 add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
 target_link_libraries(pcbgen antlr4-runtime ${Boost_LIBRARIES})
 

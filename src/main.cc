@@ -18,10 +18,7 @@ void Usage(const char *format, ...)
 
 int main(int argc, char **argv)
 {
-  parse_xml("out.xml");
-  exit(0);
-  
-  const char *filename = 0;
+  const char *filename = NULL;
   for (int i=1;i<argc;i++)
     {
       if (strcmp(argv[i], "-pcb") == 0)
@@ -38,16 +35,22 @@ int main(int argc, char **argv)
   if (! filename) {
     Usage("missing file name");
   }
-  
-  std::ifstream stream;
-  stream.open(filename);
-  antlr4::ANTLRInputStream input(stream);
-  dslLexer lexer(&input);
-  antlr4::CommonTokenStream tokens(&lexer);
-  dslParser parser(&tokens);
 
-  antlr4::tree::ParseTree *tree = parser.startRule();
-  ModelCreatorListener listener;
-  antlr4::tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
+  try {
+    std::ifstream stream;
+    stream.open(filename);
+    antlr4::ANTLRInputStream input(stream);
+    dslLexer lexer(&input);
+    antlr4::CommonTokenStream tokens(&lexer);
+    dslParser parser(&tokens);
+    
+    antlr4::tree::ParseTree *tree = parser.startRule();
+    ModelCreatorListener listener;
+    antlr4::tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
+  } catch (antlr4::RuntimeException &e) {
+    fprintf(stderr, "caught exception!\n");
+  }
+
+  printf("going to start optimization now\n");
   return 0;
 }

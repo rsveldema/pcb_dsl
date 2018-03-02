@@ -7,96 +7,21 @@
 
 #include "datasheet.h"
 
+std::string destringify(const std::string &s);
 unsigned get_unique_id();
+std::string normalize(const std::string &s);
+bool valid_pin_name(const std::string &s);
 
 class Model;
 class ModelContext;
 
-class Point
-{
- public:
-  float x, y;
-  unsigned layer;
-
- public:
-  Point(float _x, float _y, unsigned _layer)
-    : x(_x), y(_y), layer(_layer)
-    {
-    }
-  
-  Point add(const Point &p) const
-  {
-    return Point(x + p.x, y + p.y, layer);
-  }
-  
-  Point div(float d) const
-  {
-    return Point(x / d, y / d, layer);
-  }
-
-  Point mul(float d) const
-  {
-    return Point(x * d, y * d, layer);
-  }
-  
-  bool can_transpose(const Point &dir, const Point &max) const
-  {
-    Point k = add(dir);
-    if (k.x < 0) return false;
-    if (k.y < 0) return false;
-    if (k.x > max.x) return false;
-    if (k.y > max.y) return false;
-    return true;
-  }
-};
-
-class Outline
-{
- public:
-  std::vector<Point> points;
-
-
-  void addRect(const Point &ul,
-	       const Point &lr)
-  {
-    points.push_back(ul);
-    points.push_back(Point(lr.x, ul.y, ul.layer));
-    points.push_back(lr);
-    points.push_back(Point(ul.x, lr.y, ul.layer));
-  }
-  
-  void transpose(const Point &dir)
-  {
-    for (int i=0;i<points.size(); i++)
-      {
-	points[i] = points[i].add(dir);
-      }
-  }
-  
-  Point center() const
-  {
-    Point c(0,0,0);
-    bool first = true;
-    for (auto p : points)
-      {
-	if (first)
-	  {
-	    c = p;
-	  }
-	else
-	  {
-	    p = c.add(p);
-	  }
-      }
-    return c.div(points.size());
-  }  
-};
+#include "phys.h"
 
 class Pin
 {
  public:
   unsigned id;
-  std::string name, mode;
+  std::string name, mode, description;
   Outline outline;
   std::vector<Pin *> connections;
 
@@ -105,7 +30,12 @@ class Pin
     name(s)
     {
     }
-
+  
+  void setDescription(const std::string &descr)
+  {
+    this->description = descr;
+  }
+  
   void transpose(const Point &dir)
   {
     outline.transpose(dir);
@@ -137,6 +67,7 @@ class Component
   const bool is_board;
   std::string component_type;
   std::vector<Table *> table_list;
+  Page *package = NULL;
 
  Component(Model *m, const std::string &_name, bool _is_router)
    : id(get_unique_id()),
@@ -147,6 +78,33 @@ class Component
     is_board(_name == "board")
       {
       }
+  
+  void create_outline()
+  {
+    auto p = findKnownPackage(component_type);
+    p->create_outline(this);
+  }
+  
+  void add_table(Table *table) {
+    table_list.push_back(table);
+    if (table->name == "pins")
+      {
+	for (auto row : table->rows)
+	  {
+	    auto name = normalize(row->get(0)->string);
+	    if (valid_pin_name(name))
+	      {
+		auto pin = add_pin(name);
+		pin->setDescription(row->get(1)->string);
+	      }
+	  }
+      }
+  }
+
+  void add_package(Page *p)
+  {
+    package = p;
+  }
 
   int resolve_length(const std::string &name)
   {

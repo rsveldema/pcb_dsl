@@ -1,10 +1,30 @@
 #include "create_model.h"
+#include <boost/algorithm/string/replace.hpp>
+
 
 unsigned get_unique_id()
 {
   static unsigned id;
   return id++;
 }
+
+std::string normalize(const std::string &str)
+{
+  std::string s(str);
+  boost::replace_all(s, "-", "_");
+  boost::replace_all(s, " ", "_");
+  return s;
+}
+
+
+bool valid_pin_name(const std::string &name)
+{
+  if (name == "Name") {
+    return false;
+  }
+  return true;
+}
+    
 
 Pin *Component::get_pin_by_suffixes(const std::vector<dslParser::Access_suffixContext*> &suffixes,
 				    ModelContext &context, bool odd)
