@@ -146,12 +146,12 @@ def process_dimensions(comp, dim_prop_list):
             comp.layers = constant_fold_expr(model, dim.layers)
 
     if not comp.has_data_sheet:
-        sx = 0
-        sy = 0
         if comp.component_type != None:
             pkg = findKnownPackage(comp.component_type)
             pkg.create_outline(comp)
         else:
+            sx = 0
+            sy = 0
             print("COMPONENT "+ comp.name + " has no assigned type yet")
             comp.outline.addRect(Point(sx, sy, comp.layers),
                                  Point(comp.width, comp.height, comp.layers))

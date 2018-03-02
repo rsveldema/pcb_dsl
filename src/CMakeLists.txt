@@ -9,8 +9,13 @@ set(ANTLR4CPP_JAR_LOCATION ${PROJECT_SOURCE_DIR}/thirdparty/antlr/antlr4-4.5.4-S
 
 
 include( ./cmake/ExternalAntlr4Cpp.cmake )
+include( ./cmake/FindBoost.cmake )
 
+FIND_PACKAGE( Boost 1.66 COMPONENTS program_options REQUIRED )
+
+include_directories( ${Boost_INCLUDE_DIR} )
 include_directories( ${ANTLR4CPP_INCLUDE_DIRS} )
+
 link_directories( ${ANTLR4CPP_LIBS} )
 message(STATUS "Found antlr4cpp libs: ${ANTLR4CPP_LIBS} and includes: ${ANTLR4CPP_INCLUDE_DIRS} ")
 
@@ -22,5 +27,8 @@ antlr4cpp_process_grammar(pcbgen
 include_directories(${antlr4cpp_include_dirs_antlrcpptest})
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
-add_executable(pcbgen main.cc ${antlr4cpp_src_files_antlrcpp})
+add_executable(pcbgen main.cc dslBaseListener.cpp dslListener.cpp dslLexer.cpp	dslParser.cpp create_model.cc model.cc datasheet.cc database.cc)
 add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
+target_link_libraries(pcbgen antlr4-runtime ${Boost_LIBRARIES})
+
+
