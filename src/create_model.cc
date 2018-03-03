@@ -191,6 +191,10 @@ void add_location(Component *comp, dslParser::ComponentContext *ctxt)
 void process_dimensions(Component *comp,
 			const std::vector<dslParser::Dim_propContext *> &dim_prop_list)
 {
+  if (dim_prop_list.size() == 0)
+    {
+      return;
+    }
   auto model = comp->model;
   model->current_component = comp;
   
@@ -217,7 +221,7 @@ void process_dimensions(Component *comp,
       model->board_dim = comp->dim;
     }
   
-  if (!comp->has_data_sheet)
+  if (! comp->has_data_sheet)
     {
       if (comp->component_type != "")
 	{

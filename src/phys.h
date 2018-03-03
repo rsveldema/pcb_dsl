@@ -70,6 +70,13 @@ class Outline
     return {0, 255, 0};
   }
 
+  void drawLineTo(const Point &to,
+		  Canvas *c)
+  {
+    RGB color = getColor(to.layer);
+    c->draw_line(color, center(), to);
+  }
+
   void draw(Canvas *c,
 	    const std::string &name)
   {

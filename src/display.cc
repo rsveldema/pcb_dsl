@@ -3,8 +3,9 @@
 #include <cairomm/context.h>
 
 
-
-
+/** Wrap cairo to avoid importing cairo everywhere.
+ * Now cairo is used only in this file.
+ */
 class CairoCanvas : public Canvas
 {
 private:

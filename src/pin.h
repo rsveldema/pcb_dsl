@@ -21,6 +21,10 @@ class Pin
   void draw(Canvas *c)
   {
     outline.draw(c, name);
+    for (auto connection : connections)
+      {
+	outline.drawLineTo(connection->outline.center(), c);
+      }
   }
   
   bool can_transpose(const Point &dir,

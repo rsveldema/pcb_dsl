@@ -42,7 +42,7 @@ void Model::random_move_components(const Point &range)
   const Point board_dim = this->board_dim;
   for (auto comp : components)
     {
-      if (comp->fixed_position)
+      if (! comp->fixed_position)
 	{
 	  auto dir = Point(randrange(-range.x, range.x),
 			   randrange(-range.y, range.y),
@@ -63,7 +63,7 @@ void Model::initial_random_move_components()
   const Point board_dim = this->board_dim;
   for (auto comp : components)
     {
-      if (comp->fixed_position)
+      if (! comp->fixed_position)
 	{
 	  auto dir = Point(randrange(board_dim.x),
 			   randrange(board_dim.y),
@@ -107,8 +107,10 @@ void Component::place_routing_components(Model *model, const Point &dim)
   for (auto p : pins)
     {
       if (p->connections.size() == 0)
-	continue;
-
+	{
+	  continue;
+	}
+      
       clone_map_t routers;
       routers[this] = this;
       
@@ -308,7 +310,7 @@ public:
 	  
       }
 
-    scores[0].second->writeSVG(utils::str("group-best-", iteration, ".svg"));
+    //scores[0].second->writeSVG(utils::str("group-best-", iteration, ".svg"));
   }
         
   void optimize(unsigned iteration)
@@ -392,6 +394,8 @@ public:
 
 NestedGeneration* create_initial_generation(Model *model)
 {
+  model->writeSVG("initial.svg");
+  
   auto dim = model->board_dim;
   auto start_model = model->deepclone();
   auto random_routed = start_model->place_routing_components(dim);
@@ -413,7 +417,8 @@ NestedGeneration* create_initial_generation(Model *model)
   return nested;
 }
 
-Model* optimize_model(Model *model, unsigned time_limit_secs)
+Model* optimize_model(Model *model,
+		      unsigned time_limit_secs)
 {
   printf("creating initial population");
   auto nested = create_initial_generation(model);
@@ -446,6 +451,7 @@ Model* optimize_model(Model *model, unsigned time_limit_secs)
 	}
       iteration += 1;
     }
-  
+
+  utils::print("performed ", iteration,  " # iterations");
   return nested->find_best();
 }

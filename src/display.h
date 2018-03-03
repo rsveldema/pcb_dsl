@@ -12,6 +12,10 @@ struct RGB
   double blue() const  { return b / 255.0; }
 };
 
+
+/** Wrap cairo to avoid importing cairo everywhere.
+ * Now it is only used inside of display.cc
+ */
 class Canvas
 {
  public:
