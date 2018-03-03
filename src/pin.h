@@ -33,6 +33,12 @@ class Pin
     return outline.can_transpose(dir,
 				 board_dim);
   }
+
+  void transpose(const Point &dir)
+  {
+    outline.transpose(dir);
+  }
+  
   
   double sum_connection_lengths();
   void revector(Pin *from_pin, Pin *to_pin)
@@ -53,11 +59,6 @@ class Pin
   void setDescription(const std::string &descr)
   {
     this->description = descr;
-  }
-  
-  void transpose(const Point &dir)
-  {
-    outline.transpose(dir);
   }
   
   void add_connection(Pin *to_pin)

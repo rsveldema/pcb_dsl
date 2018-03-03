@@ -63,7 +63,8 @@ class Component
       }
   }
   
-  void add_table(Table *table) {
+  void add_table(Table *table)
+  {
     table_list.push_back(table);
     if (table->name == "pins")
       {

@@ -167,14 +167,14 @@ unsigned Model::count_overlaps()
 	    continue;
 
 	  
-	  double d = p1->outline.distance(p2->outline);
+	  double      d = p1->outline.distance(p2->outline);
 	  double radius = p1->outline.getRadius();
 	  
 	  if (d < radius)
 	    {
 	      utils::print("overlap of ", p1->name,
 			   " with ", p2->name,
-			   "--- ", d, " radius = ", radius);
+			   "--- dist = ", d, " radius = ", radius);
 	      c += 1;
 	    }
 	}
@@ -273,10 +273,10 @@ public:
       }
   }
 
-  static int comparer(std::pair<score_t,Model*> &p1,
-		      std::pair<score_t,Model*> &p2)
+  static bool comparer(std::pair<score_t,Model*> &p1,
+		       std::pair<score_t,Model*> &p2)
   {
-    return p1.first - p2.first;
+    return p2.first > p1.first;
   }
 		      
   
@@ -286,11 +286,12 @@ public:
 
     for (auto model : models)
       {
-	int score = model->score();
+	score_t score = model->score();
 	scores.push_back( { score, model } );
       }
 
     std::sort(scores.begin(), scores.end(), comparer);
+
 
     // TODO: delete bad ones.
     models.clear();
@@ -298,6 +299,7 @@ public:
       {
 	if (i < SELECTION_FILTER_SIZE)
 	  {
+	    //printf("score[%d]: %d\n", i, (int)scores[i].first);
 	    models.push_back(scores[i].second);
 	  }
 	else
@@ -394,8 +396,6 @@ public:
 
 NestedGeneration* create_initial_generation(Model *model)
 {
-  model->writeSVG("initial.svg");
-  
   auto dim = model->board_dim;
   auto start_model = model->deepclone();
   auto random_routed = start_model->place_routing_components(dim);
@@ -420,6 +420,8 @@ NestedGeneration* create_initial_generation(Model *model)
 Model* optimize_model(Model *model,
 		      unsigned time_limit_secs)
 {
+  model->writeSVG("initial.svg");
+      
   printf("creating initial population");
   auto nested = create_initial_generation(model);
   printf("DONE: starting optimization process");
@@ -452,6 +454,7 @@ Model* optimize_model(Model *model,
       iteration += 1;
     }
 
+  auto best = nested->find_best();
   utils::print("performed ", iteration,  " # iterations");
-  return nested->find_best();
+  return best;
 }

@@ -1,6 +1,7 @@
 #ifndef PHYS__G_H___
 #define PHYS__G_H___
 
+#include <assert.h>
 #include <math.h>
 #include <vector>
 
@@ -128,8 +129,9 @@ class Outline
       }
   }
 
-  double getRadius()
+  double getRadius() const
   {
+    assert(points.size() > 0);
     return center().distance(points[0]);
   }
 
@@ -155,11 +157,12 @@ class Outline
       {
 	if (first)
 	  {
+	    first = false;
 	    c = p;
 	  }
 	else
 	  {
-	    p = c.add(p);
+	    c = c.add(p);
 	  }
       }
     return c.div(points.size());
