@@ -1,6 +1,7 @@
 #ifndef COMPONENT_H_H__H_
 #define COMPONENT_H_H__H_
 
+#include "parser.h"
 
 class Component
 {
@@ -52,11 +53,7 @@ class Component
   Component *shallow_clone(Model *m, clone_map_t &map);
   void relink(Model *m, clone_map_t &map);
   
-  void create_outline()
-  {
-    auto p = findKnownPackage(component_type);
-    p->create_outline(this);
-  }
+  void create_outline();
   
   void add_table(Table *table) {
     table_list.push_back(table);

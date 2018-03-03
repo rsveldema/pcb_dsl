@@ -14,6 +14,7 @@ bool valid_pin_name(const std::string &s);
 
 class Model;
 class ModelContext;
+class Component;
 
 typedef std::map<Component*, Component*> clone_map_t;
 

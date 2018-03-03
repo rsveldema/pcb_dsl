@@ -3,6 +3,8 @@ SET (CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wno-attributes -g2")
 
+message("CMAKE DIR IS "  ${PROJECT_SOURCE_DIR}/cmake)
+
 LIST( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake )
 
 project (pcb_dsl)
@@ -13,6 +15,7 @@ set(ANTLR4CPP_JAR_LOCATION ${PROJECT_SOURCE_DIR}/thirdparty/antlr/antlr-4.7.1-co
 
 include( ./cmake/ExternalAntlr4Cpp.cmake )
 include( ./cmake/FindBoost.cmake )
+include( ./cmake/FindCairo.cmake )
 
 FIND_PACKAGE( Boost 1.64 COMPONENTS program_options REQUIRED )
 
@@ -32,8 +35,13 @@ include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
 
 
-add_executable(pcbgen main.cc optimizer.cc utils.cc create_model.cc model.cc datasheet.cc known_packages.cc ${antlr4cpp_src_files_antlrcpp}) 
-#add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
-target_link_libraries(pcbgen antlr4-runtime ${Boost_LIBRARIES})
+add_executable(pcbgen main.cc display.cc optimizer.cc utils.cc create_model.cc model.cc datasheet.cc known_packages.cc ${antlr4cpp_src_files_antlrcpp})
+
+
+#find_package(Cairo)
+include_directories( ${Cairomm_INCLUDE_DIRS} )
+
+add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
+target_link_libraries(pcbgen antlr4-runtime ${Boost_LIBRARIES} ${Cairomm_LIBRARIES})
 
 

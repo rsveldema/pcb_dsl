@@ -1,14 +1,7 @@
 #ifndef CREATE_MODEL_H___
 #define CREATE_MODEL_H___
 
-namespace antlrcpp {}
-
-#include "dslLexer.h"
-#include "dslParser.h"
-#include "dslBaseListener.h"
-
-using namespace antlrcpp;
-
+#include "parser.h"
 #include "database.h"
 #include "model.h"
 

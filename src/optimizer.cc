@@ -36,10 +36,6 @@ void revector_connections_to_router(clone_map_t &routers,
     }
 }
 
-void Model::writeSVG(const std::string &filename)
-{
-  abort();
-}
 
 void Model::random_move_components(const Point &range)
 {

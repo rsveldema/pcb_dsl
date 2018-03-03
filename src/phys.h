@@ -4,6 +4,18 @@
 #include <math.h>
 #include <vector>
 
+enum class Color
+  {
+  };
+
+class Canvas
+{
+ public:
+  virtual void draw_line(const Point &from,
+			 const Point &to);
+			 
+};
+
 class Point
 {
  public:

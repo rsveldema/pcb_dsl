@@ -157,3 +157,11 @@ KnownPackageInfo* findKnownPackage(const std::string &name)
   
   abort();
 }
+
+
+
+void Component::create_outline()
+{
+  auto p = findKnownPackage(component_type);
+  p->create_outline(this);
+}
