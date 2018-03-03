@@ -32,7 +32,7 @@ include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
 
 
-add_executable(pcbgen main.cc  create_model.cc model.cc datasheet.cc known_packages.cc ${antlr4cpp_src_files_antlrcpp}) 
+add_executable(pcbgen main.cc optimizer.cc utils.cc create_model.cc model.cc datasheet.cc known_packages.cc ${antlr4cpp_src_files_antlrcpp}) 
 #add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
 target_link_libraries(pcbgen antlr4-runtime ${Boost_LIBRARIES})
 

@@ -1,6 +1,7 @@
 #ifndef PHYS__G_H___
 #define PHYS__G_H___
 
+#include <math.h>
 #include <vector>
 
 class Point
@@ -14,6 +15,15 @@ class Point
     : x(_x), y(_y), layer(_layer)
     {
     }
+  
+  double distance(const Point &other)
+  {
+    double dx = other.x - x;
+    double dy = other.y - y;
+
+    return sqrt((dx*dx) + (dy*dy));
+  }
+
   
   Point add(const Point &p) const
   {
@@ -52,6 +62,10 @@ class Outline
  public:
   std::vector<Point> points;
 
+  double distance(Outline &other)
+  {
+    return center().distance(other.center());
+  }
 
   void addRect(const Point &ul,
 	       const Point &lr)
@@ -68,6 +82,25 @@ class Outline
       {
 	points[i] = points[i].add(dir);
       }
+  }
+
+  double getRadius()
+  {
+    return center().distance(points[0]);
+  }
+
+  bool can_transpose(const Point &dir,
+		     const Point &board_dim)
+  {
+    for (auto p : points)
+      {
+	if (! p.can_transpose(dir,
+			      board_dim))
+	  {
+	    return false;
+	  }
+      }
+    return true;
   }
   
   Point center() const

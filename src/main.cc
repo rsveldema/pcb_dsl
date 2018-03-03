@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "create_model.h"
-
+#include "optimizer.h"
 
 void Usage(const char *format, ...)
 {
@@ -56,6 +56,9 @@ int main(int argc, char **argv)
 
   printf("going to start optimization now\n");
   Model *model = listener.get();
+
+  Model *best = optimize_model(model, 5);
+  best->writeSVG("final.svg");
   
   return 0;
 }

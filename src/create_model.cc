@@ -196,11 +196,11 @@ void process_dimensions(Component *comp,
   
   for (auto dim : dim_prop_list) {
     if (dim->width)
-      comp->width = constant_fold_expr(model, dim->width);
+      comp->dim.x = constant_fold_expr(model, dim->width);
     if (dim->height)
-      comp->height = constant_fold_expr(model, dim->height);
+      comp->dim.y = constant_fold_expr(model, dim->height);
     if (dim->layers)
-      comp->layers = constant_fold_expr(model, dim->layers);
+      comp->dim.layer = constant_fold_expr(model, dim->layers);
   }
   
   if (!comp->has_data_sheet)
@@ -213,8 +213,8 @@ void process_dimensions(Component *comp,
       else
 	{
 	  printf("COMPONENT %s has no assigned type yet\n", comp->name.c_str());
-	  comp->outline.addRect(Point(0, 0, comp->layers),
-				Point(comp->width, comp->height, comp->layers));
+	  comp->outline.addRect(Point(0, 0, comp->dim.layer),
+				Point(comp->dim.x, comp->dim.y, comp->dim.layer));
 	}
     }
 }
