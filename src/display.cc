@@ -23,8 +23,13 @@ public:
 			 const Point &from,
 			 const std::string &text)
   {
+    ctxt->set_source_rgb (color.red(),
+			  color.green(),
+			  color.blue());
+    ctxt->set_line_width(0.2);
     ctxt->move_to(from.x,
 		  from.y);
+    ctxt->set_font_size(4);
     ctxt->show_text(text);
   }
   
@@ -32,10 +37,15 @@ public:
 			 const Point &from,
 			 const Point &to)
   {
+    ctxt->set_source_rgb (color.red(),
+			  color.green(),
+			  color.blue());
+    ctxt->set_line_width(0.2);
     ctxt->move_to(from.x,
 		  from.y);
     ctxt->line_to(to.x,
 		  to.y);
+    ctxt->stroke();
   }
 };
 

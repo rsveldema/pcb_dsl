@@ -6,6 +6,10 @@
 struct RGB
 {
   unsigned char r, g, b;
+
+  double red() const   { return r / 255.0; }
+  double green() const { return g / 255.0; }
+  double blue() const  { return b / 255.0; }
 };
 
 class Canvas
