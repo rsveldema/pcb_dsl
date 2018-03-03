@@ -95,10 +95,12 @@ void Component::relink(Model *m, clone_map_t &map)
     }
 }
 
+
 Model *Model::deepclone()
 {
   auto m = new Model();
   m->constants = constants;
+  m->board_dim = board_dim;
 
   clone_map_t map;
     

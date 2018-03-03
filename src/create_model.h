@@ -99,7 +99,7 @@ class ModelCreatorListener : public dslBaseListener
 
   Model *get() const { return model; }
 
-  virtual void  enterConstant(dslParser::ConstantContext *ctxt) {
+  virtual void enterConstant(dslParser::ConstantContext *ctxt) {
     //constant: 'const' ID '=' expr ';';
     auto name = ctxt->ID()->getText();
     auto expr = ctxt->expr();
@@ -109,7 +109,7 @@ class ModelCreatorListener : public dslBaseListener
   
  private:
 
-  void  add_connections(ModelContext &mctxt, dslParser::NetworkContext *ctxt) {
+  void add_connections(ModelContext &mctxt, dslParser::NetworkContext *ctxt) {
     for (auto conn : ctxt->connection())
       {
 	for (unsigned k = 0; k < conn->access().size()-1; k++)
@@ -123,7 +123,7 @@ class ModelCreatorListener : public dslBaseListener
       }
   }
 
-  virtual void  enterNetwork(dslParser::NetworkContext *ctxt) {
+  virtual void enterNetwork(dslParser::NetworkContext *ctxt) {
     auto names = ctxt->object_name()->ID();
     if (names.size() == 1)
       {
@@ -143,7 +143,7 @@ class ModelCreatorListener : public dslBaseListener
     }
   }
 
-  virtual void  enterComponent(dslParser::ComponentContext *ctxt)
+  virtual void enterComponent(dslParser::ComponentContext *ctxt)
   {
     auto names = ctxt->object_name()->ID();
     //print("EXAMINE COMPONENT: " + str(names))

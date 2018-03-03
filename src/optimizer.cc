@@ -39,7 +39,7 @@ void revector_connections_to_router(clone_map_t &routers,
 
 void Model::random_move_components(const Point &range)
 {
-  const Point board_dim = get_board_size();
+  const Point board_dim = this->board_dim;
   for (auto comp : components)
     {
       if (comp->fixed_position)
@@ -60,7 +60,7 @@ void Model::random_move_components(const Point &range)
 						      
 void Model::initial_random_move_components()
 {
-  const Point board_dim = get_board_size();
+  const Point board_dim = this->board_dim;
   for (auto comp : components)
     {
       if (comp->fixed_position)
@@ -392,7 +392,7 @@ public:
 
 NestedGeneration* create_initial_generation(Model *model)
 {
-  auto dim = model->get_board_size();
+  auto dim = model->board_dim;
   auto start_model = model->deepclone();
   auto random_routed = start_model->place_routing_components(dim);
   random_routed->writeSVG("random_routed.svg");
@@ -426,7 +426,7 @@ Model* optimize_model(Model *model, unsigned time_limit_secs)
   while (now < end)
     {
       nested->optimize(iteration);
-      now = currentTimeMillis();
+      now = currentTimeSecs();
       
       if (int(now) != int(old))
 	{
@@ -442,7 +442,7 @@ Model* optimize_model(Model *model, unsigned time_limit_secs)
 	    }
 	  
 	  old = now;
-	  utils::print("left: ", int(end - now), " secs, done ", iteration);
+	  utils::print("left: ", long(end - now), " secs, done ", iteration);
 	}
       iteration += 1;
     }

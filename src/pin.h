@@ -18,6 +18,11 @@ class Pin
     {
     }
 
+  void draw(Canvas *c)
+  {
+    outline.draw(c, name);
+  }
+  
   bool can_transpose(const Point &dir,
 		     const Point &board_dim)
   {

@@ -54,6 +54,14 @@ class Component
   void relink(Model *m, clone_map_t &map);
   
   void create_outline();
+  void draw(Canvas *c)
+  {
+    outline.draw(c, name);
+    for (auto p : pins)
+      {
+	p->draw(c);
+      }
+  }
   
   void add_table(Table *table) {
     table_list.push_back(table);

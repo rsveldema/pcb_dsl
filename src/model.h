@@ -6,16 +6,11 @@
 #include <map>
 
 #include "datasheet.h"
-
-std::string destringify(const std::string &s);
-unsigned get_unique_id();
-std::string normalize(const std::string &s);
-bool valid_pin_name(const std::string &s);
+#include "utils.h"
 
 class Model;
 class ModelContext;
 class Component;
-
 typedef std::map<Component*, Component*> clone_map_t;
 
 #include "phys.h"
@@ -34,10 +29,9 @@ class Model
   std::map<std::string, int> constants;
   Point board_dim;
 
+ public:
   double sum_connection_lengths();
-  unsigned count_overlaps();
-  const Point &get_board_size() const { return board_dim; }
-
+  unsigned count_overlaps();  
   Component *create_router();
   Model *deepclone();
   void writeSVG(const std::string &filename);

@@ -41,7 +41,7 @@ add_executable(pcbgen main.cc display.cc optimizer.cc utils.cc create_model.cc m
 #find_package(Cairo)
 include_directories( ${Cairomm_INCLUDE_DIRS} )
 
-add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
+#add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
 target_link_libraries(pcbgen antlr4-runtime ${Boost_LIBRARIES} ${Cairomm_LIBRARIES})
 
 

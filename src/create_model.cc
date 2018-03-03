@@ -194,14 +194,28 @@ void process_dimensions(Component *comp,
   auto model = comp->model;
   model->current_component = comp;
   
-  for (auto dim : dim_prop_list) {
-    if (dim->width)
-      comp->dim.x = constant_fold_expr(model, dim->width);
-    if (dim->height)
-      comp->dim.y = constant_fold_expr(model, dim->height);
-    if (dim->layers)
-      comp->dim.layer = constant_fold_expr(model, dim->layers);
-  }
+  for (auto dim : dim_prop_list)
+    {
+      if (dim->width)
+	{
+	  comp->dim.x = constant_fold_expr(model, dim->width);
+	}
+      
+      if (dim->height)
+	{
+	  comp->dim.y = constant_fold_expr(model, dim->height);
+	}
+      
+      if (dim->layers)
+	{
+	  comp->dim.layer = constant_fold_expr(model, dim->layers);
+	}
+    }
+
+  if (comp->name == "board")
+    {
+      model->board_dim = comp->dim;
+    }
   
   if (!comp->has_data_sheet)
     {

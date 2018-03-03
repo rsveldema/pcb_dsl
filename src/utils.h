@@ -49,4 +49,8 @@ static inline double currentTimeSecs() { return currentTimeMillis() / 1000.0; }
 int randrange(int min, int max);
 unsigned randrange(unsigned max);
 
+std::string destringify(const std::string &s);
+unsigned get_unique_id();
+std::string normalize(const std::string &s);
+bool valid_pin_name(const std::string &s);
 #endif

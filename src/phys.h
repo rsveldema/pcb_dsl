@@ -4,17 +4,6 @@
 #include <math.h>
 #include <vector>
 
-enum class Color
-  {
-  };
-
-class Canvas
-{
- public:
-  virtual void draw_line(const Point &from,
-			 const Point &to);
-			 
-};
 
 class Point
 {
@@ -69,11 +58,47 @@ class Point
   }
 };
 
+#include "display.h"
+
 class Outline
 {
  public:
   std::vector<Point> points;
 
+  RGB getColor(int layer)
+  {
+    return {0, 255, 0};
+  }
+
+  void draw(Canvas *c,
+	    const std::string &name)
+  {
+    if (name != "")
+      {
+	RGB red = {255, 0, 0};
+	c->draw_text(red,
+		     points[0],
+		     name);
+      }
+    
+    for (unsigned i = 0; i < points.size(); i++)
+      {
+	Point &from = points[i];
+	RGB color = getColor(from.layer);
+
+	if (i == (points.size() - 1))
+	  {
+	    Point &to = points[0];
+	    c->draw_line(color, from, to);
+	  }
+	else
+	  {
+	    Point &to = points[i + 1];
+	    c->draw_line(color, from, to);
+	  }
+      }
+  }
+  
   double distance(Outline &other)
   {
     return center().distance(other.center());
