@@ -1,4 +1,5 @@
 locals
+externals
 CMakeCache.txt
 CMakeFiles
 Makefile
