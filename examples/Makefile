@@ -2,12 +2,12 @@
 
 
 simple: clean
-	python3 ../src/generate.py sampler1.edsl
+	python3 ../pysrc/generate.py sampler1.edsl
 	dot -Tpdf model.dot > model.pdf
 
 
 full: clean
-	python3  ../src/generate.py sampler.edsl
+	python3  ../pysrc/generate.py sampler.edsl
 	dot -Tpdf model.dot > model.pdf
 
 

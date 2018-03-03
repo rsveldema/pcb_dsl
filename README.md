@@ -15,7 +15,13 @@ The vision is to:
 This is all work in progress. Currently, it scrapes example datasheet pdfs already for some tables.
 
 
---- installation:
+
+--- NEW C++ installation:
+
+  - yum install python3 antlr4 libuuid-devel mvn
+
+
+--- OLD Python installation:
 
  -# install python3
  -# install pdftohtml from poppler-utils

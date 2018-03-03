@@ -64,7 +64,7 @@ class Outline
   
   void transpose(const Point &dir)
   {
-    for (int i=0;i<points.size(); i++)
+    for (unsigned i = 0; i < points.size(); i++)
       {
 	points[i] = points[i].add(dir);
       }

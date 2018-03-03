@@ -1,5 +1,6 @@
 #include <antlr4-runtime.h>
 #include <stdarg.h>
+#include <string.h>
 #include <iostream>
 
 #include "create_model.h"
@@ -36,6 +37,8 @@ int main(int argc, char **argv)
     Usage("missing file name");
   }
 
+  ModelCreatorListener listener;
+
   try {
     std::ifstream stream;
     stream.open(filename);
@@ -45,12 +48,14 @@ int main(int argc, char **argv)
     dslParser parser(&tokens);
     
     antlr4::tree::ParseTree *tree = parser.startRule();
-    ModelCreatorListener listener;
     antlr4::tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
   } catch (antlr4::RuntimeException &e) {
     fprintf(stderr, "caught exception!\n");
+    exit(1);
   }
 
   printf("going to start optimization now\n");
+  Model *model = listener.get();
+  
   return 0;
 }

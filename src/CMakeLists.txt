@@ -1,17 +1,20 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 SET (CMAKE_CXX_STANDARD 14)
+
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wno-attributes -g2")
+
 LIST( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake )
 
 project (pcb_dsl)
 
 # set variable pointing to the antlr tool that supports C++
-set(ANTLR4CPP_JAR_LOCATION ${PROJECT_SOURCE_DIR}/thirdparty/antlr/antlr4-4.5.4-SNAPSHOT.jar)
+set(ANTLR4CPP_JAR_LOCATION ${PROJECT_SOURCE_DIR}/thirdparty/antlr/antlr-4.7.1-complete.jar)
 
 
 include( ./cmake/ExternalAntlr4Cpp.cmake )
 include( ./cmake/FindBoost.cmake )
 
-FIND_PACKAGE( Boost 1.66 COMPONENTS program_options REQUIRED )
+FIND_PACKAGE( Boost 1.64 COMPONENTS program_options REQUIRED )
 
 include_directories( ${Boost_INCLUDE_DIR} )
 include_directories( ${ANTLR4CPP_INCLUDE_DIRS} )
@@ -24,11 +27,13 @@ antlr4cpp_process_grammar(pcbgen
 	  antlrcpp
 	${CMAKE_CURRENT_SOURCE_DIR}/dsl.antlr4)
 
-include_directories(${antlr4cpp_include_dirs_antlrcpptest})
+include_directories(${antlr4cpp_include_dirs} antlr4cpp_generated_src/antlrcpp )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
-add_executable(pcbgen main.cc dslBaseListener.cpp dslListener.cpp dslLexer.cpp	dslParser.cpp create_model.cc model.cc datasheet.cc known_packages.cc)
-add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
+
+
+add_executable(pcbgen main.cc  create_model.cc model.cc datasheet.cc known_packages.cc ${antlr4cpp_src_files_antlrcpp}) 
+#add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
 target_link_libraries(pcbgen antlr4-runtime ${Boost_LIBRARIES})
 
 

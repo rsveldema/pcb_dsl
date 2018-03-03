@@ -1,5 +1,5 @@
 
-// Generated from /Users/dev/Projects/embedded/pcb_dsl/src/dsl.antlr4 by ANTLR 4.5.3
+// Generated from /home/devel/Projects/pcb_dsl/src/dsl.antlr4 by ANTLR 4.7.1
 
 #pragma once
 
@@ -14,7 +14,7 @@ namespace antlrcpp {
  * This class defines an abstract visitor for a parse tree
  * produced by dslParser.
  */
-class dslVisitor : public antlr4::tree::AbstractParseTreeVisitor {
+class  dslVisitor : public antlr4::tree::AbstractParseTreeVisitor {
 public:
 
   /**

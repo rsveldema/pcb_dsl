@@ -21,18 +21,19 @@ std::pair<Point,Point> create_common_box(KnownPackageInfo *config, Component *co
 
 
 void create_pins_RS28(KnownPackageInfo *config, Component *comp) {
-  auto pr= create_common_box(config, comp);
-  auto pos = pr.first;
-  auto end = pr.second;
+  //auto pr =
+  create_common_box(config, comp);
+  //auto pos = pr.first;
+  //auto end = pr.second;
       
   auto np = comp->pins.size();
-  for (int ix=0;ix<np;ix++)
+  for (unsigned ix = 0; ix < np; ix++)
     {
       auto p = comp->pins[ix];
       
       //#print("creating pin: " + str(p.name))
       
-      auto mid = comp->pins.size()/2;
+      auto mid = comp->pins.size() / 2;
       
       auto k = comp->height / mid;
       auto starty = k * 0.25; //#this->pin_dist.mul(0.5);
@@ -64,7 +65,7 @@ void create_single_row_pin_header(KnownPackageInfo *config, Component *comp) {
   comp->outline.addRect(pos,
 			end);
   auto np = comp->pins.size();
-  for (int ix=0;ix<np;ix++)
+  for (unsigned ix=0;ix<np;ix++)
     {
       auto p = comp->pins[ix];
         
@@ -91,7 +92,7 @@ void create_two_row_pin_header(KnownPackageInfo *config, Component *comp)
   
   auto np = comp->pins.size();
 
-  for (int ix=0;ix<np;ix++)
+  for (unsigned ix=0;ix<np;ix++)
     {
       auto p = comp->pins[ix];
       

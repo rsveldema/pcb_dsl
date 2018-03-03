@@ -1,9 +1,13 @@
 #ifndef CREATE_MODEL_H___
 #define CREATE_MODEL_H___
 
+namespace antlrcpp {}
+
 #include "dslLexer.h"
 #include "dslParser.h"
 #include "dslBaseListener.h"
+
+using namespace antlrcpp;
 
 #include "database.h"
 #include "model.h"
@@ -100,6 +104,8 @@ class ModelCreatorListener : public dslBaseListener
       model = new Model();
     }
 
+  Model *get() const { return model; }
+
   virtual void  enterConstant(dslParser::ConstantContext *ctxt) {
     //constant: 'const' ID '=' expr ';';
     auto name = ctxt->ID()->getText();
@@ -111,59 +117,70 @@ class ModelCreatorListener : public dslBaseListener
  private:
 
   void  add_connections(ModelContext &mctxt, dslParser::NetworkContext *ctxt) {
-    for (auto conn : ctxt->connection()) {
-	for (int k = 0; k < conn->access().size()-1; k++) {
-	  auto from_access = conn->access()[k];
-	  auto to_access   = conn->access()[k + 1];
-	  auto from_pin   = access_to_component_pin(this->model, from_access, mctxt, true);
-	  auto to_pin     = access_to_component_pin(this->model, to_access, mctxt, false);
-	  from_pin->add_connection(to_pin);
-	}
+    for (auto conn : ctxt->connection())
+      {
+	for (unsigned k = 0; k < conn->access().size()-1; k++)
+	  {
+	    auto from_access = conn->access()[k];
+	    auto to_access   = conn->access()[k + 1];
+	    auto from_pin   = access_to_component_pin(this->model, from_access, mctxt, true);
+	    auto to_pin     = access_to_component_pin(this->model, to_access, mctxt, false);
+	    from_pin->add_connection(to_pin);
+	  }
       }
-    }
+  }
 
   virtual void  enterNetwork(dslParser::NetworkContext *ctxt) {
     auto names = ctxt->object_name()->ID();
-    if (names.size() == 1) {
-      ModelContext mctxt;
-      this->add_connections(mctxt, ctxt);
-    } else {
-      auto limit = names[2]->getText();
-      auto count = this->model->constants[limit];
-      for (int i=0;i<count;i++) {
-	auto var = ModelVar(names[1]->getText(), i);
+    if (names.size() == 1)
+      {
 	ModelContext mctxt;
-	mctxt.add(var);
 	this->add_connections(mctxt, ctxt);
       }
+    else
+      {
+	auto limit = names[2]->getText();
+	auto count = this->model->constants[limit];
+	for (int i = 0; i < count; i++) {
+	  auto var = ModelVar(names[1]->getText(), i);
+	  ModelContext mctxt;
+	  mctxt.add(var);
+	  this->add_connections(mctxt, ctxt);
+	}
     }
   }
 
-  virtual void  enterComponent(dslParser::ComponentContext *ctxt) {
+  virtual void  enterComponent(dslParser::ComponentContext *ctxt)
+  {
     auto names = ctxt->object_name()->ID();
-        //print("EXAMINE COMPONENT: " + str(names))
-    if (names.size() == 1) {
-      auto comp = new Component(this->model, names[0]->getText(), false);
-      preprocess_component(this->model, comp, ctxt->component_property());
-      this->model->components.push_back(comp);
-
-      add_dimensions(comp, ctxt);
-      add_datasheet_props(comp, ctxt);
-      add_location(comp, ctxt);          
-    } else {
-      auto limit = names[2]->getText();
-      auto count = this->model->constants[limit];
-      for (int i = 0; i< count; i++) {
-	auto comp = new Component(this->model,
-				  names[0]->getText() + str(i), false);
+    //print("EXAMINE COMPONENT: " + str(names))
+    if (names.size() == 1)
+      {
+	auto comp = new Component(this->model, names[0]->getText(), false);
 	preprocess_component(this->model, comp, ctxt->component_property());
 	this->model->components.push_back(comp);
-
-	for (auto p : ctxt->component_property()) {
-	  process_dimensions(comp, p->dim_prop());
-	}
+	
+	add_dimensions(comp, ctxt);
+	add_datasheet_props(comp, ctxt);
+	add_location(comp, ctxt);          
       }
-    }
+    else
+      {
+	auto limit = names[2]->getText();
+	auto count = this->model->constants[limit];
+	for (int i = 0; i< count; i++)
+	  {
+	    auto comp = new Component(this->model,
+				      names[0]->getText() + str(i), false);
+	    preprocess_component(this->model, comp, ctxt->component_property());
+	    this->model->components.push_back(comp);
+	    
+	    for (auto p : ctxt->component_property())
+	      {
+		process_dimensions(comp, p->dim_prop());
+	      }
+	  }
+      }
   }
 };
 

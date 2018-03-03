@@ -72,7 +72,7 @@ void createPageArray(ptree &pt,
 	  
 	  int width = pt.get<int>("<xmlattr>.width");
 	  int height = pt.get<int>("<xmlattr>.height");
-	  int num = pt.get<int>("<xmlattr>.number");
+	  ///  int num = pt.get<int>("<xmlattr>.number");
 	  
 	  //printf("WxH, %d = %d, %d\n", width, height, num);
 	  

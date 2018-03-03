@@ -1,5 +1,5 @@
 
-// Generated from /Users/dev/Projects/embedded/pcb_dsl/src/dsl.antlr4 by ANTLR 4.5.3
+// Generated from /home/devel/Projects/pcb_dsl/src/dsl.antlr4 by ANTLR 4.7.1
 
 #pragma once
 
@@ -14,7 +14,7 @@ namespace antlrcpp {
  * This class provides an empty implementation of dslVisitor, which can be
  * extended to create a visitor which only needs to handle a subset of the available methods.
  */
-class dslBaseVisitor : public dslVisitor {
+class  dslBaseVisitor : public dslVisitor {
 public:
 
   virtual antlrcpp::Any visitStartRule(dslParser::StartRuleContext *ctx) override {
