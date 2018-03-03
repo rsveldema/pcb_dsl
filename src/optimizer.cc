@@ -43,7 +43,23 @@ void Model::writeSVG(const std::string &filename)
 
 void Model::random_move_components(const Point &range)
 {
-    abort();
+  const Point board_dim = get_board_size();
+  for (auto comp : components)
+    {
+      if (comp->fixed_position)
+	{
+	  auto dir = Point(randrange(-range.x, range.x),
+			   randrange(-range.y, range.y),
+			   comp->dim.layer);
+	  
+	  //print("INITIAL_DIR TO PLACE: " + str(dir) + "  where comp [" + comp.name+ "] at " + str(comp.outline.center()))
+	  if (comp->can_transpose(dir, board_dim))
+	    {
+	      comp->transpose(dir);
+	    }
+	  //#comp.rotate()
+	}
+    }
 }
 						      
 void Model::initial_random_move_components()
