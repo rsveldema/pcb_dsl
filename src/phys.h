@@ -6,6 +6,13 @@
 #include <vector>
 
 
+static inline
+float grid(float x)
+{
+  return (int(x * 100.0)) / 100.0;
+}
+
+
 class Point
 {
  public:
@@ -14,7 +21,7 @@ class Point
 
  public:
   Point(float _x, float _y, unsigned _layer)
-    : x(_x), y(_y), layer(_layer)
+    : x(grid(_x)), y(grid(_y)), layer(_layer)
     {
     }
   

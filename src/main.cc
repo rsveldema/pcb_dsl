@@ -19,6 +19,8 @@ void Usage(const char *format, ...)
 
 int main(int argc, char **argv)
 {
+  srand(10);
+  
   const char *filename = NULL;
   for (int i=1;i<argc;i++)
     {

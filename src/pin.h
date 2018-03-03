@@ -26,6 +26,8 @@ class Pin
 	outline.drawLineTo(connection->outline.center(), c);
       }
   }
+
+  void crossover(Pin *other);
   
   bool can_transpose(const Point &dir,
 		     const Point &board_dim)
