@@ -77,6 +77,7 @@ int main(int argc, char **argv)
   printf("going to start optimization now\n");
   Model *model = listener.get();
 
+  model->check();
   Model *best = optimize_model(model, 5, enable_gui);
   best->writeSVG("final.svg");
   

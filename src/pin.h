@@ -11,16 +11,7 @@ struct Connection
   bool crosses(const Connection &connection);
 };
 
-class LayerMap
-{
- private:
-  std::map<layer_t, std::vector<Pin*> > usage;
- public:
-  LayerMap() {}
-
-  unsigned num_layers() const { return usage.size(); }
-  void add(layer_t layer);
-};
+#include "layer_map.h"
 
 class Pin
 {
@@ -48,6 +39,15 @@ class Pin
       ret += ")";
       return ret;
     }
+
+  void check()
+  {
+    if (outline.size() == 0)
+      {
+	fprintf(stderr, "ERROR: pin %s has no outline\n", name.c_str());
+	abort();
+      }
+  }
   
   layer_t get_layer() const { return outline.get_layer(); }
   void gather_layer_map(LayerMap &map);

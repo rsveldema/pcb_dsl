@@ -7,6 +7,8 @@ class Outline
  public:
   std::vector<Point> points;
 
+  size_t size() const { return points.size(); }
+  
   layer_t get_layer() const
   {
     assert(points.size() > 0);

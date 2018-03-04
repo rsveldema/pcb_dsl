@@ -5,8 +5,8 @@
 void LayerMap::add(Pin *p)
 {
   layer_t layer = p->get_layer();
-  auto vec = map[layer];
-  vec.push_back(pin)
+  auto vec = usage[layer];
+  vec.push_back(p);
 }
 
 void Pin::gather_layer_map(LayerMap &map)

@@ -26,3 +26,10 @@ bool file_exists(const std::string &filename)
   fclose(f);
   return true;
 }
+
+
+std::string destringify(const std::string &s)
+{
+  return s.substr(1, s.size()-2);
+}
+

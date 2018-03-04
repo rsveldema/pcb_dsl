@@ -1,0 +1,95 @@
+
+
+component board {
+  dimensions {
+  width: 10 cm;
+  height: 10 cm;
+  layers: 2 layer;
+  }
+}
+
+
+component conn1 {
+  type: "single row pin header";
+  
+  pin P0
+  {}
+    
+  location {
+  at: 1 cm, 4 cm;
+  }
+  
+  dimensions {
+  width: #pins * 2.54 mm;
+  height: 2.54 mm;
+  }
+}
+
+component conn2 {
+  type: "single row pin header";
+  
+  pin P0
+  {}
+    
+  location {
+  at: 9 cm, 4 cm;
+  }
+  
+  dimensions {
+  width: #pins * 2.54 mm;
+  height: 2.54 mm;
+  }
+}
+
+component conn3 {
+  type: "single row pin header";
+  
+  pin P0
+  {}
+    
+  location {
+  at: 4 cm, 1 cm;
+  }
+  
+  dimensions {
+  width: #pins * 2.54 mm;
+  height: 2.54 mm;
+  }
+}
+
+component conn4 {
+  type: "single row pin header";
+  
+  pin P0
+  {}
+    
+  location {
+  at: 4 cm, 9 cm;
+  }
+  
+  dimensions {
+  width: #pins * 2.54 mm;
+  height: 2.54 mm;
+  }
+}
+
+
+
+component R5K_1 {
+ value: 5000 ohm;
+ type: "SMD resistor";
+   pin IN {
+    input;
+  }
+  pin OUT {
+    output;
+  }
+}
+
+
+// 1V mode, single ended inputs for I/Q channels as per page 11 of AD9201
+network c2c {
+  conn1.P0 -> R5K_1 -> conn2.P0;
+  conn3.P0 -> conn4.P0;	
+}
+

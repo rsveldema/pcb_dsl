@@ -1,13 +1,10 @@
 #include "create_model.h"
 #include <stdlib.h>
 
-std::string destringify(const std::string &s)
-{
-  return s.substr(1, s.size()-2);
-}
+static
+int constant_fold_expr(Model *model, dslParser::ExprContext *expr);
 
-
-
+static
 int constant_fold_field(Component *comp,
 			const std::vector<dslParser::Access_suffixContext *>& access_suffixes)
 {
@@ -22,6 +19,7 @@ int constant_fold_field(Component *comp,
   return value;
 }
 
+static
 int constant_fold_access(Model *model, dslParser::AccessContext *access)
 {
   auto name = access->ID()->getText();
@@ -41,6 +39,8 @@ int constant_fold_access(Model *model, dslParser::AccessContext *access)
   abort();
 }
 
+
+static
 int constant_fold_primary(Model *model, dslParser::PrimaryContext *p)
 {
   if (p->length)
@@ -67,6 +67,7 @@ int constant_fold_primary(Model *model, dslParser::PrimaryContext *p)
   abort();
 }
 
+static
 int constant_fold_expr(Model *model, dslParser::ExprContext *expr)
 {
   auto p = expr->primary();
@@ -127,7 +128,7 @@ void preprocess_component(Model *model,
       if (p->component_type)
 	{
 	  comp->component_type = destringify(p->component_type->getText());
-	  //#print("SAW COMPONENT TYPE: "+ comp->component_type)
+	  fprintf(stderr, "SAW COMPONENT TYPE: '%s'\n", comp->component_type.c_str());
 	}
     }
   
@@ -147,15 +148,7 @@ void preprocess_component(Model *model,
     }
 }
 
-void add_dimensions(Component *comp, dslParser::ComponentContext *ctxt)
-{
-  for (auto p : ctxt->component_property())
-    {
-      process_dimensions(comp, p->dim_prop());
-    }
-}
-
-
+static
 void add_datasheet_props(Component *comp, dslParser::ComponentContext *ctxt)
 {
   for (auto p : ctxt->component_property())
@@ -164,6 +157,8 @@ void add_datasheet_props(Component *comp, dslParser::ComponentContext *ctxt)
     }
 }
 
+
+static
 void process_location(Component *comp,
 		      const std::vector<dslParser::Location_propContext *> &loc_prop_list)
 {
@@ -180,6 +175,7 @@ void process_location(Component *comp,
     }
 }
 
+static
 void add_location(Component *comp, dslParser::ComponentContext *ctxt)
 {
   for (auto p : ctxt->component_property())
@@ -188,13 +184,11 @@ void add_location(Component *comp, dslParser::ComponentContext *ctxt)
     }
 }
 
-void process_dimensions(Component *comp,
-			const std::vector<dslParser::Dim_propContext *> &dim_prop_list)
+static
+void do_process_dimensions(Component *comp,
+			   const std::vector<dslParser::Dim_propContext *> &dim_prop_list)
 {
-  if (dim_prop_list.size() == 0)
-    {
-      return;
-    }
+  assert(dim_prop_list.size() > 0);
   auto model = comp->model;
   model->current_component = comp;
   
@@ -215,12 +209,30 @@ void process_dimensions(Component *comp,
 	  comp->dim.layer = constant_fold_expr(model, dim->layers);
 	}
     }
-
+    
   if (comp->name == "board")
     {
       model->board_dim = comp->dim;
     }
-  
+}
+
+
+static
+void add_dimensions(Component *comp, dslParser::ComponentContext *ctxt)
+{
+  for (auto p : ctxt->component_property())
+    {
+      if (p->dim_prop().size() > 0)
+	{
+	  do_process_dimensions(comp, p->dim_prop());
+	}
+    }
+}
+
+static
+void process_component_type(Model *model,
+			    Component *comp)
+{  
   if (! comp->has_data_sheet)
     {
       if (comp->component_type != "")
@@ -235,4 +247,97 @@ void process_dimensions(Component *comp,
 				Point(comp->dim.x, comp->dim.y, comp->dim.layer));
 	}
     }
+  else
+    {
+      fprintf(stderr, "component %s has a datasheet!\n", comp->name.c_str());
+    }
 }
+
+
+void ModelCreatorListener::add_connections(ModelContext &mctxt, dslParser::NetworkContext *ctxt) {
+  for (auto conn : ctxt->connection())
+    {
+      for (unsigned k = 0; k < conn->access().size()-1; k++)
+	{
+	  auto from_access = conn->access()[k];
+	  auto to_access   = conn->access()[k + 1];
+	  auto from_pin   = access_to_component_pin(this->model, from_access, mctxt, true);
+	  auto to_pin     = access_to_component_pin(this->model, to_access, mctxt, false);
+	  from_pin->add_connection(to_pin);
+	}
+    }
+}
+
+
+void ModelCreatorListener::enterConstant(dslParser::ConstantContext *ctxt) {
+  //constant: 'const' ID '=' expr ';';
+  auto name = ctxt->ID()->getText();
+  auto expr = ctxt->expr();
+  std::cout << "resolve constant: " << name;
+  this->model->constants[name] = constant_fold_expr(this->model, expr);
+}
+
+
+void ModelCreatorListener::enterNetwork(dslParser::NetworkContext *ctxt) {
+  auto names = ctxt->object_name()->ID();
+  if (names.size() == 1)
+    {
+      ModelContext mctxt;
+      this->add_connections(mctxt, ctxt);
+    }
+  else
+    {
+      auto limit = names[2]->getText();
+      auto count = this->model->constants[limit];
+      for (int i = 0; i < count; i++) {
+	auto var = ModelVar(names[1]->getText(), i);
+	ModelContext mctxt;
+	mctxt.add(var);
+	this->add_connections(mctxt, ctxt);
+      }
+    }
+}
+
+
+
+
+void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
+{
+  auto names = ctxt->object_name()->ID();
+  utils::print("EXAMINE COMPONENT: ", utils::str(names));
+  if (names.size() == 1)
+    {
+      auto comp = new Component(this->model, names[0]->getText(), false);
+      preprocess_component(this->model, comp, ctxt->component_property());
+      this->model->components.push_back(comp);
+	
+      add_dimensions(comp, ctxt);
+      process_component_type(model, 
+			     comp);
+      add_datasheet_props(comp, ctxt);
+      add_location(comp, ctxt);          
+    }
+  else
+    {
+      auto limit = names[2]->getText();
+      auto count = this->model->constants[limit];
+      for (int i = 0; i< count; i++)
+	{
+	  auto comp = new Component(this->model,
+				    names[0]->getText() + str(i), false);
+	  preprocess_component(this->model, comp, ctxt->component_property());
+	  this->model->components.push_back(comp);
+	    
+	  for (auto p : ctxt->component_property())
+	    {
+	      if (p->dim_prop().size() > 0)
+		{
+		  do_process_dimensions(comp, p->dim_prop());
+		  process_component_type(model, 
+					 comp);
+		}
+	    }
+	}
+    }
+}
+

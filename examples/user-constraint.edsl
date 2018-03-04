@@ -1,0 +1,267 @@
+
+component board {
+  dimensions {
+  width: 10 cm;
+  height: 10 cm;
+  layers: 2 layer;
+  }
+}
+
+component ADC {
+  datasheet {
+  file: "../docs/AD9201.pdf";
+  extract: package("PIN CONFIGURATION") as package;
+  extract: table("PIN FUNCTION DESCRIPTIONS") as pins;
+  extract: table("AD9201-SPECIFICATIONS") as specs;
+  extract: outline("OUTLINE DIMENSIONS") as outline;
+  }
+  
+  location {
+  at: 5 cm, 5 cm;
+  }
+}
+
+const ADC_BITS = ADC.specs.RESOLUTION;
+
+component analog_connector {
+  type: "single row pin header";
+  
+  pin P0, P1, P2, P3, P4, P5, P6, P7, P8, P9
+  {}
+    
+  location {
+  at: 1 cm, 4 cm;
+  }
+  
+  dimensions {
+  width: #pins * 2.54 mm;
+  height: 2.54 mm;
+  }
+}
+
+
+component AGND {
+  type:	 "ground";
+  pin GND {
+    analog_ground;
+  }
+}
+
+component DGND {
+  type:	 "ground";
+  pin GND {
+    digital_ground;
+  }
+}
+
+component fpga_connector {
+  type: "two row pin header";
+  
+  pin P0, D0,
+      P2, D1,
+      P4, D2,
+      P6, D3,
+      P8, D4,
+      P10, GND1,
+      P12, D5,
+      P14, D6,
+      P16, D7,
+      P18, D8,
+      P20, D9,
+      P22, P23,
+      P24, P25,
+      P26, P27,
+      P28, GND2,      
+      P30, P31,
+      P32, P33,
+      P34, P35,      
+      P36, P37,
+      P38, P39
+  {}
+  
+  location {
+  at: 9 cm, 4 cm;
+  }
+  
+  dimensions {
+  width: #pins * 2.54 mm;
+  height: 2.54 mm;
+  }
+}
+
+
+component R[x:ADC_BITS] {
+ value: 20 ohm;
+ type: "SMD resistor";
+  pin IN {
+    input;
+  }
+  pin OUT {
+    output;
+  }
+}
+
+component R5K_1 {
+ value: 5000 ohm;
+ type: "SMD resistor";
+   pin IN {
+    input;
+  }
+  pin OUT {
+    output;
+  }
+}
+
+component R5K_2 {
+ value: 5000 ohm;
+ type: "SMD resistor";
+   pin IN {
+    input;
+  }
+  pin OUT {
+    output;
+  }
+}
+
+component C_01_uF_1 {
+  value: 0.1 uF;
+  type: "SMD condensator";
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_10_uF_1 {
+  value: 10 uF;
+  type: "SMD condensator";
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+
+component C_01_uF_2 {
+  value: 0.1 uF;
+  type: "SMD condensator";
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_10_uF_2 {
+  value: 10 uF;
+  type: "SMD condensator";
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+
+
+component C_01_uF_3 {
+  value: 0.1 uF;
+  type: "SMD condensator";
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_10_uF_3 {
+  value: 10 uF;
+  type: "SMD condensator";
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_01_uF_4 {
+  value: 0.1 uF;
+  type: "SMD condensator";
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_01_uF_5 {
+  value: 0.1 uF;
+  type: "SMD condensator";
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+
+
+
+
+component C_01_uF_6 {
+  value: 0.1 uF;
+  type: "SMD condensator";
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_10_uF_7 {
+  value: 10 uF;
+  type: "SMD condensator";
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_01_uF_8 {
+  value: 0.1 uF;
+  type: "SMD condensator";
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+component C_01_uF_9 {
+  value: 0.1 uF;
+  type: "SMD condensator";
+  pin IN  { input;  }
+  pin OUT { output; }
+}
+
+
+
+network ADC_to_Rx[x:ADC_BITS] {
+  ADC.D[x] -> R[x].IN;
+}
+
+network Rx_to_Connector[x:ADC_BITS] {
+  R[x].OUT -> fpga_connector.D[x];
+}
+
+// 1V mode, single ended inputs for I/Q channels as per page 11 of AD9201
+network ADC_ina1 {
+  DGND -> AGND;
+
+  fpga_connector.GND1 -> DGND;
+  
+  analog_connector.P0 -> ADC.INA_I;
+  analog_connector.P1 -> ADC.INA_Q;
+  analog_connector.P2 -> AGND;
+
+  ADC.REFSENSE -> C_01_uF_1 -> AGND;
+  ADC.REFSENSE -> C_10_uF_1 -> AGND;
+  
+  ADC.VREF -> ADC.REFSENSE;  
+  ADC.VREF -> R5K_1 -> R5K_2 -> AGND;
+
+  R5K_2.IN -> C_01_uF_2 -> AGND;
+  R5K_2.IN -> C_10_uF_2 -> AGND;
+  
+  ADC.INB_I -> R5K_2.IN;
+  ADC.INB_Q -> R5K_2.IN;
+  
+  ADC.REFT_I -> C_01_uF_3.IN  -> C_10_uF_3.IN  -> C_01_uF_4 -> AGND;
+  ADC.REFB_I -> C_01_uF_3.OUT -> C_10_uF_3.OUT -> C_01_uF_5 -> AGND;
+
+  ADC.REFT_Q -> C_01_uF_6.IN  -> C_10_uF_7.IN  -> C_01_uF_8 -> AGND;
+  ADC.REFB_Q -> C_01_uF_6.OUT -> C_10_uF_7.OUT -> C_01_uF_9 -> AGND;
+}
+
+
+//----- constraints section:
+constraint equal_lengths_for_ADC_to_connector {
+  for i in ADC_BITS {
+      for j in ADC_BITS {
+
+	  require Rx_to_Connector[i].length == 3mm;
+	  
+	  require
+	    (ADC_to_Rx[i].length + Rx_to_Connector[i].length) ==
+	    (ADC_to_Rx[j].length + Rx_to_Connector[j].length);
+	}
+    }
+}
+
+
+strategy meandering {
+  for j in ADC_BITS {
+      ADC_to_Rx[j].meander();
+    }
+}
+
+

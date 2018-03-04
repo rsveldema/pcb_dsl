@@ -47,6 +47,7 @@ class Model
   void crossover(Model *m);
   score_t score();
   void gather_layer_map(LayerMap &map);
+  
 
 
   Model()
@@ -54,32 +55,24 @@ class Model
     {
     }
 
-  void writeDOT(const std::string filename)
+  size_t num_layers()
   {
-    FILE *f = fopen(filename.c_str(), "w");
-    assert(f != NULL);
-
-    fprintf(f, "digraph model {\n");
-    for (auto c : components)
-      {
-	for (auto p : c->pins)
-	  {
-	    std::string from = c->name + "_" + p->name;
-
-	    fprintf(f, "%s -> %s;\n", c->name.c_str(), from.c_str());	    
-	    fprintf(f, "%s [label=\"%s @ %d\"];\n", from.c_str(), from.c_str(), p->get_layer());
-	    for (auto to_pin : p->connections)
-	      {
-		std::string to = to_pin->component->name + "_" + to_pin->name;
-		
-		fprintf(f, "%s -> %s;\n", from.c_str(), to.c_str());
-	      }
-	  }
-      }
-
-    fprintf(f, "}\n");
-    fclose(f);
+    LayerMap map;
+    gather_layer_map(map);
+    return map.size();
   }
+
+  void remove_router();
+  
+  void check()
+  {
+     for (auto c : components)
+       {
+	 c->check();
+       }
+  }
+
+  void writeDOT(const std::string filename);
 
     std::string str() const
     {

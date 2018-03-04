@@ -15,6 +15,7 @@ Page *find_page(std::vector<Page *> &pages,
 	  return p;
 	}
     }
+  fprintf(stderr, "ERROR: failed to find page holding %s in PDF\n", title.c_str());
   abort();
   return NULL;
 }

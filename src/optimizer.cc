@@ -16,11 +16,13 @@ static bool enable_gui;
 
 score_t Model::score()
 {
+  auto num_layers = this-> num_layers();
   auto my_num_overlaps    = this->count_overlaps();
   auto my_len             = this->sum_connection_lengths();
   unsigned crossing_lines = this->count_crossing_lines();
   score_t s = (my_num_overlaps * 100) + (my_len * 2) + (crossing_lines * 1000);
   s *= components.size();
+  s *= num_layers;
   return s;
 }
 
@@ -63,6 +65,7 @@ public:
 	    //w.div(iteration), h.div(iteration))
 	    model->random_move_components(Point(10, 10, 0));
 	    model->add_layers_for_crossing_lines();
+	    model->remove_router();
 	  }
 	if (this->should_crossover())
 	  {

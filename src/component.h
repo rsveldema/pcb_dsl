@@ -69,6 +69,20 @@ class Component
   
   void create_outline();
   void draw(Canvas *c);
+
+  void check()
+  {
+    if (outline.size() == 0)
+      {
+	fprintf(stderr, "ERROR: component %s has no outline\n", name.c_str());
+	abort();
+      }
+    
+    for (auto c : pins)
+      {
+	c->check();
+      }
+  }
   
   void add_table(Table *table)
   {

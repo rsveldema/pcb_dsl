@@ -23,7 +23,14 @@ void Pin::draw(Canvas *c)
 
 void Component::draw(Canvas *c)
 {
-  outline.draw(c, name);
+  if (is_board)
+    {
+      outline.draw(c, "");
+    }
+  else
+    {
+      outline.draw(c, name);
+    }
   for (auto p : pins)
     {
       p->draw(c);

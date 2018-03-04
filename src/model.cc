@@ -153,3 +153,33 @@ Pin *Component::get_pin_by_suffixes(const std::vector<dslParser::Access_suffixCo
       return this->get_pin_by_name(context.indexed_pin_name(name, s0->index()));
   }
 }
+
+
+void Model::writeDOT(const std::string filename)
+{
+    FILE *f = fopen(filename.c_str(), "w");
+    assert(f != NULL);
+
+    fprintf(f, "digraph model {\n");
+    for (auto c : components)
+      {
+	for (auto p : c->pins)
+	  {
+	    std::string from = c->name + "_" + p->name;
+
+	    fprintf(f, "%s -> %s;\n", c->name.c_str(), from.c_str());	    
+	    fprintf(f, "%s [label=\"%s @ %d\"];\n", from.c_str(), from.c_str(), p->get_layer());
+	    for (auto to_pin : p->connections)
+	      {
+		std::string to = to_pin->component->name + "_" + to_pin->name;
+		
+		fprintf(f, "%s -> %s;\n", from.c_str(), to.c_str());
+	      }
+	  }
+      }
+
+    fprintf(f, "}\n");
+    fclose(f);
+}
+
+

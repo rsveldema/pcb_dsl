@@ -11,7 +11,7 @@ static char **app_argv;
 static std::mutex mutex;
 class CairoCanvas;
 
-static double zoom = 4;
+static double zoom = 6;
 
 class Viewer : public Gtk::DrawingArea
 {
@@ -110,7 +110,7 @@ public:
     ctxt->set_source_rgb (color.red(),
 			  color.green(),
 			  color.blue());
-    ctxt->set_line_width(0.2);
+    ctxt->set_line_width(0.2 * zoom);
     ctxt->move_to(from.x * zoom,
 		  from.y * zoom);
     ctxt->set_font_size(4);
@@ -124,7 +124,7 @@ public:
     ctxt->set_source_rgb (color.red(),
 			  color.green(),
 			  color.blue());
-    ctxt->set_line_width(0.2);
+    ctxt->set_line_width(0.2 * zoom);
     ctxt->move_to(from.x * zoom,
 		  from.y * zoom);
     ctxt->line_to(to.x * zoom,
