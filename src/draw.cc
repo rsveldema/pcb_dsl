@@ -4,14 +4,14 @@
 
 bool Pin::is_router_pin() const
 {
-  return component->is_router;
+  return component->info->is_router;
 }
 
 void Pin::draw(Canvas *c)
 {
   if (! is_router_pin())
     {
-      outline.draw(c, name);
+      outline.draw(c, info->name);
     }
   for (auto connection : connections)
     {
@@ -23,13 +23,13 @@ void Pin::draw(Canvas *c)
 
 void Component::draw(Canvas *c)
 {
-  if (is_board)
+  if (info->is_board)
     {
       outline.draw(c, "");
     }
   else
     {
-      outline.draw(c, name);
+      outline.draw(c, info->name);
     }
   for (auto p : pins)
     {

@@ -7,14 +7,14 @@ unsigned Model::count_overlaps()
   unsigned c = 0;
   for (auto p1 : components)
     {
-      if (p1->is_board)
+      if (p1->info->is_board)
 	{
 	  continue;
 	}
       
       for (auto p2 : components)
 	{
-	  if (p2->is_board)
+	  if (p2->info->is_board)
 	    {
 	      continue;
 	    }
@@ -24,7 +24,7 @@ unsigned Model::count_overlaps()
 	      continue;
 	    }
 	  
-	  if (p1->dim.layer != p2->dim.layer)
+	  if (p1->info->dim.layer != p2->info->dim.layer)
 	    {
 	      // cannnot overlap...
 	      continue;

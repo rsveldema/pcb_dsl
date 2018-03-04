@@ -5,9 +5,19 @@
 
 using boost::property_tree::ptree;
 
+static
+bool valid_pin_name(const std::string &name)
+{
+  if (name == "Name") {
+    return false;
+  }
+  return true;
+}
+    
+
 void Component::add_table(Table *table)
 {
-  table_list.push_back(table);
+  info->table_list.push_back(table);
   if (table->name == "pins")
     {
       for (auto row : table->rows)
@@ -15,7 +25,8 @@ void Component::add_table(Table *table)
 	  auto name = normalize_ident(row->get(0)->string);
 	  if (valid_pin_name(name))
 	    {
-	      auto pin = add_pin(name);
+	      auto info = new PinInfo(name);
+	      auto pin = add_pin(info);
 	      pin->setDescription(row->get(1)->string);
 	    }
 	}
@@ -217,7 +228,7 @@ void extract_outline(Component *comp,
   auto p = find_page(pages, title);
   if (p->contains("28-Lead Shrink Small Outline Package (SSOP)") || p->contains("(RS-28)"))
     {
-      comp->component_type = "RS-28";
+      comp->info->component_type = "RS-28";
       comp->create_outline();
     }
   else

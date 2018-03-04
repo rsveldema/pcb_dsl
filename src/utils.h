@@ -58,7 +58,6 @@ namespace utils
   }
 }
 
-
 uint64_t currentTimeMillis();
 static inline double currentTimeSecs() { return currentTimeMillis() / 1000.0; }
 int randrange(int min, int max);
@@ -67,6 +66,5 @@ std::string destringify(const std::string &s);
 unsigned get_unique_id();
 std::string normalize_text(const std::string &s);
 std::string normalize_ident(const std::string &s);
-bool valid_pin_name(const std::string &s);
 bool file_exists(const std::string &filename);
 #endif

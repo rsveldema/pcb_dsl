@@ -119,9 +119,9 @@ void preprocess_component(Model *model,
 			  Component *comp,
 			  const std::vector<dslParser::Component_propertyContext *>& props)
 {
-  if (comp->name == "board")
+  if (comp->info->name == "board")
     {
-      comp->fixed_position = new Point(0, 0, 0);
+      comp->info->fixed_position = new Point(0, 0, 0);
     }
     
   model->current_component = comp;
@@ -130,11 +130,11 @@ void preprocess_component(Model *model,
     {
       if (p->datasheet_prop().size() > 0)
 	{
-	  comp->has_data_sheet = true;
+	  comp->info->has_data_sheet = true;
 	}
       if (p->component_type)
 	{
-	  comp->component_type = destringify(p->component_type->getText());
+	  comp->info->component_type = destringify(p->component_type->getText());
 	  //fprintf(stderr, "SAW COMPONENT TYPE: '%s'\n", comp->component_type.c_str());
 	}
     }
@@ -147,11 +147,27 @@ void preprocess_component(Model *model,
 	    {
 	      std::string normalized_pin_name = normalize_ident(pin_name->getText());
 	      //fprintf(stderr, "normalized to %s\n", normalized_pin_name.c_str());
-	      
-	      auto pin = comp->add_pin(normalized_pin_name);
+
+	      auto info = new PinInfo(normalized_pin_name);
+	      auto pin = comp->add_pin(info);
 	      for (auto k : p->pin_prop())
 		{
-		  pin->mode = k->pinmode->getText();
+		  auto m = k->pinmode->getText();
+
+		  if (m == "input")
+		    pin->info->mode = PinInfo::Mode::INPUT;
+		  else if (m == "output")
+		    pin->info->mode = PinInfo::Mode::OUTPUT;
+		  else if (m == "inout")
+		    pin->info->mode = PinInfo::Mode::INOUT;
+		  else if (m == "analog_ground")
+		    pin->info->mode = PinInfo::Mode::ANALOG_GROUND;
+		  else if (m == "digital_ground")
+		    pin->info->mode = PinInfo::Mode::DIGITAL_GROUND;
+		  else {
+		    fprintf(stderr, "unrecognized mode: %s\n", m.c_str());
+		    abort();
+		  }
 		}
 	    }
 	}    
@@ -180,8 +196,8 @@ void process_location(Component *comp,
       auto sx = constant_fold_expr(model, loc->expr()[0]);
       auto sy = constant_fold_expr(model, loc->expr()[1]);
       
-      comp->fixed_position = new Point(sx, sy, 0);
-      comp->transpose(*comp->fixed_position);
+      comp->info->fixed_position = new Point(sx, sy, 0);
+      comp->transpose(*comp->info->fixed_position);
     }
 }
 
@@ -206,23 +222,23 @@ void do_process_dimensions(Component *comp,
     {
       if (dim->width)
 	{
-	  comp->dim.x = constant_fold_expr(model, dim->width);
+	  comp->info->dim.x = constant_fold_expr(model, dim->width);
 	}
       
       if (dim->height)
 	{
-	  comp->dim.y = constant_fold_expr(model, dim->height);
+	  comp->info->dim.y = constant_fold_expr(model, dim->height);
 	}
       
       if (dim->layers)
 	{
-	  comp->dim.layer = constant_fold_expr(model, dim->layers);
+	  comp->info->dim.layer = constant_fold_expr(model, dim->layers);
 	}
     }
     
-  if (comp->name == "board")
+  if (comp->info->name == "board")
     {
-      model->board_dim = comp->dim;
+      model->board_dim = comp->info->dim;
     }
 }
 
@@ -243,23 +259,23 @@ static
 void process_component_type(Model *model,
 			    Component *comp)
 {  
-  if (! comp->has_data_sheet)
+  if (! comp->info->has_data_sheet)
     {
-      if (comp->component_type != "")
+      if (comp->info->component_type != "")
 	{
-	  auto pkg = findKnownPackage(comp->component_type);
+	  auto pkg = findKnownPackage(comp->info->component_type);
 	  pkg->create_outline(comp);
 	}
       else
 	{
-	  printf("COMPONENT %s has no assigned type yet\n", comp->name.c_str());
-	  comp->outline.addRect(Point(0, 0, comp->dim.layer),
-				Point(comp->dim.x, comp->dim.y, comp->dim.layer));
+	  printf("COMPONENT %s has no assigned type yet\n", comp->info->name.c_str());
+	  comp->outline.addRect(Point(0, 0, comp->info->dim.layer),
+				Point(comp->info->dim.x, comp->info->dim.y, comp->info->dim.layer));
 	}
     }
   else
     {
-      fprintf(stderr, "component %s has a datasheet!\n", comp->name.c_str());
+      fprintf(stderr, "component %s has a datasheet!\n", comp->info->name.c_str());
     }
 }
 
@@ -317,7 +333,9 @@ void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
   //utils::print("EXAMINE COMPONENT: ", utils::str(names));
   if (names.size() == 1)
     {
-      auto comp = new Component(this->model, names[0]->getText(), false);
+      ComponentInfo *info = new ComponentInfo(names[0]->getText(), false);
+      
+      auto comp = new Component(info, this->model);
       preprocess_component(this->model, comp, ctxt->component_property());
       this->model->components.push_back(comp);
 	
@@ -333,8 +351,10 @@ void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
       auto count = this->model->constants[limit];
       for (int i = 0; i< count; i++)
 	{
-	  auto comp = new Component(this->model,
-				    names[0]->getText() + str(i), false);
+	  auto info = new ComponentInfo(names[0]->getText() + str(i), false);
+	  
+	  auto comp = new Component(info, this->model);
+				    
 	  preprocess_component(this->model, comp, ctxt->component_property());
 	  this->model->components.push_back(comp);
 	    
@@ -343,10 +363,10 @@ void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
 	      if (p->dim_prop().size() > 0)
 		{
 		  do_process_dimensions(comp, p->dim_prop());
-		}
-	      process_component_type(model, 
-				     comp);	      
+		}	      
 	    }
+	  process_component_type(model,
+				 comp);
 	}
     }
 }

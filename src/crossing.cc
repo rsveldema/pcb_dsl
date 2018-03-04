@@ -10,16 +10,19 @@ bool Connection::crosses(const Connection &connection)
 }
 
 bool Pin::have_crossing_connection(const Connection &connection,
-				Connection *crossed)
+				   Connection *crossed)
 {
   if (connection.p1.layer != get_layer())
     {
       return false;
     }
   auto p1 = outline.center();
-  
-  for (auto other_pin : connections)
+
+  const unsigned count = connections.size();
+  for (unsigned i=0;i<count;i++)
     {
+      auto other_pin = connections[i];
+ 
       auto p2 = other_pin->outline.center();
       Point dummy = {0,0,0};
       Connection other_connection {this, other_pin, p1, p2, dummy };
@@ -48,7 +51,7 @@ bool Pin::have_crossing_connection(const Connection &connection,
 bool Component::have_crossing_connection(const Connection &connection,
 					 Connection *crossed)
 {
-  if (is_board)
+  if (info->is_board)
     {
       return false;
     }
@@ -58,8 +61,10 @@ bool Component::have_crossing_connection(const Connection &connection,
       return false;
     }
   
-  for (auto c : pins)
+  const unsigned count = pins.size();
+  for (unsigned i=0;i<count;i++)
     {
+      auto c = pins[i];
       if (c->have_crossing_connection(connection,
 				      crossed))
 	{
@@ -111,9 +116,12 @@ unsigned Pin::count_crossing_lines(Model *model)
 {
   unsigned count = 0;
   auto p1 = outline.center();
-  
-  for (auto other_pin : connections)
+
+  const unsigned conn_count = connections.size();
+  for (unsigned i=0;i<conn_count;i++)
     {
+      auto other_pin = connections[i];
+
       auto p2 = other_pin->outline.center();
       Point dummy = {0,0,0};
       Connection connection =  {this, other_pin, p1, p2, dummy};

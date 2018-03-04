@@ -4,25 +4,27 @@
 #include "create_model.h"
 #include "utils.h"
 
-auto POPULATION_NUM_GROUPS =  1u;
-auto POPULATION_GROUP_SIZE = 10u;
-
-auto SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
-auto CROSSOVER_PROBABILITY   = unsigned(0.8 * POPULATION_GROUP_SIZE);
-auto MUTATION_PROBABILITY    = unsigned(0.2 * POPULATION_GROUP_SIZE);
+constexpr auto POPULATION_NUM_GROUPS =  1u;
+constexpr auto POPULATION_GROUP_SIZE = 10u;
+constexpr double OVERLAP_PENALTY = 3.0;
+constexpr auto SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
+constexpr auto CROSSOVER_PROBABILITY   = unsigned(0.8 * POPULATION_GROUP_SIZE);
+constexpr auto MUTATION_PROBABILITY    = unsigned(0.2 * POPULATION_GROUP_SIZE);
 
 static bool enable_gui;
 
-
+/** 0 == perfect score, INF = forget it.
+ */
 score_t Model::score()
 {
   auto num_layers = this-> num_layers();
   auto my_num_overlaps    = this->count_overlaps();
   auto my_len             = this->sum_connection_lengths();
   unsigned crossing_lines = this->count_crossing_lines();
-  score_t s = (my_num_overlaps * 100) + (my_len * 2) + (crossing_lines * 1000);
+  score_t s = (my_len * 2) + (crossing_lines * 1000);
   s *= components.size();
-  s *= num_layers;
+  s *= num_layers; 
+  s *= (1 + my_num_overlaps * OVERLAP_PENALTY);
   return s;
 }
 
@@ -64,13 +66,13 @@ public:
 	  {
 	    Point min_range(10, 10, 0);
 	    Point range = model->board_dim.div(iteration);
-	    assert(range.x > 0);
-	    assert(range.y > 0);
+	    assert(range.x > 0 && range.y > 0);
 	    
 	    model->random_move_components(min_range.max(range));
 	    model->add_layers_for_crossing_lines();
 	    model->remove_router();
 	  }
+	
 	if (this->should_crossover())
 	  {
 	    unsigned k = randrange(0, models.size());

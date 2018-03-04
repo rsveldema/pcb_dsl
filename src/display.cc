@@ -96,7 +96,7 @@ public:
       }
     displayed_model = m->deepclone();
     
-    fprintf(stderr, "signal!\n");
+    //fprintf(stderr, "signal!\n");
     //gtk_widget_queue_draw_area(&window->draw_area, 0, 0, 800, 600);
     window->draw_area.queue_draw(); //signal_draw();
     mutex.unlock();

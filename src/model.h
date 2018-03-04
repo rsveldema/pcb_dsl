@@ -24,8 +24,6 @@ typedef double score_t;
 class Model
 {
  public:
-  float WIRE_WIDTH = 0.1;
-  
   Component *current_component = NULL;
   std::vector<Component *> components;
   std::map<std::string, int> constants;
@@ -94,7 +92,7 @@ class Model
   {
     for (auto c : components)
       {
-	if (c->name == name)
+	if (c->info->name == name)
 	  {
 	    return c;
 	  }

@@ -6,13 +6,15 @@
 void Model::random_move_components(const Point &range)
 {
   const Point board_dim = this->board_dim;
-  for (auto comp : components)
+  const unsigned count = components.size();
+  for (unsigned i=0;i<count;i++)
     {
-      if (! comp->fixed_position)
+      auto comp = components[i];
+      if (! comp->info->fixed_position)
 	{
 	  auto dir = Point(randrange(-range.x, range.x),
 			   randrange(-range.y, range.y),
-			   comp->dim.layer);
+			   comp->info->dim.layer);
 	  
 	  //print("INITIAL_DIR TO PLACE: " + str(dir) + "  where comp [" + comp.name+ "] at " + str(comp.outline.center()))
 	  if (comp->can_transpose(dir, board_dim))
@@ -29,11 +31,11 @@ void Model::initial_random_move_components()
   const Point board_dim = this->board_dim;
   for (auto comp : components)
     {
-      if (! comp->fixed_position)
+      if (! comp->info->fixed_position)
 	{
 	  auto dir = Point(randrange(board_dim.x),
 			   randrange(board_dim.y),
-			   comp->dim.layer);
+			   comp->info->dim.layer);
 	  
 	  //print("INITIAL_DIR TO PLACE: " + str(dir) + "  where comp [" + comp.name+ "] at " + str(comp.outline.center()))
 	  if (comp->can_transpose(dir, board_dim))

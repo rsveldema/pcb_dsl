@@ -28,12 +28,12 @@ class Point
   layer_t layer;
 
  public:
-  Point(double _x, double _y, layer_t _layer)
+ inline Point(double _x, double _y, layer_t _layer)
     : x(grid(_x)), y(grid(_y)), layer(_layer)
     {
     }
 
-  void move_to_layer(layer_t layer)
+  inline void move_to_layer(layer_t layer)
   {
     this->layer = layer;
   }
@@ -43,10 +43,9 @@ class Point
       return utils::str("(", x, ", ", y, " @",layer,")");
     }
 
-  static inline
-  double grid(double x)
+  static inline double grid(double x)
   {
-    return (int(x * 1000.0)) / 1000.0;
+    return (int(x * 256.0)) / 256.0;
   }
   
   double distance(const Point &other) const
@@ -64,6 +63,12 @@ class Point
     return Point(std::max(x, p.x),
 		 std::max(y, p.y),
 		 layer);
+  }
+
+  inline void add_inline(const Point &p)
+  {
+    x += p.x;
+    y += p.y;
   }
 
   Point add(const Point &p) const

@@ -8,11 +8,11 @@ class Component;
 
         
 std::pair<Point,Point> create_common_box(KnownPackageInfo *config, Component *comp) {
-  comp->dim.x = config->w;
-  comp->dim.y = config->h;
+  comp->info->dim.x = config->w;
+  comp->info->dim.y = config->h;
   auto pos = Point(0, 0, 0);
-  auto end = pos.add(comp->dim.x,
-		     comp->dim.y);
+  auto end = pos.add(comp->info->dim.x,
+		     comp->info->dim.y);
   comp->outline.addRect(pos,
 			end);
   //print("created: " + str(comp->outline))
@@ -35,12 +35,12 @@ void create_pins_RS28(KnownPackageInfo *config, Component *comp) {
       
       auto mid = comp->pins.size() / 2;
       
-      auto k = comp->dim.y / mid;
+      auto k = comp->info->dim.y / mid;
       auto starty = k * 0.25; //#this->pin_dist.mul(0.5);
       
       float x, y;
       if (ix >= mid) {
-	x = comp->dim.x;
+	x = comp->info->dim.x;
 	y = starty + k * ((np-1) - ix);
       } else {
 	//#print(">>>> " + str(ix))
@@ -57,11 +57,11 @@ void create_pins_RS28(KnownPackageInfo *config, Component *comp) {
 }
 
 void create_single_row_pin_header(KnownPackageInfo *config, Component *comp) {
-  comp->dim.x  = config->w;
-  comp->dim.y  = config->h * comp->pins.size();
+  comp->info->dim.x  = config->w;
+  comp->info->dim.y  = config->h * comp->pins.size();
   auto pos = Point(0, 0, 0);
-  auto end = pos.add(comp->dim.x,
-		     comp->dim.y);
+  auto end = pos.add(comp->info->dim.x,
+		     comp->info->dim.y);
   comp->outline.addRect(pos,
 			end);
   auto np = comp->pins.size();
@@ -82,11 +82,11 @@ void create_single_row_pin_header(KnownPackageInfo *config, Component *comp) {
 
 void create_two_row_pin_header(KnownPackageInfo *config, Component *comp)
 {
-  comp->dim.x  = config->w * 2;
-  comp->dim.y = config->h * (comp->pins.size() / 2);
+  comp->info->dim.x  = config->w * 2;
+  comp->info->dim.y = config->h * (comp->pins.size() / 2);
   auto pos = Point(0, 0, 0);
-  auto end = pos.add(comp->dim.x,
-		     comp->dim.y);
+  auto end = pos.add(comp->info->dim.x,
+		     comp->info->dim.y);
   comp->outline.addRect(pos,
 			end);
   
@@ -109,7 +109,7 @@ void create_two_row_pin_header(KnownPackageInfo *config, Component *comp)
     }
 }
 
-std::vector<KnownPackageInfo*> packages = {
+static std::vector<KnownPackageInfo*> packages = {
 	new KnownPackageInfo("ground",            
 			     2.35, //# w
 			     2.35, //# h
@@ -142,7 +142,7 @@ std::vector<KnownPackageInfo*> packages = {
 			     0.65, // pin-dist
 			     0.38,// pin-width
 			     create_pins_RS28)
-      };
+};
 
 
 KnownPackageInfo* findKnownPackage(const std::string &name)
@@ -158,10 +158,8 @@ KnownPackageInfo* findKnownPackage(const std::string &name)
   abort();
 }
 
-
-
 void Component::create_outline()
 {
-  auto p = findKnownPackage(component_type);
+  auto p = findKnownPackage(info->component_type);
   p->create_outline(this);
 }

@@ -40,7 +40,7 @@ void Model::crossover(Model *other)
   if (c2 != NULL)
     {
       assert(c1->id == c2->id);
-      assert(c1->name == c2->name);
+      assert(c1->info == c2->info);
       c1->crossover(c2);
     }
 }

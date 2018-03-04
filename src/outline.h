@@ -4,15 +4,25 @@
 
 class Outline
 {
- public:
+ private:
   std::vector<Point> points;
-
-  size_t size() const { return points.size(); }
+  Point cached_center;
   
-  layer_t get_layer() const
+ public:
+  Outline()
+    : cached_center(0, 0, 0)
+    {
+    }
+  
+  size_t size() const
   {
-    assert(points.size() > 0);
-    return points[0].layer;
+    return points.size();
+  }
+  
+  inline layer_t get_layer() const
+  {
+    assert(points[0].layer == cached_center.layer);
+    return cached_center.layer; 
   }
   
   void move_to_layer(layer_t layer)
@@ -21,6 +31,7 @@ class Outline
       {
 	p.move_to_layer(layer);
       }
+    cached_center.move_to_layer(layer);
   }
   
   void drawLineTo(const Point &to,
@@ -56,13 +67,14 @@ class Outline
 		     center(),
 		     name);
       }
-    
-    for (unsigned i = 0; i < points.size(); i++)
+
+    const unsigned count = points.size();
+    for (unsigned i = 0; i < count; i++)
       {
 	Point &from = points[i];
 	RGB color = RGB::getColor(from.layer);
 
-	if (i == (points.size() - 1))
+	if (i == (count - 1))
 	  {
 	    Point &to = points[0];
 	    c->draw_line(color, from, to);
@@ -83,41 +95,55 @@ class Outline
   void addRect(const Point &ul,
 	       const Point &lr)
   {
+    assert(points.size() == 0);
+    
     points.push_back(ul);
     points.push_back(Point(lr.x, ul.y, ul.layer));
     points.push_back(lr);
     points.push_back(Point(ul.x, lr.y, ul.layer));
+    compute_center();
   }
   
   void transpose(const Point &dir)
   {
-    for (unsigned i = 0; i < points.size(); i++)
+    const unsigned count = points.size();
+    for (unsigned i = 0; i < count; i++)
       {
-	points[i] = points[i].add(dir);
+	points[i].add_inline(dir);
       }
+    cached_center.add_inline(dir);
   }
 
+  static constexpr double SAFE_DISTANCE_BETWEEN_COMPONENTS = 2;
+  
   double getRadius() const
   {
     assert(points.size() > 0);
-    return center().distance(points[0]);
+    return SAFE_DISTANCE_BETWEEN_COMPONENTS + center().distance(points[0]);
   }
 
   bool can_transpose(const Point &dir,
 		     const Point &board_dim)
   {
-    for (auto p : points)
-      {
-	if (! p.can_transpose(dir,
-			      board_dim))
-	  {
-	    return false;
-	  }
-      }
+    const unsigned count = points.size();
+    for (unsigned i = 0; i < count; i++)
+       {
+	 if (! points[i].can_transpose(dir,
+				       board_dim))
+	   {
+	     return false;
+	   }
+       }
     return true;
   }
-  
-  Point center() const
+
+  inline const Point &center() const
+  {
+    return cached_center;
+  }
+
+ private:
+  void compute_center()
   {
     Point c(0, 0, 0); // overwritten immediately, so we don't care about the layer here.
     bool first = true;
@@ -133,7 +159,7 @@ class Outline
 	    c = c.add(p);
 	  }
       }
-    return c.div(points.size());
+    cached_center = c.div(points.size());
   }  
 };
 

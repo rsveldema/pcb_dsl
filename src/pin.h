@@ -13,27 +13,46 @@ struct Connection
 
 #include "layer_map.h"
 
+/** holds info shared by all instances of a given pin type.
+ */
+class PinInfo
+{
+ public:
+  enum class Mode
+  {
+    INPUT, OUTPUT, INOUT, DIGITAL_GROUND, ANALOG_GROUND,
+  } mode;
+  
+  std::string name;
+  std::string description;
+
+  PinInfo(const std::string &_name)
+    : name(_name)
+  {
+  }
+};
+
 class Pin
 {
  public:
+  PinInfo *info;
   unsigned id;
-  std::string name, mode, description;
   Component *component;
   Outline outline;
   std::vector<Pin *> connections;
 
  public:
- Pin(Component *comp,
-     const std::string &s)
-   : id(get_unique_id()),
-    name(s),
+ Pin(PinInfo *_info,
+     Component *comp)
+   : info(_info),
+    id(get_unique_id()),
     component(comp)
     {
     }
 
   std::string str() const
     {
-      std::string ret = name;
+      std::string ret = info->name;
       ret += "(";
       ret += outline.str();
       ret += ")";
@@ -44,7 +63,7 @@ class Pin
   {
     if (outline.size() == 0)
       {
-	fprintf(stderr, "ERROR: pin %s has no outline\n", name.c_str());
+	fprintf(stderr, "ERROR: pin %s has no outline\n", info->name.c_str());
 	abort();
       }
   }
@@ -100,11 +119,13 @@ class Pin
 
   Pin *shallow_clone(Component *c, clone_map_t &map);
   void relink(Pin *m, clone_map_t &map);
-    
+
+  
   void setDescription(const std::string &descr)
   {
-    this->description = descr;
+    this->info->description = descr;
   }
+  
   
   void add_connection(Pin *to_pin)
   {

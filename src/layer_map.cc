@@ -16,7 +16,7 @@ void Pin::gather_layer_map(LayerMap &map)
 
 void Component::gather_layer_map(LayerMap &map)
 {
-  if (is_board)
+  if (info->is_board)
     {
       return;
     }
