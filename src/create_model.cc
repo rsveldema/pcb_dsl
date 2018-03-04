@@ -14,6 +14,13 @@ int constant_fold_field(Component *comp,
   //#print("constant fold in component " + str(names) + ", list = " + str(self.table_list));
   auto table = comp->find_table(name0);
   auto row = table->find_row_by_key(name1);
+  if (! row)
+    {
+      fprintf(stderr, "failed to find row '%s' of table '%s'\n",
+	      name1.c_str(), name0.c_str());
+      table->dump();
+      abort();
+    }
   auto value = atoi(row->get(1)->string.c_str());
   printf("PDF TABLE LOOKUP[%s.%s] = %d\n", name0.c_str(), name1.c_str(), value);
   return value;
@@ -128,7 +135,7 @@ void preprocess_component(Model *model,
       if (p->component_type)
 	{
 	  comp->component_type = destringify(p->component_type->getText());
-	  fprintf(stderr, "SAW COMPONENT TYPE: '%s'\n", comp->component_type.c_str());
+	  //fprintf(stderr, "SAW COMPONENT TYPE: '%s'\n", comp->component_type.c_str());
 	}
     }
   
@@ -138,7 +145,10 @@ void preprocess_component(Model *model,
 	{
 	  for (auto pin_name : p->pin_name()->ID())
 	    {
-	      auto pin = comp->add_pin(pin_name->getText());
+	      std::string normalized_pin_name = normalize_ident(pin_name->getText());
+	      //fprintf(stderr, "normalized to %s\n", normalized_pin_name.c_str());
+	      
+	      auto pin = comp->add_pin(normalized_pin_name);
 	      for (auto k : p->pin_prop())
 		{
 		  pin->mode = k->pinmode->getText();
@@ -304,7 +314,7 @@ void ModelCreatorListener::enterNetwork(dslParser::NetworkContext *ctxt) {
 void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
 {
   auto names = ctxt->object_name()->ID();
-  utils::print("EXAMINE COMPONENT: ", utils::str(names));
+  //utils::print("EXAMINE COMPONENT: ", utils::str(names));
   if (names.size() == 1)
     {
       auto comp = new Component(this->model, names[0]->getText(), false);
@@ -333,9 +343,9 @@ void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
 	      if (p->dim_prop().size() > 0)
 		{
 		  do_process_dimensions(comp, p->dim_prop());
-		  process_component_type(model, 
-					 comp);
 		}
+	      process_component_type(model, 
+				     comp);	      
 	    }
 	}
     }

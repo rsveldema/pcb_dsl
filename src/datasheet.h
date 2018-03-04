@@ -2,21 +2,22 @@
 #define TABLE_H___
 
 #include <vector>
+#include "utils.h"
 
 class Text
 {
- public:
+public:
   const int x, y, width, height;
   std::string string;
-
- public:
+  
+public:
   Text(int _x, int _y, int _width, int _height,
        const std::string &_string)
     : x(_x), y(_y), width(_width), height(_height),
-    string(_string)
-    {
-    }
-
+      string(normalize_text(_string))
+  {
+  }
+  
   bool isIllegalPinName() const;
   
   bool isBelow(const Text *elt) const
@@ -24,16 +25,12 @@ class Text
     return y > elt->y;
   }
 
-
-
   const std::string &str() const { return string; }
-
   
   bool contains(const std::string &s) const
   {
     return string.find(s) != std::string::npos;
-  }
-  
+  }  
 };
 
 
@@ -48,6 +45,16 @@ class Row
     : y(_y)
     {
     }
+
+  void dump()
+  {
+    fprintf(stderr, "%d: ", y);
+    for (auto t : cols)
+      {
+	fprintf(stderr, "%s, ", t->str().c_str());
+      }
+    fprintf(stderr, "\n");
+  }
 
   void add(Text *p)
   {
@@ -77,6 +84,14 @@ class Table
     : name(n)
     {
     }
+
+  void dump()
+  {
+    for (auto r : rows)
+      {
+	r->dump();
+      }
+  }
 
   void cleanup()
   {
@@ -170,7 +185,6 @@ class Page
     return find(str) != NULL;
   }
   
-  
   Text *find(const std::string &title)
   {
     for (Text *t : texts)
@@ -196,6 +210,14 @@ class Page
 	table->add(p);
       }
     return table;
+  }
+
+  void dump()
+  {
+    for (auto t : texts)
+      {
+	fprintf(stderr, "(%d,%d): %s\n", t->x, t->y, t->string.c_str());
+      }
   }
 };
 

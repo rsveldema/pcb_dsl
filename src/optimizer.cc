@@ -62,8 +62,12 @@ public:
 	Model *model = models[i];
 	if (this->should_mutate())
 	  {
-	    //w.div(iteration), h.div(iteration))
-	    model->random_move_components(Point(10, 10, 0));
+	    Point min_range(10, 10, 0);
+	    Point range = model->board_dim.div(iteration);
+	    assert(range.x > 0);
+	    assert(range.y > 0);
+	    
+	    model->random_move_components(min_range.max(range));
 	    model->add_layers_for_crossing_lines();
 	    model->remove_router();
 	  }

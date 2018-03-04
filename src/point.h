@@ -59,7 +59,13 @@ class Point
     return sqrt((dx*dx) + (dy*dy));
   }
 
-  
+  Point max(const Point &p) const
+  {
+    return Point(std::max(x, p.x),
+		 std::max(y, p.y),
+		 layer);
+  }
+
   Point add(const Point &p) const
   {    
     return Point(x + p.x, y + p.y, layer);

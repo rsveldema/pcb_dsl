@@ -1,20 +1,6 @@
 #include "create_model.h"
-#include <boost/algorithm/string/replace.hpp>
 #include "utils.h"
 
-unsigned get_unique_id()
-{
-  static unsigned id;
-  return id++;
-}
-
-std::string normalize(const std::string &str)
-{
-  std::string s(str);
-  boost::replace_all(s, "-", "_");
-  boost::replace_all(s, " ", "_");
-  return s;
-}
 
 Pin *Pin::shallow_clone(Component *comp, clone_map_t &map)
 {

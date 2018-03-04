@@ -84,23 +84,7 @@ class Component
       }
   }
   
-  void add_table(Table *table)
-  {
-    table_list.push_back(table);
-    if (table->name == "pins")
-      {
-	for (auto row : table->rows)
-	  {
-	    auto name = normalize(row->get(0)->string);
-	    if (valid_pin_name(name))
-	      {
-		auto pin = add_pin(name);
-		pin->setDescription(row->get(1)->string);
-	      }
-	  }
-      }
-  }
-
+  void add_table(Table *table);
   void add_package(Page *p)
   {
     pkg_list.push_back(p);

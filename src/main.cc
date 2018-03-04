@@ -23,12 +23,18 @@ int main(int argc, char **argv)
 
   bool enable_gui = true;
   const char *filename = NULL;
+  int optimize_secs = 5;
   
   for (int i=1;i<argc;i++)
     {
       if (strcmp(argv[i], "-gui") == 0)
 	{
 	  enable_gui = true;
+	}
+      else if (strcmp(argv[i], "-secs") == 0)
+	{
+	  i++;	  
+	  optimize_secs = atoi(argv[i]);
 	}
       else if (strcmp(argv[i], "-pcb") == 0)
 	{
@@ -54,8 +60,7 @@ int main(int argc, char **argv)
 
 
   argc = 1;
-  Canvas::init(argc, argv);
-    
+  Canvas::init(argc, argv);    
 
   ModelCreatorListener listener;
 
@@ -78,7 +83,7 @@ int main(int argc, char **argv)
   Model *model = listener.get();
 
   model->check();
-  Model *best = optimize_model(model, 5, enable_gui);
+  Model *best = optimize_model(model, optimize_secs, enable_gui);
   best->writeSVG("final.svg");
   
   return 0;

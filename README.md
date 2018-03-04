@@ -19,6 +19,7 @@ pdfs already for some tables and can generate SVG files after optimization.
 
 --- installation:
 
+  - yum install boost-devel
   - yum install gcc gcc-c++ make
   - yum install python3 antlr4 libuuid-devel mvn cmake
   - yum install libsigc++-2.0 cairomm-devel gtkmm-devel glibmm-devel

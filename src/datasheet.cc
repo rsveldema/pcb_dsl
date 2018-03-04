@@ -5,6 +5,24 @@
 
 using boost::property_tree::ptree;
 
+void Component::add_table(Table *table)
+{
+  table_list.push_back(table);
+  if (table->name == "pins")
+    {
+      for (auto row : table->rows)
+	{
+	  auto name = normalize_ident(row->get(0)->string);
+	  if (valid_pin_name(name))
+	    {
+	      auto pin = add_pin(name);
+	      pin->setDescription(row->get(1)->string);
+	    }
+	}
+    }
+}
+
+
 Page *find_page(std::vector<Page *> &pages,
 		const std::string &title)
 {
@@ -35,9 +53,9 @@ std::string getFileName(const std::vector<dslParser::Datasheet_propContext *> &p
 
 std::string get_content(ptree &pt)
 {
-  std::string ret;
-  if (pt.size())
+  if (pt.size() > 1)    
     {
+      std::string ret;
       for (auto it : pt)
 	{
 	  auto name = it.first;
@@ -86,16 +104,17 @@ void createPageArray(ptree &pt,
 	    {
 	      auto name = it.first;
 	      if (name == "text")
-		{	  
-		  int x = pt.get<int>("<xmlattr>.left");
-		  int y = pt.get<int>("<xmlattr>.top");
-		  int w = pt.get<int>("<xmlattr>.width");
-		  int h = pt.get<int>("<xmlattr>.height");
-		  std::string str = get_content(it.second);
+		{
+		  auto sec = it.second;
+		  int x = sec.get<int>("<xmlattr>.left");
+		  int y = sec.get<int>("<xmlattr>.top");
+		  int w = sec.get<int>("<xmlattr>.width");
+		  int h = sec.get<int>("<xmlattr>.height");
+		  std::string str = get_content(sec);
 
 		  //printf("looking2 at %s\n", str.c_str());
-				  
-		  Text *t = new Text(x,y,w,h,str);
+		  
+		  Text *t = new Text(x, y, w, h, str);
 		  p->add(t);
 		}
 	    }
@@ -107,7 +126,6 @@ void parse_xml(const char *xml,
 	       std::vector<Page *> &pages)
 {  
   // Create an empty property tree object
-
   ptree pt;
   read_xml(xml, pt);
   
@@ -207,8 +225,8 @@ void extract_outline(Component *comp,
       abort();
     }
 }
-        
-    
+
+
 Table *extract_table(const std::string &tableName,
 		     std::vector<Page *> pages,
 		     const std::string &title,
@@ -216,6 +234,7 @@ Table *extract_table(const std::string &tableName,
 {
   auto p = find_page(pages, title);
   p = p->extract_section(title);
+  //p->dump();
   auto table = p->extractTable();
   table->name = tableName;
   return table;
