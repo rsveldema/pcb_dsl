@@ -2,7 +2,9 @@
 #include <stdlib.h>
 
 static
-int constant_fold_expr(Model *model, dslParser::ExprContext *expr);
+int constant_fold_expr(Model *model,
+		       Component *current_component,
+		       dslParser::ExprContext *expr);
 
 static
 int constant_fold_field(Component *comp,
@@ -34,7 +36,7 @@ int constant_fold_access(Model *model, dslParser::AccessContext *access)
     {
       if (access->index() == NULL)
 	{
-	  return model->constants[name];
+	  return model->info->constants[name];
 	}
     }
   
@@ -48,16 +50,18 @@ int constant_fold_access(Model *model, dslParser::AccessContext *access)
 
 
 static
-int constant_fold_primary(Model *model, dslParser::PrimaryContext *p)
+int constant_fold_primary(Model *model,
+			  Component *current_component,
+			  dslParser::PrimaryContext *p)
 {
   if (p->length)
     {
       auto name = p->ID()->getText();
-      return model->current_component->resolve_length(name);
+      return current_component->resolve_length(name);
     }
   if (p->expr())
     {
-      return constant_fold_expr(model, p->expr());
+      return constant_fold_expr(model, current_component, p->expr());
     }
   if (p->access())
     {
@@ -75,17 +79,19 @@ int constant_fold_primary(Model *model, dslParser::PrimaryContext *p)
 }
 
 static
-int constant_fold_expr(Model *model, dslParser::ExprContext *expr)
+int constant_fold_expr(Model *model,
+		       Component *current_component,
+		       dslParser::ExprContext *expr)
 {
   auto p = expr->primary();
-  auto left = constant_fold_primary(model, p[0]);
+  auto left = constant_fold_primary(model, current_component, p[0]);
   if (p.size() == 1)
     {
       return left;
     }
   else
     {
-      auto right = constant_fold_primary(model, p[1]);
+      auto right = constant_fold_primary(model, current_component, p[1]);
       auto operand = expr->op()->operand->getText();
       if (operand == "+")
 	return left + right;
@@ -100,6 +106,49 @@ int constant_fold_expr(Model *model, dslParser::ExprContext *expr)
   return 0;
 }
 
+   
+Pin *Component::get_pin_by_name(const std::string &s)
+{
+  const unsigned count = pins.size();
+  for (unsigned i=0;i<count;i++)
+    {
+      auto p = pins[i];
+      
+      if (p->info->name == s)
+	{
+	  return p;   
+	}
+    }
+  fprintf(stderr, "failed to find pin %s\n", s.c_str());
+  abort();
+}
+
+Pin *Component::get_pin_by_suffixes(const std::vector<dslParser::Access_suffixContext*> &suffixes,
+                                   ModelContext &context, bool odd)
+{
+  if (suffixes.size() == 0) {
+    if (this->pins.size() == 1) {
+      return this->pins[0];
+    }
+    
+    if (this->pins.size() > 2) {
+      printf("don't know which pin to address, please make it explicit: %s\n", this->info->name.c_str());
+      abort();
+    }
+    
+    return this->pins[odd];
+
+  } else {
+    auto s0 = suffixes[0];
+    auto name = s0->ID()->getText();
+    if (s0->index() == 0)
+      return this->get_pin_by_name(name);
+    else
+      return this->get_pin_by_name(context.indexed_pin_name(name, s0->index()));
+  }
+}
+
+
 Pin *access_to_component_pin(Model *model,
 			     dslParser::AccessContext* access,
 			     ModelContext &context,
@@ -112,7 +161,9 @@ Pin *access_to_component_pin(Model *model,
     }
   
   auto comp = model->find_component(name);
-  return comp->get_pin_by_suffixes(access->access_suffix(), context, odd);
+  return comp->get_pin_by_suffixes(access->access_suffix(),
+				   context,
+				   odd);
 }
 
 void preprocess_component(Model *model,
@@ -123,8 +174,8 @@ void preprocess_component(Model *model,
     {
       comp->info->fixed_position = new Point(0, 0, 0);
     }
-    
-  model->current_component = comp;
+  
+  //model->current_component = comp;
   
   for (auto p : props)
     {
@@ -192,9 +243,9 @@ void process_location(Component *comp,
 
   for (auto loc : loc_prop_list)
     {
-      model->current_component = comp;
-      auto sx = constant_fold_expr(model, loc->expr()[0]);
-      auto sy = constant_fold_expr(model, loc->expr()[1]);
+      //model->current_component = comp;
+      auto sx = constant_fold_expr(model, comp, loc->expr()[0]);
+      auto sy = constant_fold_expr(model, comp, loc->expr()[1]);
       
       comp->info->fixed_position = new Point(sx, sy, 0);
       comp->transpose(*comp->info->fixed_position);
@@ -216,29 +267,29 @@ void do_process_dimensions(Component *comp,
 {
   assert(dim_prop_list.size() > 0);
   auto model = comp->model;
-  model->current_component = comp;
+  //model->current_component = comp;
   
   for (auto dim : dim_prop_list)
     {
       if (dim->width)
 	{
-	  comp->info->dim.x = constant_fold_expr(model, dim->width);
+	  comp->info->dim.x = constant_fold_expr(model, comp, dim->width);
 	}
       
       if (dim->height)
 	{
-	  comp->info->dim.y = constant_fold_expr(model, dim->height);
+	  comp->info->dim.y = constant_fold_expr(model, comp, dim->height);
 	}
       
       if (dim->layers)
 	{
-	  comp->info->dim.layer = constant_fold_expr(model, dim->layers);
+	  comp->info->dim.layer = constant_fold_expr(model, comp, dim->layers);
 	}
     }
     
   if (comp->info->name == "board")
     {
-      model->board_dim = comp->info->dim;
+      model->info->board_dim = comp->info->dim;
     }
 }
 
@@ -299,8 +350,11 @@ void ModelCreatorListener::enterConstant(dslParser::ConstantContext *ctxt) {
   //constant: 'const' ID '=' expr ';';
   auto name = ctxt->ID()->getText();
   auto expr = ctxt->expr();
-  std::cout << "resolve constant: " << name;
-  this->model->constants[name] = constant_fold_expr(this->model, expr);
+  //std::cout << "resolve constant: " << name;
+  assert(current_component);
+  this->model->info->constants[name] = constant_fold_expr(this->model,
+							  current_component,
+							  expr);
 }
 
 
@@ -314,7 +368,7 @@ void ModelCreatorListener::enterNetwork(dslParser::NetworkContext *ctxt) {
   else
     {
       auto limit = names[2]->getText();
-      auto count = this->model->constants[limit];
+      auto count = this->model->info->constants[limit];
       for (int i = 0; i < count; i++) {
 	auto var = ModelVar(names[1]->getText(), i);
 	ModelContext mctxt;
@@ -336,6 +390,7 @@ void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
       ComponentInfo *info = new ComponentInfo(names[0]->getText(), false);
       
       auto comp = new Component(info, this->model);
+      this->current_component = comp;
       preprocess_component(this->model, comp, ctxt->component_property());
       this->model->components.push_back(comp);
 	
@@ -348,13 +403,13 @@ void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
   else
     {
       auto limit = names[2]->getText();
-      auto count = this->model->constants[limit];
+      auto count = this->model->info->constants[limit];
       for (int i = 0; i< count; i++)
 	{
 	  auto info = new ComponentInfo(names[0]->getText() + str(i), false);
 	  
 	  auto comp = new Component(info, this->model);
-				    
+	  this->current_component = comp;	    
 	  preprocess_component(this->model, comp, ctxt->component_property());
 	  this->model->components.push_back(comp);
 	    

@@ -5,7 +5,7 @@
 
 void Model::random_move_components(const Point &range)
 {
-  const Point board_dim = this->board_dim;
+  const Point board_dim = this->info->board_dim;
   const unsigned count = components.size();
   for (unsigned i=0;i<count;i++)
     {
@@ -28,7 +28,7 @@ void Model::random_move_components(const Point &range)
 						      
 void Model::initial_random_move_components()
 {
-  const Point board_dim = this->board_dim;
+  const Point board_dim = this->info->board_dim;
   for (auto comp : components)
     {
       if (! comp->info->fixed_position)

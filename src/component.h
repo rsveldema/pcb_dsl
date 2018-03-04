@@ -147,21 +147,7 @@ class Component
   }
   
   
-  Pin *get_pin_by_name(const std::string &s)
-  {
-    const unsigned count = pins.size();
-    for (unsigned i=0;i<count;i++)
-      {
-	auto p = pins[i];
-	
-	if (p->info->name == s)
-	  {
-	    return p;	
-	  }
-      }
-    fprintf(stderr, "failed to find pin %s\n", s.c_str());
-    abort();
-  }
+  Pin *get_pin_by_name(const std::string &s);
     
   Pin *get_pin_by_suffixes(const std::vector<dslParser::Access_suffixContext*> &suffix,
 			   ModelContext &context, bool odd);

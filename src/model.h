@@ -20,15 +20,30 @@ typedef std::map<Component*, Component*> clone_map_t;
 typedef double score_t;
 
 
+class ModelInfo
+{
+ public:
+  Point board_dim = {0,0,0};
+  std::map<std::string, int> constants;
+};
+
 
 class Model
 {
  public:
-  Component *current_component = NULL;
   std::vector<Component *> components;
-  std::map<std::string, int> constants;
-  Point board_dim;
+  ModelInfo *info;
+  
+ public:
+  Model(ModelInfo *_info)
+    : info(_info)
+    {
+    }
 
+  ~Model()
+    {      
+    }
+  
  public:
   bool have_crossing_connection(const Connection &connection,
 				Connection *crossed);
@@ -46,13 +61,6 @@ class Model
   score_t score();
   void gather_layer_map(LayerMap &map);
   
-
-
-  Model()
-    : board_dim(0, 0, 0)
-    {
-    }
-
   size_t num_layers()
   {
     LayerMap map;

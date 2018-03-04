@@ -74,11 +74,13 @@ class ModelCreatorListener : public dslBaseListener
 {
  private:
   Model *model;
+  Component *current_component = NULL;
   
  public:
   ModelCreatorListener()
     {
-      model = new Model();
+      ModelInfo *info = new ModelInfo();
+      model = new Model(info);
     }
 
   Model *get() const { return model; }

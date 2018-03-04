@@ -65,7 +65,7 @@ public:
 	if (this->should_mutate())
 	  {
 	    Point min_range(10, 10, 0);
-	    Point range = model->board_dim.div(iteration);
+	    Point range = model->info->board_dim.div(iteration);
 	    assert(range.x > 0 && range.y > 0);
 	    
 	    model->random_move_components(min_range.max(range));
@@ -209,7 +209,7 @@ public:
 
 NestedGeneration* create_initial_generation(Model *initial_model)
 {
-  //auto dim = initial_model->board_dim;
+  //auto dim = initial_model->info->board_dim;
   auto start_model = initial_model->deepclone();
   start_model->writeSVG("random_routed.svg");
     
