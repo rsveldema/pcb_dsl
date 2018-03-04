@@ -35,7 +35,7 @@ include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
 
 
-add_executable(pcbgen main.cc display.cc optimizer.cc utils.cc create_model.cc model.cc datasheet.cc known_packages.cc ${antlr4cpp_src_files_antlrcpp})
+add_executable(pcbgen count_overlaps.cc main.cc sum_lengths.cc place_routing_components.cc random_move.cc crossover.cc crossing.cc display.cc optimizer.cc utils.cc create_model.cc model.cc datasheet.cc known_packages.cc ${antlr4cpp_src_files_antlrcpp})
 
 
 #find_package(Cairo)

@@ -119,8 +119,7 @@ class Component
 	  }
       }
     return true;
-  }
-
+  }  
 
   void transpose(const Point &dir)
   {
@@ -130,6 +129,10 @@ class Component
 	p->transpose(dir);
       }
   }
+
+  bool have_crossing_connection(const Connection &connection);
+  void add_layers_for_crossing_lines(Model *model);
+  unsigned count_crossing_lines(Model *model);
 
   Pin *add_pin(const std::string &s)
   {

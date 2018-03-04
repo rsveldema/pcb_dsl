@@ -30,6 +30,9 @@ class Model
   Point board_dim;
 
  public:
+  bool have_crossing_connection(const Connection &connection);
+  unsigned count_crossing_lines();
+  void add_layers_for_crossing_lines();
   double sum_connection_lengths();
   unsigned count_overlaps();  
   Component *create_router();

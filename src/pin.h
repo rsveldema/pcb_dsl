@@ -1,6 +1,16 @@
 #ifndef PIN_H__H_H__
 #define PIN_H__H_H__
 
+class Pin;
+
+struct Connection
+{
+  Pin *from, *to;
+  Point p1, p2;
+
+  bool crosses(const Connection &connection) const;
+};
+
 class Pin
 {
  public:
@@ -10,14 +20,23 @@ class Pin
   Outline outline;
   std::vector<Pin *> connections;
 
+ public:
  Pin(Component *comp,
      const std::string &s)
-    : id(get_unique_id()),
+   : id(get_unique_id()),
     name(s),
     component(comp)
     {
     }
 
+  bool have_crossing_connection(const Connection &connection);
+  void add_layers_for_crossing_lines(Model *model);
+  unsigned count_crossing_lines(Model *model);
+  void move_to_layer(layer_t layer)
+  {
+    outline.move_to_layer(layer);
+  }
+  
   void draw(Canvas *c)
   {
     outline.draw(c, name);
