@@ -94,37 +94,43 @@ public:
   
   void selection(unsigned iteration)
   {
-    std::vector<std::pair<score_t,Model*>> scores;
+    std::vector<std::pair<score_t, Model*>> scores;
 
+    assert(models.size() == POPULATION_GROUP_SIZE);    
     for (auto model : models)
       {
 	score_t score = model->score();
 	scores.push_back( { score, model } );
       }
 
+    assert(scores.size() == POPULATION_GROUP_SIZE);    
     std::sort(scores.begin(), scores.end(), comparer);
 
-
-    // TODO: delete bad ones.
     models.clear();
+    assert(models.size() == 0);
+    
     for (unsigned i = 0; i < POPULATION_GROUP_SIZE; i++)
       {
+	Model *model = scores[i].second;
+	
 	if (i < SELECTION_FILTER_SIZE)
 	  {
 	    //printf("score[%d]: %d\n", i, (int)scores[i].first);
-	    models.push_back(scores[i].second);
+	    models.push_back(model);
 	  }
 	else
 	  {
+	    delete model;
+	    scores[i].second = NULL;
+	    
 	    auto k = i % SELECTION_FILTER_SIZE;
+	    assert(k < SELECTION_FILTER_SIZE);
+	    
 	    auto cloned = scores[k].second->deepclone();
 	    cloned->random_move_components(Point(5, 5, 0));
 	    models.push_back(cloned);
-	  }
-	  
+	  }	  
       }
-
-    //scores[0].second->writeSVG(utils::str("group-best-", iteration, ".svg"));
   }
         
   void optimize(unsigned iteration)

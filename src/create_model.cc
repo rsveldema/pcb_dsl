@@ -124,7 +124,7 @@ Pin *Component::get_pin_by_name(const std::string &s)
 }
 
 Pin *Component::get_pin_by_suffixes(const std::vector<dslParser::Access_suffixContext*> &suffixes,
-                                   ModelContext &context, bool odd)
+				    ModelContext &context, bool odd)
 {
   if (suffixes.size() == 0) {
     if (this->pins.size() == 1) {

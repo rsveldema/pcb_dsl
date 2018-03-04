@@ -41,7 +41,7 @@ class Model
     }
 
   ~Model()
-    {      
+    {
     }
   
  public:
