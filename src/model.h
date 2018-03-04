@@ -42,6 +42,11 @@ class Model
 
   ~Model()
     {
+      const unsigned count = components.size();
+      for (unsigned i=0;i<count;i++)
+	{
+	  delete components[i];
+	}
     }
   
  public:

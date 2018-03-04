@@ -24,8 +24,7 @@ class ComponentInfo
 class Component
 {
  public:
-  ComponentInfo *info;
-  
+  ComponentInfo *info;  
   unsigned id;
   std::vector<Pin *> pins;
   Outline outline;
@@ -37,6 +36,17 @@ class Component
     model(m)
   {
   }
+
+  ~Component()
+    {
+      const unsigned count = pins.size();
+      for (unsigned i=0;i<count;i++)
+	{
+	  delete pins[i];
+	}
+    }
+  
+
 
   std::string str() const
     {
