@@ -12,24 +12,13 @@ The vision is to:
   - perform some electrical rule checking
   - output eagle files for import into eagle and circuitmaker/altium
   
-This is all work in progress. Currently, it scrapes example datasheet pdfs already for some tables.
+This is all work in progress. Currently, it scrapes example datasheet
+pdfs already for some tables and can generate SVG files after optimization.
 
 
 
---- NEW C++ installation:
+--- installation:
 
-  - yum install python3 antlr4 libuuid-devel mvn
-
-
---- OLD Python installation:
-
- -# install python3
- -# install pdftohtml from poppler-utils
- -# install python3-lxml
-
- Once that's done:
- -# pip3 install pystache
- -# pip3 install bs4
- -# pip3 install svgwrite
- -# pip3 install antlr4-python3-runtime
- 
+  - yum install gcc gcc-c++ make
+  - yum install python3 antlr4 libuuid-devel mvn cmake
+  - yum install libsigc++-2.0 cairomm-devel gtkmm-devel glibmm-devel
