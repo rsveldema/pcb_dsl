@@ -19,12 +19,10 @@ void Usage(const char *format, ...)
 
 int main(int argc, char **argv)
 {
-  Canvas::init(argc, argv);
-  
   srand(10);
 
   bool enable_gui = true;
-  const char *filename = "../examples/sampler2.edsl";
+  const char *filename = NULL;
   
   for (int i=1;i<argc;i++)
     {
@@ -43,9 +41,21 @@ int main(int argc, char **argv)
 	}
     }
 
-  if (! filename) {
-    Usage("missing file name");
-  }
+  if (! filename)
+    {
+      Usage("missing file name");
+    }
+  if (! file_exists(filename))
+    {
+      fprintf(stderr, "ERROR: file '%s' not found\n", filename);
+      exit(1);
+    }
+  printf("PARSING: %s\n", filename);
+
+
+  argc = 1;
+  Canvas::init(argc, argv);
+    
 
   ModelCreatorListener listener;
 

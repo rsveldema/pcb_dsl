@@ -12,7 +12,7 @@ bool Connection::crosses(const Connection &connection)
 bool Pin::have_crossing_connection(const Connection &connection,
 				Connection *crossed)
 {
-  if (connection.p1.layer != outline.points[0].layer)
+  if (connection.p1.layer != get_layer())
     {
       return false;
     }

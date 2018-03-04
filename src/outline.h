@@ -9,6 +9,7 @@ class Outline
 
   layer_t get_layer() const
   {
+    assert(points.size() > 0);
     return points[0].layer;
   }
   

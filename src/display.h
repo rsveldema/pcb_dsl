@@ -48,6 +48,7 @@ class Canvas
   virtual void draw_line(const RGB &color,
 			 const Point &from,
 			 const Point &to) = 0;
+  virtual void publish(Model *m) = 0;
   virtual int run() = 0;
   virtual ~Canvas() {}
 

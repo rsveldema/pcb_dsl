@@ -49,7 +49,7 @@ class Pin
       return ret;
     }
   
-  layer_t get_layer() const { return outline.points[0].layer; }
+  layer_t get_layer() const { return outline.get_layer(); }
   void gather_layer_map(LayerMap &map);
   bool have_crossing_connection(const Connection &connection,
 				Connection *crossed);

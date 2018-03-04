@@ -17,3 +17,12 @@ unsigned randrange(unsigned max)
 {
    return rand() % max;
 }
+
+
+bool file_exists(const std::string &filename)
+{
+  FILE *f = fopen(filename.c_str(), "r");
+  if (! f) return false;
+  fclose(f);
+  return true;
+}

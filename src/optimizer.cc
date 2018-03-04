@@ -11,6 +11,7 @@ auto SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
 auto CROSSOVER_PROBABILITY   = unsigned(0.8 * POPULATION_GROUP_SIZE);
 auto MUTATION_PROBABILITY    = unsigned(0.2 * POPULATION_GROUP_SIZE);
 
+static bool enable_gui;
 
 
 score_t Model::score()
@@ -242,7 +243,14 @@ void optimization_thread(NestedGeneration* nested,
             
 	  if (best)
 	    {
-	      best->writeSVG(utils::str("best-iteration-", iteration, ".svg"));
+	      if (enable_gui)
+		{
+		  gui->publish(best);
+		}
+	      else
+		{
+		  best->writeSVG(utils::str("best-iteration-", iteration, ".svg"));
+		}
 	    }
 	  else
 	    {
@@ -262,14 +270,18 @@ Model* optimize_model(Model *model,
 		      unsigned time_limit_secs,
 		      bool enable_gui)
 {
+  ::enable_gui = enable_gui;
   Canvas *gui = NULL;
     
-  model->writeSVG("initial.svg");
-
   auto nested = create_initial_generation(model);  
   if (enable_gui)
     {
       gui = Canvas::create_canvas();
+      gui->publish(model);
+    }
+  else
+    {
+      model->writeSVG("initial.svg");
     }
 
   int num_worker_threads = 1;

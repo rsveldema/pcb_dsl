@@ -2,38 +2,44 @@
 #include <cairomm/surface.h>
 #include <cairomm/context.h>
 #include <gtkmm.h>
+#include <mutex>
 
 static Glib::RefPtr<Gtk::Application> app;
 static int app_argc;
 static char **app_argv;
 
+static std::mutex mutex;
+class CairoCanvas;
+
+static double zoom = 4;
 
 class Viewer : public Gtk::DrawingArea
 {
+private:
+  CairoCanvas *c;
+  
 public:
-  Viewer()
+  Viewer(CairoCanvas *c)
   {
+    this->c = c;
     //set_default_size (500, 500);
     set_has_window(false);
   }
     
 public:
-  bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override
-  {    
-    printf("should redraw here\n");
-    return true;
-  }
+  bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
 };
 
 class DemoWindow : public Gtk::Window
 {
-private:
+public:
   Viewer draw_area;
   
 public:
-  DemoWindow()
+  DemoWindow(CairoCanvas *c)
+    : draw_area(c)
   {
-    set_default_size (800, 600);
+    set_default_size(800, 600);
     set_title("pcb generator");
 
     add(draw_area);
@@ -56,12 +62,13 @@ private:
   Cairo::RefPtr<Cairo::SvgSurface> svg;
   Cairo::RefPtr<Cairo::Context>    ctxt;
 
+  Model *displayed_model = 0;
   DemoWindow *window = 0;
   
 public:
   CairoCanvas()
   {
-    window = new DemoWindow();
+    window = new DemoWindow(this);
   }
   
   CairoCanvas(const std::string &filename)
@@ -71,6 +78,31 @@ public:
   }
   
 public:
+  void draw(const Cairo::RefPtr<Cairo::Context>& cr)
+  {
+    ctxt = cr;
+    if (displayed_model)
+      {
+	displayed_model->draw(this);
+      }
+  }
+  
+  virtual void publish(Model *m)
+  {
+    mutex.lock();
+    if (displayed_model)
+      {
+	delete displayed_model;
+      }
+    displayed_model = m->deepclone();
+    
+    fprintf(stderr, "signal!\n");
+    //gtk_widget_queue_draw_area(&window->draw_area, 0, 0, 800, 600);
+    window->draw_area.queue_draw(); //signal_draw();
+    mutex.unlock();
+  }
+
+  
   virtual void draw_text(const RGB &color,
 			 const Point &from,
 			 const std::string &text) override
@@ -79,8 +111,8 @@ public:
 			  color.green(),
 			  color.blue());
     ctxt->set_line_width(0.2);
-    ctxt->move_to(from.x,
-		  from.y);
+    ctxt->move_to(from.x * zoom,
+		  from.y * zoom);
     ctxt->set_font_size(4);
     ctxt->show_text(text);
   }
@@ -93,10 +125,10 @@ public:
 			  color.green(),
 			  color.blue());
     ctxt->set_line_width(0.2);
-    ctxt->move_to(from.x,
-		  from.y);
-    ctxt->line_to(to.x,
-		  to.y);
+    ctxt->move_to(from.x * zoom,
+		  from.y * zoom);
+    ctxt->line_to(to.x * zoom,
+		  to.y * zoom);
     ctxt->stroke();
   }
 
@@ -105,6 +137,15 @@ public:
     return app->run(*window, app_argc, app_argv);
   }
 };
+
+
+bool Viewer::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) 
+{
+  mutex.lock();
+  c->draw(cr);
+  mutex.unlock();
+  return true;
+}
 
 
 Canvas *Canvas::create_SVG_canvas(const std::string &filename)
@@ -125,3 +166,4 @@ void Canvas::init(int argc, char **argv)
   
   app = Gtk::Application::create();
 }
+

@@ -53,4 +53,5 @@ std::string destringify(const std::string &s);
 unsigned get_unique_id();
 std::string normalize(const std::string &s);
 bool valid_pin_name(const std::string &s);
+bool file_exists(const std::string &filename);
 #endif
