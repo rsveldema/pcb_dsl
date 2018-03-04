@@ -32,54 +32,43 @@ void revector_connections_to_router(clone_map_t &routers,
 }
 
 
-void Component::place_routing_components(Model *model, const Point &dim)
+void Pin::route_around_conflict(Model *model,
+				Component *comp,
+				const Point &around)
 {
-  for (auto p : pins)
-    {
-      if (p->connections.size() == 0)
-	{
-	  continue;
-	}
-      
-      clone_map_t routers;
-      routers[this] = this;
-      
-      Component *last = NULL;
-      for (unsigned k = 0; k < NUM_BENDS_PER_ROUTE; k++)
-	{
-	  auto router = model->create_router();
-	  routers[router] = router;
+  auto center = this->center();
 
-	  if (! last)
-	    {
-	      router->pins[1]->connections = p->connections;
-	      p->connections = { router->pins[0] };
-	    }
-	  else
-	    {
-	      router->pins[1]->connections = last->pins[1]->connections;
-	      last->pins[1]->connections = { router->pins[0] };
-	    }
-	  last = router;
-	}
-     revector_connections_to_router(routers, last, model, p);
-    }
+  auto vec = around.sub(center);
+  auto loc1 = center.add(vec.mul(0.9));
+  auto loc2 = center.add(vec.mul(1.1));
+
+  auto router1 = model->create_router(loc1);
+  auto router2 = model->create_router(loc2);
+  
+  //clone_map_t routers;
+  //routers[comp] = comp;
+  // routers[router1] = router1;
+  //routers[router2] = router2;
+
+  //  before:  this -> P2
+  //  after:   this -> R1 -> R2 -> P2
+
+  layer_t new_layer = outline.get_layer() + 1;
+    
+
+  router1->pins[0]->move_to_layer(this->get_layer());
+  router1->pins[1]->connections = { router2->pins[0] };
+  router1->pins[1]->move_to_layer(new_layer);
+  
+  router2->pins[0]->move_to_layer(new_layer);  
+  router2->pins[1]->connections = this->connections;
+  router2->pins[1]->move_to_layer(this->get_layer());
+  
+  this->connections = { router1->pins[0] };
+
+  //utils::print("done: ", model->str());
+  model->writeDOT("routed.dot");
+  //revector_connections_to_router(routers, router2, model, his);
 }
 
-void Model::do_place_routing_components(const Point &dim)
-{
-  for (auto c : components)
-    {
-      if (! c->is_router)
-	{
-	  c->place_routing_components(this, dim);
-	}
-    }
-}
 
-Model* Model::place_routing_components(const Point &dim)
-{
-  auto m = deepclone();
-  m->do_place_routing_components(dim);
-  return m;
-}

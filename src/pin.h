@@ -6,9 +6,20 @@ class Pin;
 struct Connection
 {
   Pin *from, *to;
-  Point p1, p2;
+  Point p1, p2, conflict;
 
-  bool crosses(const Connection &connection) const;
+  bool crosses(const Connection &connection);
+};
+
+class LayerMap
+{
+ private:
+  std::map<layer_t, std::vector<Pin*> > usage;
+ public:
+  LayerMap() {}
+
+  unsigned num_layers() const { return usage.size(); }
+  void add(layer_t layer);
 };
 
 class Pin
@@ -29,22 +40,35 @@ class Pin
     {
     }
 
-  bool have_crossing_connection(const Connection &connection);
-  void add_layers_for_crossing_lines(Model *model);
+  std::string str() const
+    {
+      std::string ret = name;
+      ret += "(";
+      ret += outline.str();
+      ret += ")";
+      return ret;
+    }
+  
+  layer_t get_layer() const { return outline.points[0].layer; }
+  void gather_layer_map(LayerMap &map);
+  bool have_crossing_connection(const Connection &connection,
+				Connection *crossed);
+  void route_around_conflict(Model *model,
+			     Component *comp,
+			     const Point &around);
+  bool add_layers_for_crossing_lines(Model *model,
+				     Component *comp);
   unsigned count_crossing_lines(Model *model);
   void move_to_layer(layer_t layer)
   {
     outline.move_to_layer(layer);
   }
-  
-  void draw(Canvas *c)
-  {
-    outline.draw(c, name);
-    for (auto connection : connections)
-      {
-	outline.drawLineTo(connection->outline.center(), c);
-      }
-  }
+
+  Point center() const { return outline.center(); }
+
+  bool is_router_pin() const;
+  void draw(Canvas *c);
+    
 
   void crossover(Pin *other);
   

@@ -35,9 +35,11 @@ unsigned Model::count_overlaps()
 	  
 	  if (d < radius)
 	    {
+	      /*
 	      utils::print("overlap of ", p1->name,
 			   " with ", p2->name,
 			   "--- dist = ", d, " radius = ", radius);
+	      */
 	      c += 1;
 	    }
 	}

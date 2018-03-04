@@ -19,6 +19,8 @@ typedef std::map<Component*, Component*> clone_map_t;
 
 typedef double score_t;
 
+
+
 class Model
 {
  public:
@@ -30,26 +32,70 @@ class Model
   Point board_dim;
 
  public:
-  bool have_crossing_connection(const Connection &connection);
+  bool have_crossing_connection(const Connection &connection,
+				Connection *crossed);
   unsigned count_crossing_lines();
   void add_layers_for_crossing_lines();
   double sum_connection_lengths();
   unsigned count_overlaps();  
-  Component *create_router();
+  Component *create_router(const Point &pos);
   Model *deepclone();
   void writeSVG(const std::string &filename);
+  void draw(Canvas *c);
   void random_move_components(const Point &range);
   void initial_random_move_components();
   void crossover(Model *m);
-  void do_place_routing_components(const Point &dim);
-  Model* place_routing_components(const Point &dim);
   score_t score();
+  void gather_layer_map(LayerMap &map);
 
 
   Model()
     : board_dim(0, 0, 0)
     {
     }
+
+  void writeDOT(const std::string filename)
+  {
+    FILE *f = fopen(filename.c_str(), "w");
+    assert(f != NULL);
+
+    fprintf(f, "digraph model {\n");
+    for (auto c : components)
+      {
+	for (auto p : c->pins)
+	  {
+	    std::string from = c->name + "_" + p->name;
+
+	    fprintf(f, "%s -> %s;\n", c->name.c_str(), from.c_str());	    
+	    fprintf(f, "%s [label=\"%s @ %d\"];\n", from.c_str(), from.c_str(), p->get_layer());
+	    for (auto to_pin : p->connections)
+	      {
+		std::string to = to_pin->component->name + "_" + to_pin->name;
+		
+		fprintf(f, "%s -> %s;\n", from.c_str(), to.c_str());
+	      }
+	  }
+      }
+
+    fprintf(f, "}\n");
+    fclose(f);
+  }
+
+    std::string str() const
+    {
+      std::string ret = "model";
+      ret += "{";
+      const char *sep = "";
+      for (auto p : components)
+	{
+	  ret += sep;
+	  ret += p->str();
+	  sep = ", ";
+	}
+      ret += "}";
+      return ret;
+    }
+
     
   Component *find_component(const std::string &name)
   {
@@ -62,6 +108,18 @@ class Model
       }
     
     abort();
+    return NULL;
+  }
+
+  Component *find_component_by_id(unsigned id)
+  {
+    for (auto c : components)
+      {
+	if (c->id == id)
+	  {
+	    return c;
+	  }
+      }
     return NULL;
   }
 };

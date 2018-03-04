@@ -19,12 +19,20 @@ void Usage(const char *format, ...)
 
 int main(int argc, char **argv)
 {
-  srand(10);
+  Canvas::init(argc, argv);
   
-  const char *filename = NULL;
+  srand(10);
+
+  bool enable_gui = true;
+  const char *filename = "../examples/sampler2.edsl";
+  
   for (int i=1;i<argc;i++)
     {
-      if (strcmp(argv[i], "-pcb") == 0)
+      if (strcmp(argv[i], "-gui") == 0)
+	{
+	  enable_gui = true;
+	}
+      else if (strcmp(argv[i], "-pcb") == 0)
 	{
 	  i++;
 	  filename = argv[i];
@@ -59,7 +67,7 @@ int main(int argc, char **argv)
   printf("going to start optimization now\n");
   Model *model = listener.get();
 
-  Model *best = optimize_model(model, 5);
+  Model *best = optimize_model(model, 5, enable_gui);
   best->writeSVG("final.svg");
   
   return 0;

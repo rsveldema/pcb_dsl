@@ -2,15 +2,15 @@
 #include <algorithm>
 #include "utils.h"
 
-
-bool Connection::crosses(const Connection &connection) const
+bool Connection::crosses(const Connection &connection)
 {
   return Point::intersection(p1, p2,
 			     connection.p1, connection.p2,
-			     NULL);
+			     &conflict);
 }
 
-bool Pin::have_crossing_connection(const Connection &connection)
+bool Pin::have_crossing_connection(const Connection &connection,
+				Connection *crossed)
 {
   if (connection.p1.layer != outline.points[0].layer)
     {
@@ -21,32 +21,47 @@ bool Pin::have_crossing_connection(const Connection &connection)
   for (auto other_pin : connections)
     {
       auto p2 = other_pin->outline.center();
-      Connection other_connection {this, other_pin, p1, p2 };
+      Point dummy = {0,0,0};
+      Connection other_connection {this, other_pin, p1, p2, dummy };
 
-      if (other_connection.from == connection.from &&
-	  other_connection.to   == connection.to)
+      if ((connection.to->component == other_connection.from->component) ||
+	  (connection.p1 == other_connection.p2) ||
+	  (connection.p2 == other_connection.p1))
 	{
 	  continue;
 	}	  
 
       if (other_connection.crosses(connection))
 	{
+	  //printf("crossed connection found\n");
+	  //bool test = (connection.p1 == other_connection.p2);
+	  if (crossed)
+	    {
+	      *crossed = other_connection;
+	    }
 	  return true;
 	}      
     }
   return false;
 }
 
-bool Component::have_crossing_connection(const Connection &connection)
+bool Component::have_crossing_connection(const Connection &connection,
+					 Connection *crossed)
 {
   if (is_board)
+    {
+      return false;
+    }
+
+  if (this == connection.from->component)
     {
       return false;
     }
   
   for (auto c : pins)
     {
-      if (c->have_crossing_connection(connection))
+      if (c->have_crossing_connection(connection,
+				      crossed))
 	{
 	  return true;
 	}
@@ -54,11 +69,13 @@ bool Component::have_crossing_connection(const Connection &connection)
   return false;
 }
 
-bool Model::have_crossing_connection(const Connection &connection)
+bool Model::have_crossing_connection(const Connection &connection,
+				     Connection *crossed)
 {
   for (auto c : components)
     {
-      if (c->have_crossing_connection(connection))
+      if (c->have_crossing_connection(connection,
+				      crossed))
 	{
 	  return true;
 	}
@@ -66,23 +83,28 @@ bool Model::have_crossing_connection(const Connection &connection)
   return false;
 }
 
-void Pin::add_layers_for_crossing_lines(Model *model)
+bool Pin::add_layers_for_crossing_lines(Model *model,
+					Component *comp)
 {
   auto p1 = outline.center();
-  
+
   for (auto other_pin : connections)
     {
       auto p2 = other_pin->outline.center();
-      Connection connection {this, other_pin, p1, p2 };
-      
-      if (model->have_crossing_connection(connection))
+      Point dummy = {0, 0, 0};
+      Connection connection {this, other_pin, p1, p2, dummy };
+      Connection crossed = connection;
+      if (model->have_crossing_connection(connection,
+					  &crossed))
 	{
-	  layer_t layer = outline.points[0].layer + 1;
-	  this->move_to_layer(layer);
-	  other_pin->move_to_layer(layer);
-	  return;
+	  //utils::print("conflict occurred at ", crossed.conflict.str(), " between ", comp->name);
+	  route_around_conflict(model,
+				comp,
+				crossed.conflict);
+	  return true;
 	}
     }
+  return false;
 }
 
 unsigned Pin::count_crossing_lines(Model *model)
@@ -93,9 +115,11 @@ unsigned Pin::count_crossing_lines(Model *model)
   for (auto other_pin : connections)
     {
       auto p2 = other_pin->outline.center();
-      Connection connection =  {this, other_pin, p1, p2 };
+      Point dummy = {0,0,0};
+      Connection connection =  {this, other_pin, p1, p2, dummy};
       
-      if (model->have_crossing_connection(connection))
+      if (model->have_crossing_connection(connection,
+					  NULL))
 	{
 	  count++;
 	}
@@ -103,12 +127,16 @@ unsigned Pin::count_crossing_lines(Model *model)
   return count;
 }
 
-void Component::add_layers_for_crossing_lines(Model *model)
+bool Component::add_layers_for_crossing_lines(Model *model)
 {
   for (auto p : pins)
     {
-      p->add_layers_for_crossing_lines(model);
+      if (p->add_layers_for_crossing_lines(model, this))
+	{
+	  return true;
+	}
     }
+  return false;
 }
 
 unsigned Component::count_crossing_lines(Model *model)
@@ -136,7 +164,10 @@ void Model::add_layers_for_crossing_lines()
 {
   for (auto c : components)
     {
-      c->add_layers_for_crossing_lines(this);
+      if (c->add_layers_for_crossing_lines(this))
+	{
+	  break;
+	}
     }
 }
 

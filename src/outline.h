@@ -7,6 +7,11 @@ class Outline
  public:
   std::vector<Point> points;
 
+  layer_t get_layer() const
+  {
+    return points[0].layer;
+  }
+  
   void move_to_layer(layer_t layer)
   {
     for (Point &p : points)
@@ -15,17 +20,28 @@ class Outline
       }
   }
   
-  RGB getColor(int layer)
-  {
-    return {0, 255, 0};
-  }
-
   void drawLineTo(const Point &to,
 		  Canvas *c)
   {
-    RGB color = getColor(to.layer);
+    RGB color = RGB::getColor(to.layer);
     c->draw_line(color, center(), to);
   }
+
+  
+  std::string str() const
+    {
+      const char *prefix = "";
+      std::string ret("outline<");
+      for (auto p : points)
+	{
+	  ret += prefix;
+	  ret += p.str();
+	  prefix = ", ";
+	}
+      ret += ">";
+      return ret;
+    }
+
 
   void draw(Canvas *c,
 	    const std::string &name)
@@ -34,14 +50,14 @@ class Outline
       {
 	RGB red = {255, 0, 0};
 	c->draw_text(red,
-		     points[0],
+		     center(),
 		     name);
       }
     
     for (unsigned i = 0; i < points.size(); i++)
       {
 	Point &from = points[i];
-	RGB color = getColor(from.layer);
+	RGB color = RGB::getColor(from.layer);
 
 	if (i == (points.size() - 1))
 	  {

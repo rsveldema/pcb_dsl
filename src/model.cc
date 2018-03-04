@@ -53,7 +53,7 @@ std::string get_new_routing_name()
   return utils::str("route_", get_unique_id());
 }
 
-Component *Model::create_router()
+Component *Model::create_router(const Point &pos)
 {
   //#print("creating router")
   auto comp = new Component(this, get_new_routing_name(), true);
@@ -70,6 +70,8 @@ Component *Model::create_router()
   comp->outline.addRect(s, e);
   pin_in->outline.addRect(s, e);
   pin_out->outline.addRect(s, e);
+
+  comp->transpose( pos );
   return comp;
 }
 
