@@ -73,7 +73,7 @@ class Model
     return map.size();
   }
 
-  void remove_router();
+  void remove_router_chain();
   
   void check()
   {

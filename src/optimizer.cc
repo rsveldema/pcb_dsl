@@ -17,10 +17,11 @@ static bool enable_gui;
  */
 score_t Model::score()
 {
-  auto num_layers = this-> num_layers();
+  auto num_layers         = this-> num_layers();
   auto my_num_overlaps    = this->count_overlaps();
   auto my_len             = this->sum_connection_lengths();
-  unsigned crossing_lines = this->count_crossing_lines();
+  auto crossing_lines     = this->count_crossing_lines();
+
   score_t s = (my_len * 2) + (crossing_lines * 1000);
   s *= components.size();
   s *= num_layers; 
@@ -66,12 +67,12 @@ public:
 	  {
 	    Point min_range(10, 10, 0);
 	    Point range = model->info->board_dim.div(iteration);
-	    assert(range.x > 0 && range.y > 0);
-	    
-	    model->random_move_components(min_range.max(range));
-	    model->add_layers_for_crossing_lines();
-	    model->remove_router();
+	    assert(range.x > 0 && range.y > 0);	    
+	    model->random_move_components(min_range.max(range));	    
 	  }
+	
+	model->add_layers_for_crossing_lines();
+	model->remove_router_chain();
 	
 	if (this->should_crossover())
 	  {

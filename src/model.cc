@@ -47,28 +47,6 @@ Component *Component::shallow_clone(Model *m, clone_map_t &map)
 }
 
 
-static PinInfo *router_in = new PinInfo("in");
-static PinInfo *router_out = new PinInfo("out");
-static ComponentInfo *router_info = new ComponentInfo("router", true);
-
-Component *Model::create_router(const Point &pos)
-{
-  //#print("creating router")
-  auto comp = new Component(router_info, this);
-  components.push_back(comp);
-  auto pin_in  = comp->add_pin(router_in);
-  auto pin_out = comp->add_pin(router_out);
-  
-  auto s = Point(0, 0, 0);
-  auto e = s.add(comp->info->dim);
-
-  comp->outline.addRect(s, e);
-  pin_in->outline.addRect(s, e);
-  pin_out->outline.addRect(s, e);
-
-  comp->transpose( pos );
-  return comp;
-}
 
 Pin *Component::find_pin_by_id(unsigned id) const
 {
