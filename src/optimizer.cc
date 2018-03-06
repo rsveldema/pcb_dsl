@@ -13,12 +13,23 @@ constexpr auto MUTATION_PROBABILITY    = unsigned(0.2 * POPULATION_GROUP_SIZE);
 
 static bool enable_gui;
 
+std::string score_t::str() const
+{
+  return utils::str("score<",
+		    "L:", num_layers,
+		    ", O:", num_overlaps,
+		    ", CL:", connection_lengths,
+		    ", X:", crossing_lines,
+		    ">");
+}
+
+
 bool score_t::operator <(const score_t &s)
 {
+  if (crossing_lines > s.crossing_lines) return false;
   if (num_layers > s.num_layers) return false;
   if (num_overlaps > s.num_overlaps) return false;
   if (connection_lengths > s.connection_lengths) return false;
-  if (crossing_lines > s.crossing_lines) return false;
   return true;
 }
 
@@ -147,7 +158,7 @@ public:
     this->selection(iteration);
   }
   
-  Model* find_best()
+  std::pair<score_t, Model*> find_best()
   {
     Model* best = NULL;
     score_t best_score;
@@ -168,7 +179,7 @@ public:
 	      }
 	  }
       }
-    return best;
+    return {best_score, best};
   }
 };
     
@@ -193,18 +204,19 @@ public:
     nest.push_back(p);
   }
 
-  Model* find_best()
+  std::pair<score_t, Model*> find_best()
   {
     Model *best = NULL;
     score_t best_score;
     
     for (auto k : this->nest)
       {
-	auto b = k->find_best();
-	score_t score = b->score();
+	auto pair = k->find_best();
+	Model *model = pair.second;
+	score_t score = pair.first;
 	if (best == NULL)
 	  {
-	    best = b;
+	    best = model;
 	    best_score = score;
 	  }
 	else
@@ -212,11 +224,11 @@ public:
 	    if (score < best_score)
 	      {
 		best_score = score;
-		best = b;
+		best = model;
 	      }
 	  }
       }
-    return best;
+    return {best_score, best};
   }
 };
 
@@ -262,7 +274,9 @@ void optimization_thread(NestedGeneration* nested,
       
       if (int(now) != int(old))
 	{
-	  auto best = nested->find_best();
+	  auto pair = nested->find_best();
+	  Model *best = pair.second;
+	  score_t score = pair.first;
             
 	  if (best)
 	    {
@@ -281,7 +295,7 @@ void optimization_thread(NestedGeneration* nested,
 	    }
 	  
 	  old = now;
-	  utils::print("left: ", long(end - now), " secs, done ", iteration);
+	  utils::print("left: ", long(end - now), " secs, done ", iteration, ", got: ", score.str());
 	}
       iteration += 1;
     }
@@ -330,7 +344,9 @@ Model* optimize_model(Model *model,
     }
 
   
-  auto best = nested->find_best();
+  auto pair = nested->find_best();
+  Model *best_model = pair.second;
+  //score_t best_score = pair.fist;
   utils::print("performed ", nested->iterations.load(), " # iterations");
-  return best;
+  return best_model;
 }

@@ -268,7 +268,7 @@ void extract_tables(Component *comp,
 	  
 	  if (extractor->getText() == "package") {
 	    auto pkg = extract_package(table, pages, title, createdTableName);
-	    comp->add_package(pkg);
+	    comp->info->add_package(pkg);
 	  } else if (extractor->getText() == "outline") {
 	    extract_outline(comp, pages, title);
 	  } else if (extractor->getText() == "table") {
@@ -292,7 +292,8 @@ void process_datasheet_prop(Component *comp,
   printf("reading component prop: %s\n", filename.c_str());
   char cmd[64];
   sprintf(cmd, "pdftohtml -xml %s out.xml",  filename.c_str());
-  system(cmd);
+  int ret = system(cmd);
+  assert(ret == 0);
 
   const char *xml ="out.xml";
   FILE *f = fopen(xml, "rb");

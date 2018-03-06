@@ -3,6 +3,19 @@
 
 class Pin;
 
+
+struct MutationAdmin
+{
+  static constexpr auto MAX_CROSSING_LINES_ELIMITED_PER_ROUND = 4;
+  
+  std::map<Pin*, bool> forbidden;
+
+  bool limit_reached() const
+  {
+    return forbidden.size() >= MAX_CROSSING_LINES_ELIMITED_PER_ROUND;
+  }
+};
+
 struct Connection
 {
   Pin *from, *to;
@@ -87,7 +100,8 @@ class Pin
 			     Component *comp,
 			     const Point &around);
   bool add_layers_for_crossing_lines(Model *model,
-				     Component *comp);
+				     Component *comp,
+				     MutationAdmin &admin);
   unsigned count_crossing_lines(Model *model);
   void move_to_layer(layer_t layer)
   {

@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 SET (CMAKE_CXX_STANDARD 14)
 
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wno-attributes -g2")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wno-attributes -g2 -pg ")
 
 message("CMAKE DIR IS "  ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -41,4 +41,4 @@ include_directories( ${Cairomm_INCLUDE_DIRS} ${Gtkmm_INCLUDE_DIRS} )
 
 add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
 
-target_link_libraries(pcbgen antlr4-runtime  ${Sigcpp_LIBRARIES}  ${Boost_LIBRARIES} ${Cairomm_LIBRARIES} ${Gtkmm_LIBRARIES} ${Glibmm_LIBRARIES} -lsigc-2.0 -latkmm-1.6 -lX11 -lpthread -g2)
+target_link_libraries(pcbgen antlr4-runtime  ${Sigcpp_LIBRARIES}  ${Boost_LIBRARIES} ${Cairomm_LIBRARIES} ${Gtkmm_LIBRARIES} ${Glibmm_LIBRARIES} -lsigc-2.0 -latkmm-1.6 -lX11 -lpthread -g2 -pg)

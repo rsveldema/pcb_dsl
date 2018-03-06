@@ -28,6 +28,8 @@ struct score_t
   unsigned crossing_lines = 0;
 
   bool operator <(const score_t &s);
+
+  std::string str() const;
 };
 
 class ModelInfo

@@ -89,19 +89,27 @@ bool Model::have_crossing_connection(const Connection &connection,
 }
 
 bool Pin::add_layers_for_crossing_lines(Model *model,
-					Component *comp)
+					Component *comp,
+					MutationAdmin &admin)
 {
-  auto p1 = outline.center();
+  auto center1 = outline.center();
 
   for (auto other_pin : connections)
     {
-      auto p2 = other_pin->outline.center();
+      if (admin.forbidden.find(other_pin) != admin.forbidden.end())
+	{
+	  continue;
+	}
+      
+      auto center2 = other_pin->outline.center();
       Point dummy;
-      Connection connection {this, other_pin, p1, p2, dummy };
+      Connection connection {this, other_pin, center1, center2, dummy };
       Connection crossed = connection;
       if (model->have_crossing_connection(connection,
 					  &crossed))
 	{
+	  admin.forbidden[other_pin] = true;
+	  
 	  //utils::print("conflict occurred at ", crossed.conflict.str(), " between ", comp->name);
 	  route_around_conflict(model,
 				comp,
@@ -135,13 +143,22 @@ unsigned Pin::count_crossing_lines(Model *model)
   return count;
 }
 
-bool Component::add_layers_for_crossing_lines(Model *model)
+bool Component::add_layers_for_crossing_lines(Model *model,
+					      MutationAdmin &admin)
 {
-  for (auto p : pins)
+  const unsigned count = pins.size();
+  for (unsigned i=0;i<count;i++)
     {
-      if (p->add_layers_for_crossing_lines(model, this))
+      auto p = pins[i];
+      if (p->add_layers_for_crossing_lines(model,
+					   this,
+					   admin))
 	{
-	  return true;
+	  admin.forbidden[p] = true;
+	  if (admin.limit_reached())
+	    {
+	      return true;
+	    }
 	}
     }
   return false;
@@ -150,8 +167,10 @@ bool Component::add_layers_for_crossing_lines(Model *model)
 unsigned Component::count_crossing_lines(Model *model)
 {
   unsigned c = 0;
-  for (auto p : pins)
+  const unsigned count = pins.size();
+  for (unsigned i=0;i<count;i++)
     {
+      auto p = pins[i];
       c += p->count_crossing_lines(model);
     }
   return c;
@@ -160,9 +179,11 @@ unsigned Component::count_crossing_lines(Model *model)
 unsigned Model::count_crossing_lines()
 {
   unsigned c = 0;
-  for (auto p : components)
+  const unsigned count = components.size();
+  for (unsigned i=0;i<count;i++)
     {
-      c += p->count_crossing_lines(this);
+      auto comp = components[i];
+      c += comp->count_crossing_lines(this);
     }
   return c;
 }
@@ -170,11 +191,18 @@ unsigned Model::count_crossing_lines()
 		
 void Model::add_layers_for_crossing_lines()
 {
-  for (auto c : components)
+  MutationAdmin admin;
+  const unsigned count = components.size();
+  for (unsigned i=0;i<count;i++)
     {
-      if (c->add_layers_for_crossing_lines(this))
+      auto c = components[i];
+      if (c->add_layers_for_crossing_lines(this,
+					   admin))
 	{
-	  break;
+	  if (admin.limit_reached())
+	    {
+	      break;
+	    }
 	}
     }
 }

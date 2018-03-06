@@ -2,6 +2,10 @@
 #define COMPONENT_H_H__H_
 
 #include "parser.h"
+#include <map>
+
+class Pin;
+
 
 /** holds info shared by all instances of a given component type.
  */
@@ -19,6 +23,11 @@ class ComponentInfo
   std::vector<Page *> pkg_list;
 
   ComponentInfo(const std::string &_name, bool _is_router);
+
+  void add_package(Page *p)
+  {
+    pkg_list.push_back(p);
+  }
 };
 
 class Component
@@ -55,6 +64,9 @@ class Component
 	  delete pins[i];
 	}
     }
+
+  // if its a pin-table, add the pins to this component
+   void add_table(Table *table);
   
   void move_pin_connection(Component *from,
 			   Component *to);
@@ -99,12 +111,6 @@ class Component
       }
   }
   
-  void add_table(Table *table);
-  void add_package(Page *p)
-  {
-    info->pkg_list.push_back(p);
-  }
-
   int resolve_length(const std::string &name)
   {
     if (name == "pins")
@@ -157,7 +163,8 @@ class Component
   void gather_layer_map(LayerMap &map);
   bool have_crossing_connection(const Connection &connection,
 				Connection *crossed);
-  bool add_layers_for_crossing_lines(Model *model);
+  bool add_layers_for_crossing_lines(Model *model,
+				     MutationAdmin &admin);
   unsigned count_crossing_lines(Model *model);
 
   Pin *add_pin(PinInfo *info)
