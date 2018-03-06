@@ -13,20 +13,17 @@ constexpr auto MUTATION_PROBABILITY    = unsigned(0.2 * POPULATION_GROUP_SIZE);
 
 static bool enable_gui;
 
+
+
 /** 0 == perfect score, INF = forget it.
  */
 score_t Model::score()
 {
-  auto num_layers         = this-> num_layers();
-  auto my_num_overlaps    = this->count_overlaps();
-  auto my_len             = this->sum_connection_lengths();
-  auto crossing_lines     = this->count_crossing_lines();
-
-  score_t s = (my_len * 2) + (crossing_lines * 1000);
-  s *= components.size();
-  s *= num_layers; 
-  s *= (1 + my_num_overlaps * OVERLAP_PENALTY);
-  return s;
+  return { this->num_layers(),
+      this->count_overlaps(),
+      this->sum_connection_lengths(),
+      this->count_crossing_lines()
+      };
 }
 
 
@@ -67,6 +64,7 @@ public:
 	  {
 	    Point min_range(10, 10, 0);
 	    Point range = model->info->board_dim.div(iteration);
+	    range.inplace_max(1, 1);
 	    assert(range.x > 0 && range.y > 0);	    
 	    model->random_move_components(min_range.max(range));	    
 	  }
@@ -89,7 +87,7 @@ public:
   static bool comparer(std::pair<score_t,Model*> &p1,
 		       std::pair<score_t,Model*> &p2)
   {
-    return p2.first > p1.first;
+    return p1.first < p2.first;
   }
 		      
   
@@ -143,10 +141,10 @@ public:
   Model* find_best()
   {
     Model* best = NULL;
-    score_t best_score = 0;
+    score_t best_score;
     for (auto m : this->models)
       {
-	int score = m->score();
+	score_t score = m->score();
 	if (best == NULL)
 	  {
 	    best = m;
@@ -189,7 +187,7 @@ public:
   Model* find_best()
   {
     Model *best = NULL;
-    score_t best_score = 0;
+    score_t best_score;
     
     for (auto k : this->nest)
       {

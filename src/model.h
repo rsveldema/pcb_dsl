@@ -18,8 +18,24 @@ typedef std::map<Component*, Component*> clone_map_t;
 #include "pin.h"
 #include "component.h"
 
-typedef double score_t;
 
+
+struct score_t
+{
+  size_t   num_layers = 0;
+  unsigned num_overlaps = 0;
+  double   connection_lengths = 0;
+  unsigned crossing_lines = 0;
+
+  bool operator <(const score_t &s)
+  {
+    if (num_layers > s.num_layers) return false;
+    if (num_overlaps > s.num_overlaps) return false;
+    if (connection_lengths > s.connection_lengths) return false;
+    if (crossing_lines > s.crossing_lines) return false;
+    return true;
+  }
+};
 
 class ModelInfo
 {

@@ -65,6 +65,13 @@ class Point
 		 layer);
   }
 
+
+  void inplace_max(double _x, double _y)
+  {
+    x = std::max(_x, x);
+    y = std::max(_y, y);
+  }
+  
   inline void add_inline(const Point &p)
   {
     x += p.x;
