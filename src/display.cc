@@ -17,10 +17,13 @@ class Viewer : public Gtk::DrawingArea
 {
 private:
   CairoCanvas *c;
+  Gtk::Window *window;
   
 public:
-  Viewer(CairoCanvas *c)
+  Viewer(CairoCanvas *c,
+	 Gtk::Window *window)
   {
+    this->window = window;
     this->c = c;
     //set_default_size (500, 500);
     set_has_window(false);
@@ -35,10 +38,18 @@ class DemoWindow : public Gtk::Window
 public:
   Viewer draw_area;
   
+  Glib::Dispatcher m_Dispatcher;
+  
 public:
   DemoWindow(CairoCanvas *c)
-    : draw_area(c)
+    : draw_area(c, this)
   {
+
+    // Connect the handler to the dispatcher.
+    m_Dispatcher.connect(sigc::mem_fun(*this,
+				       &DemoWindow::on_notification_from_worker_thread));
+
+    
     set_default_size(800, 600);
     set_title("pcb generator");
 
@@ -46,6 +57,19 @@ public:
     
     show_all_children();
   }
+
+  void on_notification_from_worker_thread()
+  {
+    draw_area.queue_draw(); //signal_draw();
+  }
+
+  
+  // Called from the worker thread.
+  void notify()
+  {
+    m_Dispatcher.emit();
+  }
+
   
   ~DemoWindow()
   {
@@ -88,8 +112,8 @@ public:
   }
   
   virtual void publish(Model *m)
-  {
-    mutex.lock();
+  {    
+    mutex.lock();    
     if (displayed_model)
       {
 	delete displayed_model;
@@ -98,7 +122,10 @@ public:
     
     //fprintf(stderr, "signal!\n");
     //gtk_widget_queue_draw_area(&window->draw_area, 0, 0, 800, 600);
-    window->draw_area.queue_draw(); //signal_draw();
+    //window->draw_area.queue_draw(); //signal_draw();
+
+    window->notify();
+  
     mutex.unlock();
   }
 
