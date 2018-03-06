@@ -7,12 +7,15 @@ class KnownPackageInfo;
 class Component;
 
         
-std::pair<Point,Point> create_common_box(KnownPackageInfo *config, Component *comp) {
-  comp->info->dim.x = config->w;
-  comp->info->dim.y = config->h;
-  auto pos = Point(0, 0, 0);
-  auto end = pos.add(comp->info->dim.x,
-		     comp->info->dim.y);
+std::pair<Point,Point> create_common_box(KnownPackageInfo *config,
+					 Component *comp) {
+  comp->info->dim =  MillimeterPoint(config->w,
+				     config->h,
+				     0);
+  auto pos = Point();
+  auto end = pos.add(MillimeterPoint(comp->info->dim.x,
+				     comp->info->dim.y,
+				     0));
   comp->outline.addRect(pos,
 			end);
   //print("created: " + str(comp->outline))
@@ -38,7 +41,7 @@ void create_pins_RS28(KnownPackageInfo *config, Component *comp) {
       auto k = comp->info->dim.y / mid;
       auto starty = k * 0.25; //#this->pin_dist.mul(0.5);
       
-      float x, y;
+      MillimeterLength x, y;
       if (ix >= mid) {
 	x = comp->info->dim.x;
 	y = starty + k * ((np-1) - ix);
@@ -48,8 +51,10 @@ void create_pins_RS28(KnownPackageInfo *config, Component *comp) {
 	y = starty + (k * ix);
       }
       
-      auto pos = Point(x, y, 0);
-      auto end = pos.add(config->pin_len, config->pin_width);
+      auto pos = Point(MillimeterPoint(x, y, 0));
+      auto end = pos.add(MillimeterPoint(config->pin_len, 
+					 config->pin_width,
+					 0));
       //#print("creating pin: " + str(p.name) + ", at " + str(pos))
       
       p->outline.addRect(pos, end);
@@ -59,21 +64,22 @@ void create_pins_RS28(KnownPackageInfo *config, Component *comp) {
 void create_single_row_pin_header(KnownPackageInfo *config, Component *comp) {
   comp->info->dim.x  = config->w;
   comp->info->dim.y  = config->h * comp->pins.size();
-  auto pos = Point(0, 0, 0);
-  auto end = pos.add(comp->info->dim.x,
-		     comp->info->dim.y);
+  auto pos = Point();
+  auto end = pos.add(comp->info->dim);
   comp->outline.addRect(pos,
 			end);
   auto np = comp->pins.size();
   for (unsigned ix=0;ix<np;ix++)
     {
       auto p = comp->pins[ix];
-        
-      float x = 0;
-      float y = config->h * ix;
+
+      MillimeterLength x = 0;
+      MillimeterLength y = config->h * ix;
       
-      pos = Point(x, y, 0);
-      end = pos.add(config->w, config->h);
+      pos = Point(MillimeterPoint(x, y, 0));
+      end = pos.add(MillimeterPoint(config->w,
+				    config->h,
+				    0));
       //#print("creating pin: " + str(p.name) + ", at " + str(pos))
 	
       p->outline.addRect(pos, end);
@@ -82,11 +88,10 @@ void create_single_row_pin_header(KnownPackageInfo *config, Component *comp) {
 
 void create_two_row_pin_header(KnownPackageInfo *config, Component *comp)
 {
-  comp->info->dim.x  = config->w * 2;
+  comp->info->dim.x = config->w * 2;
   comp->info->dim.y = config->h * (comp->pins.size() / 2);
-  auto pos = Point(0, 0, 0);
-  auto end = pos.add(comp->info->dim.x,
-		     comp->info->dim.y);
+  auto pos = Point();
+  auto end = pos.add(comp->info->dim);
   comp->outline.addRect(pos,
 			end);
   
@@ -101,8 +106,10 @@ void create_two_row_pin_header(KnownPackageInfo *config, Component *comp)
       auto x = config->w * (ix1);
       auto y = config->h * (ix2);
 
-      pos = Point(x, y, 0);
-      end = pos.add(config->w, config->h);
+      pos = Point(MillimeterPoint(x, y, 0));
+      end = pos.add(MillimeterPoint(config->w,
+				    config->h,
+				    0));
       //print("creating pin: " + str(p.name) + ", at " + str(pos));
       
       p->outline.addRect(pos, end);

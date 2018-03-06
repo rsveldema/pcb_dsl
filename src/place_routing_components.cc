@@ -43,7 +43,7 @@ Component *Model::create_router(const Point &pos)
   auto pin_in  = comp->add_pin(router_in);
   auto pin_out = comp->add_pin(router_out);
   
-  auto s = Point(0, 0, 0);
+  auto s = Point();
   auto e = s.add(comp->info->dim);
 
   comp->outline.addRect(s, e);

@@ -10,7 +10,6 @@ class Outline
   
  public:
   Outline()
-    : cached_center(0, 0, 0)
     {
     }
   
@@ -33,15 +32,7 @@ class Outline
       }
     cached_center.move_to_layer(layer);
   }
-  
-  void drawLineTo(const Point &to,
-		  Canvas *c)
-  {
-    RGB color = RGB::getColor(to.layer);
-    c->draw_line(color, center(), to);
-  }
-
-  
+    
   std::string str() const
     {
       const char *prefix = "";
@@ -57,36 +48,11 @@ class Outline
     }
 
 
+  void drawLineTo(const Point &to,
+		  Canvas *c);
   void draw(Canvas *c,
-	    const std::string &name)
-  {
-    if (name != "")
-      {
-	RGB red = {255, 0, 0};
-	c->draw_text(red,
-		     center(),
-		     name);
-      }
+	    const std::string &name);
 
-    const unsigned count = points.size();
-    for (unsigned i = 0; i < count; i++)
-      {
-	Point &from = points[i];
-	RGB color = RGB::getColor(from.layer);
-
-	if (i == (count - 1))
-	  {
-	    Point &to = points[0];
-	    c->draw_line(color, from, to);
-	  }
-	else
-	  {
-	    Point &to = points[i + 1];
-	    c->draw_line(color, from, to);
-	  }
-      }
-  }
-  
   double distance(Outline &other)
   {
     return center().distance(other.center());
@@ -96,11 +62,11 @@ class Outline
 	       const Point &lr)
   {
     assert(points.size() == 0);
-    
+    Dummy dummy;
     points.push_back(ul);
-    points.push_back(Point(lr.x, ul.y, ul.layer));
+    points.push_back(Point(dummy, lr.x, ul.y, ul.layer));
     points.push_back(lr);
-    points.push_back(Point(ul.x, lr.y, ul.layer));
+    points.push_back(Point(dummy, ul.x, lr.y, ul.layer));
     compute_center();
   }
   
@@ -145,7 +111,7 @@ class Outline
  private:
   void compute_center()
   {
-    Point c(0, 0, 0); // overwritten immediately, so we don't care about the layer here.
+    Point c; // overwritten immediately, so we don't care about the layer here.
     bool first = true;
     for (auto p : points)
       {

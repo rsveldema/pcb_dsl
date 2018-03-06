@@ -70,7 +70,7 @@ public:
 	Model *model = models[i];
 	if (this->should_mutate())
 	  {
-	    Point min_range(10, 10, 0);
+	    static const Point min_range(MillimeterPoint(10, 10, 0));
 	    Point range = model->info->board_dim.div(iteration);
 	    range.inplace_max(1, 1);
 	    assert(range.x > 0 && range.y > 0);	    
@@ -134,7 +134,8 @@ public:
 	    assert(k < SELECTION_FILTER_SIZE);
 	    
 	    auto cloned = scores[k].second->deepclone();
-	    cloned->random_move_components(Point(5, 5, 0));
+	    static const Point range(MillimeterPoint(5, 5, 0));
+	    cloned->random_move_components(range);
 	    models.push_back(cloned);
 	  }	  
       }

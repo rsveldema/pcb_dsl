@@ -5,8 +5,7 @@ static float WIRE_WIDTH = 0.1;
 
 
 ComponentInfo::ComponentInfo(const std::string &_name, bool _is_router)
-  : dim(0, 0, 0),
-    fixed_position(NULL),
+  : fixed_position(NULL),
     name(_name),
     is_router(_is_router),
     is_board(_name == "board")

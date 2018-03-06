@@ -1,6 +1,15 @@
 #include "create_model.h"
 #include <stdlib.h>
 
+MillimeterPoint::MillimeterPoint(const Point &p)
+  : x(((double)p.x) / Point::POINT_PRECISION),
+    y(((double)p.y) / Point::POINT_PRECISION),
+    layer(p.layer)
+{
+}
+
+
+
 static
 int constant_fold_expr(Model *model,
 		       Component *current_component,
@@ -172,7 +181,7 @@ void preprocess_component(Model *model,
 {
   if (comp->info->name == "board")
     {
-      comp->info->fixed_position = new Point(0, 0, 0);
+      comp->info->fixed_position = new Point;
     }
   
   //model->current_component = comp;
@@ -246,8 +255,11 @@ void process_location(Component *comp,
       //model->current_component = comp;
       auto sx = constant_fold_expr(model, comp, loc->expr()[0]);
       auto sy = constant_fold_expr(model, comp, loc->expr()[1]);
-      
-      comp->info->fixed_position = new Point(sx, sy, 0);
+
+      // constant fold already changed every position to millimeters:
+      comp->info->fixed_position = new Point(MillimeterPoint(sx,
+							     sy,
+							     0));
       comp->transpose(*comp->info->fixed_position);
     }
 }
@@ -320,8 +332,10 @@ void process_component_type(Model *model,
       else
 	{
 	  printf("COMPONENT %s has no assigned type yet\n", comp->info->name.c_str());
-	  comp->outline.addRect(Point(0, 0, comp->info->dim.layer),
-				Point(comp->info->dim.x, comp->info->dim.y, comp->info->dim.layer));
+	  comp->outline.addRect(Point(MillimeterPoint(0,
+						      0,
+						      comp->info->dim.layer)),
+				Point(comp->info->dim));
 	}
     }
   else

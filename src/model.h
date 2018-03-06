@@ -33,7 +33,7 @@ struct score_t
 class ModelInfo
 {
  public:
-  Point board_dim = {0,0,0};
+  Point board_dim;
   std::map<std::string, int> constants;
 };
 

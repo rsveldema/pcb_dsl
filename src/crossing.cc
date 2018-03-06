@@ -24,7 +24,7 @@ bool Pin::have_crossing_connection(const Connection &connection,
       auto other_pin = connections[i];
  
       auto p2 = other_pin->outline.center();
-      Point dummy = {0,0,0};
+      Point dummy;
       Connection other_connection {this, other_pin, p1, p2, dummy };
 
       if ((connection.to->component == other_connection.from->component) ||
@@ -96,7 +96,7 @@ bool Pin::add_layers_for_crossing_lines(Model *model,
   for (auto other_pin : connections)
     {
       auto p2 = other_pin->outline.center();
-      Point dummy = {0, 0, 0};
+      Point dummy;
       Connection connection {this, other_pin, p1, p2, dummy };
       Connection crossed = connection;
       if (model->have_crossing_connection(connection,
@@ -123,7 +123,7 @@ unsigned Pin::count_crossing_lines(Model *model)
       auto other_pin = connections[i];
 
       auto p2 = other_pin->outline.center();
-      Point dummy = {0,0,0};
+      Point dummy;
       Connection connection =  {this, other_pin, p1, p2, dummy};
       
       if (model->have_crossing_connection(connection,

@@ -8,7 +8,7 @@
 class ComponentInfo
 {
  public:
-  Point dim; // width,height,layer
+  MillimeterPoint dim; // width,height,layer
   bool has_data_sheet = false;
   Point *fixed_position;
   std::string name;

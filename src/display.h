@@ -43,11 +43,11 @@ class Canvas
 {
  public:
   virtual void draw_text(const RGB &color,
-			 const Point &from,
+			 const MillimeterPoint &from,
 			 const std::string &text) = 0;
   virtual void draw_line(const RGB &color,
-			 const Point &from,
-			 const Point &to) = 0;
+			 const MillimeterPoint &from,
+			 const MillimeterPoint &to) = 0;
   virtual void publish(Model *m) = 0;
   virtual int run() = 0;
   virtual ~Canvas() {}

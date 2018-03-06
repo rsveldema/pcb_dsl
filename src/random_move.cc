@@ -12,7 +12,9 @@ void Model::random_move_components(const Point &range)
       auto comp = components[i];
       if (! comp->info->fixed_position)
 	{
-	  auto dir = Point(randrange(-range.x, range.x),
+	  Dummy dummy;
+	  auto dir = Point(dummy,
+			   randrange(-range.x, range.x),
 			   randrange(-range.y, range.y),
 			   comp->info->dim.layer);
 	  
@@ -33,7 +35,9 @@ void Model::initial_random_move_components()
     {
       if (! comp->info->fixed_position)
 	{
-	  auto dir = Point(randrange(board_dim.x),
+	  Dummy dummy;
+	  auto dir = Point(dummy,
+			   randrange(board_dim.x),
 			   randrange(board_dim.y),
 			   comp->info->dim.layer);
 	  

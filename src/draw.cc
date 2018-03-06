@@ -2,6 +2,46 @@
 #include <algorithm>
 #include "utils.h"
 
+
+void Outline::drawLineTo(const Point &to,
+			 Canvas *c)
+{
+  RGB color = RGB::getColor(to.layer);
+  c->draw_line(color, center(), to);
+}
+
+void Outline::draw(Canvas *c,
+		   const std::string &name)
+{
+  if (name != "")
+    {
+	RGB red = {255, 0, 0};
+	c->draw_text(red,
+		     center(),
+		     name);
+      }
+  
+  const unsigned count = points.size();
+  for (unsigned i = 0; i < count; i++)
+      {
+	Point &from = points[i];
+	RGB color = RGB::getColor(from.layer);
+	
+	if (i == (count - 1))
+	  {
+	    Point &to = points[0];
+	    c->draw_line(color, from, to);
+	  }
+	else
+	  {
+	    Point &to = points[i + 1];
+	    c->draw_line(color, from, to);
+	  }
+      }
+}
+
+
+
 bool Pin::is_router_pin() const
 {
   return component->info->is_router;

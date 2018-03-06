@@ -131,31 +131,31 @@ public:
 
   
   virtual void draw_text(const RGB &color,
-			 const Point &from,
+			 const MillimeterPoint &from,
 			 const std::string &text) override
   {
     ctxt->set_source_rgb (color.red(),
 			  color.green(),
 			  color.blue());
     ctxt->set_line_width(0.2 * zoom);
-    ctxt->move_to(from.x * zoom,
-		  from.y * zoom);
+    ctxt->move_to(from.x.get() * zoom,
+		  from.y.get() * zoom);
     ctxt->set_font_size(4);
     ctxt->show_text(text);
   }
   
   virtual void draw_line(const RGB &color,
-			 const Point &from,
-			 const Point &to) override
+			 const MillimeterPoint &from,
+			 const MillimeterPoint &to) override
   {
     ctxt->set_source_rgb (color.red(),
 			  color.green(),
 			  color.blue());
     ctxt->set_line_width(0.2 * zoom);
-    ctxt->move_to(from.x * zoom,
-		  from.y * zoom);
-    ctxt->line_to(to.x * zoom,
-		  to.y * zoom);
+    ctxt->move_to(from.x.get() * zoom,
+		  from.y.get() * zoom);
+    ctxt->line_to(to.x.get() * zoom,
+		  to.y.get() * zoom);
     ctxt->stroke();
   }
 
