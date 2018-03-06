@@ -4,18 +4,18 @@
 static
 Component *next_router(Component *comp)
 {
-  if (comp->is_router)
+  if (comp->info->is_router)
     {
-      assert(comp->is_router);
+      assert(comp->info->is_router);
       assert(comp->pins.size() == 2);
-      assert(comp->pins[1].info->name == "out");
-      assert(comp->pins[1].connections.size() > 0);
+      assert(comp->pins[1]->info->name == "out");
+      assert(comp->pins[1]->connections.size() > 0);
       
-      if (comp->pins.connections.size() == 1)
+      if (comp->pins[1]->connections.size() == 1)
 	{	  
-	  auto to_pin = comp->pins[0].connections[0];
+	  auto to_pin = comp->pins[1]->connections[0];
 	  auto to_comp = to_pin->component;
-	  if (to_comp->is_router)
+	  if (to_comp->info->is_router)
 	    {
 	      return to_comp;
 	    }
@@ -24,49 +24,47 @@ Component *next_router(Component *comp)
   return NULL;
 }
 
-class InMap
+
+InMap::InMap(Model *m)
 {
-private:
-  std::map<Pin*, unsigned> map;
+  for (auto comp : m->components)
+    {
+      for (auto pin : comp->pins)
+	{
+	  for (auto conn : pin->connections)
+	    {
+	      add_in(pin, conn);
+	    }
+	}
+    }
+}
 
 
-  void add_in(Pin *p)
-  {
-    if (map.find(p) == map.end())
-      {
-	map[p] = 1;
-      }
-    else
-      {
-	map[p]++;
-      }
-  }
+void Model::remove(Component *c,
+		   InMap &in_map)
+{
+  // all references to this model should be removed.
+  abort();
+}
 
-public:
-  InMap in_map(Model *m)
-  {
-    for (auto comp : components)
-      {
-	for (auto pin : comp->pins)
-	  {
-	    for (auto conn : pin->connections)
-	      {
-		add_in(conn);
-	      }
-	  }
-      }
-  }
-  
-  unsigned num_incoming_edges(Pin *pin)
-  {
-    // if not in map, pin was unused.
-    if (map.find(pin) == map.end())
-      {
-	return 0;
-      }
-    return map[pin];
-  }
-};
+void Component::move_pin_connection(Component *from,
+				    Component *to)
+{
+  for (auto p : pins)
+    {
+      const unsigned count = p->connections.size();
+      for (unsigned i = 0; i < count; i++)
+	{
+	  auto from_pin = p->connections[i];
+	  if (from_pin->component == from)
+	    {
+	      auto to_pin = to->find_pin_by_id(from_pin->info->id);
+	      assert(to_pin);
+	      p->connections[i] = to_pin;
+	    }
+	}      
+    }
+}
 
 /** given router sequence:
  *       A -> B -> C -> D
@@ -76,22 +74,31 @@ public:
  */
 void Model::remove_router_chain()
 {
-  InMap in_map(model);
+  InMap in_map(this);
   
   for (auto A : components)
     {
-      if (auto B = next_router(model, A))
+      if (auto B = next_router(A))
 	{
-	  if (auto C = next_router(model, B))
+	  if (auto C = next_router(B))
 	    {
-	      if (auto D = next_router(model, C))
+	      if (auto D = next_router(C))
 		{
-		  fprintf(stderr, "found router chain!\n");
+		  //fprintf(stderr, "found router chain!\n");
 		  if (in_map.num_incoming_edges(B->pins[0]) == 1 &&
 		      in_map.num_incoming_edges(C->pins[0]) == 1)
 		    {
-		      model->remove(B);
-		      model->remove(C);
+		      A->pins[1]->move_to_layer(B->pins[1]->get_layer());
+		      D->pins[0]->move_to_layer(B->pins[1]->get_layer());
+		      
+		      A->move_pin_connection(B,
+					     D);
+		      
+		      utils::erase(components, B);
+		      utils::erase(components, C);
+		      
+		      delete B;
+		      delete C;
 		      return;
 		    }
 		}

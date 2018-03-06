@@ -7,6 +7,7 @@
 
 #include "datasheet.h"
 #include "utils.h"
+#include "in_map.h"
 
 class Model;
 class ModelContext;
@@ -74,6 +75,8 @@ class Model
   }
 
   void remove_router_chain();
+  void remove(Component *c,
+	      InMap &in_map);
   
   void check()
   {

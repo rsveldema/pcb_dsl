@@ -22,21 +22,22 @@ class PinInfo
   {
     INPUT, OUTPUT, INOUT, DIGITAL_GROUND, ANALOG_GROUND,
   } mode;
-  
+
+  unsigned id;
   std::string name;
   std::string description;
 
-  PinInfo(const std::string &_name)
-    : name(_name)
-  {
-  }
+ PinInfo(const std::string &_name)
+   : id(get_unique_id()),
+    name(_name)
+    {
+    }
 };
 
 class Pin
 {
  public:
   PinInfo *info;
-  unsigned id;
   Component *component;
   Outline outline;
   std::vector<Pin *> connections;
@@ -45,10 +46,20 @@ class Pin
  Pin(PinInfo *_info,
      Component *comp)
    : info(_info),
-    id(get_unique_id()),
     component(comp)
     {
     }
+
+   Pin(PinInfo *_info,
+       Component *comp,
+       const Outline &_outline)
+   : info(_info),
+    component(comp),
+    outline(_outline)
+    {
+    }
+
+  Pin(const Pin &c) = delete;
 
   std::string str() const
     {

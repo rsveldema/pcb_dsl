@@ -25,15 +25,25 @@ class Component
 {
  public:
   ComponentInfo *info;  
-  unsigned id;
   std::vector<Pin *> pins;
   Outline outline;
   Model *model;
+  unsigned id;
 
  Component(ComponentInfo *_info, Model *m)
    : info(_info),
-    id(get_unique_id()),
-    model(m)
+    model(m),
+    id(get_unique_id())
+  {
+  }
+
+ Component(const Component &c) = delete;
+  
+ Component(ComponentInfo *_info, Model *m, unsigned _id, const Outline &_outline)
+   : info(_info),
+    outline(_outline),
+    model(m),
+    id(_id)
   {
   }
 
@@ -46,7 +56,8 @@ class Component
 	}
     }
   
-
+  void move_pin_connection(Component *from,
+			   Component *to);
 
   std::string str() const
     {

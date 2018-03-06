@@ -17,7 +17,7 @@ include( ./cmake/ExternalAntlr4Cpp.cmake )
 include( ./cmake/FindBoost.cmake )
 include( ./cmake/FindCairo.cmake )
 
-FIND_PACKAGE( Boost 1.64 COMPONENTS program_options REQUIRED )
+FIND_PACKAGE( Boost 1.58 COMPONENTS program_options REQUIRED )
 
 include_directories( ${Boost_INCLUDE_DIR} )
 include_directories( ${ANTLR4CPP_INCLUDE_DIRS} )

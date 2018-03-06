@@ -279,6 +279,7 @@ void optimization_thread(NestedGeneration* nested,
       iteration += 1;
     }
   nested->iterations += iteration;
+  printf("thread finished: %d\n", iteration);
 }
 
 

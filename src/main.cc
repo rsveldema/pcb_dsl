@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 {
   srand(10);
 
-  bool enable_gui = true;
+  bool enable_gui = false;
   const char *filename = NULL;
   int optimize_secs = 5;
   

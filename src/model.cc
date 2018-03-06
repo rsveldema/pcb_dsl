@@ -7,7 +7,7 @@ static float WIRE_WIDTH = 0.1;
 ComponentInfo::ComponentInfo(const std::string &_name, bool _is_router)
   : dim(0, 0, 0),
     fixed_position(NULL),
-    name(_name),    
+    name(_name),
     is_router(_is_router),
     is_board(_name == "board")
 {
@@ -22,18 +22,14 @@ ComponentInfo::ComponentInfo(const std::string &_name, bool _is_router)
 
 Pin *Pin::shallow_clone(Component *comp, clone_map_t &map)
 {
-  auto c = new Pin(info, comp);
-  c->id = this->id;
-  c->outline = this->outline;
+  auto c = new Pin(info, comp, outline);
   return c;
 }
 
 
 Component *Component::shallow_clone(Model *m, clone_map_t &map)
 {
-  auto c = new Component(info, m);
-  c->id = id;  
-  c->outline = this->outline;
+  auto c = new Component(info, m, id, outline);
 
   const unsigned count = pins.size();
   for (unsigned i=0;i<count;i++)
@@ -54,7 +50,7 @@ Pin *Component::find_pin_by_id(unsigned id) const
   for (unsigned i=0;i<count;i++)
     {
       auto p = pins[i];
-      if (p->id == id)
+      if (p->info->id == id)
 	{
 	  return p;
 	}
@@ -73,7 +69,7 @@ void Pin::relink(Pin *orig, clone_map_t &map)
     {
       auto p = orig->connections[i];
       auto new_comp = map[p->component];
-      auto new_pin = new_comp->find_pin_by_id(p->id);
+      auto new_pin = new_comp->find_pin_by_id(p->info->id);
       connections.push_back(new_pin);
     }
 }

@@ -9,6 +9,23 @@
 namespace utils
 {
   template<typename T>
+    void erase(std::vector<T> &vec, T &search)
+    {
+      for (auto it = vec.begin(); it != vec.end(); it++)
+	{
+	  T &k = *it;
+	  if (k == search)
+	    {
+	      vec.erase(it);
+	      return;
+	    }
+	}
+      fprintf(stderr, "failed to find element\n");
+      abort();
+    }
+  
+  
+  template<typename T>
     const std::string type_to_string(const std::vector<T*> &v)
     {
       std::ostringstream ss;

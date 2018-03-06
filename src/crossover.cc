@@ -35,11 +35,9 @@ void Model::crossover(Model *other)
   auto ix = randrange(size);
   auto c1 = components[ix];
 
-  
   auto c2 = other->find_component_by_id(c1->id);
   if (c2 != NULL)
     {
-      assert(c1->id == c2->id);
       assert(c1->info == c2->info);
       c1->crossover(c2);
     }
