@@ -27,14 +27,7 @@ struct score_t
   double   connection_lengths = 0;
   unsigned crossing_lines = 0;
 
-  bool operator <(const score_t &s)
-  {
-    if (num_layers > s.num_layers) return false;
-    if (num_overlaps > s.num_overlaps) return false;
-    if (connection_lengths > s.connection_lengths) return false;
-    if (crossing_lines > s.crossing_lines) return false;
-    return true;
-  }
+  bool operator <(const score_t &s);
 };
 
 class ModelInfo

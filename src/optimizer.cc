@@ -13,6 +13,14 @@ constexpr auto MUTATION_PROBABILITY    = unsigned(0.2 * POPULATION_GROUP_SIZE);
 
 static bool enable_gui;
 
+bool score_t::operator <(const score_t &s)
+{
+  if (num_layers > s.num_layers) return false;
+  if (num_overlaps > s.num_overlaps) return false;
+  if (connection_lengths > s.connection_lengths) return false;
+  if (crossing_lines > s.crossing_lines) return false;
+  return true;
+}
 
 
 /** 0 == perfect score, INF = forget it.
