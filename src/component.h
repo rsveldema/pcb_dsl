@@ -14,10 +14,11 @@ class ComponentInfo
  public:
   MillimeterPoint dim; // width,height,layer
   bool has_data_sheet = false;
-  Point *fixed_position;
+  Point *fixed_position = NULL;
   std::string name;
   bool is_router;
   bool is_board;
+  bool is_rotateable = false;
   std::string component_type;
   std::vector<Table *> table_list;
   std::vector<Page *> pkg_list;

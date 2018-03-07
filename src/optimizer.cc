@@ -11,15 +11,15 @@ enum class SelectionHeuristic
   PLAIN_SORT
     };
 
-static SelectionHeuristic selection_heuristic = SelectionHeuristic::PARETO_FRONT;
-//static SelectionHeuristic selection_heuristic = SelectionHeuristic::PLAIN_SORT;
+//static SelectionHeuristic selection_heuristic = SelectionHeuristic::PARETO_FRONT;
+static SelectionHeuristic selection_heuristic = SelectionHeuristic::PLAIN_SORT;
 
 constexpr auto POPULATION_NUM_GROUPS =  1u;
 constexpr auto POPULATION_GROUP_SIZE = 20u;
 constexpr auto SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
 constexpr auto CROSSOVER_PROBABILITY   = unsigned(0.8 * POPULATION_GROUP_SIZE);
 constexpr auto MUTATION_PROBABILITY    = unsigned(0.02 * POPULATION_GROUP_SIZE);
-constexpr auto FIX_PROBABILITY         = unsigned(0.05 * POPULATION_GROUP_SIZE);
+constexpr auto FIX_PROBABILITY         = unsigned(0.1 * POPULATION_GROUP_SIZE);
 
 static bool enable_gui;
 

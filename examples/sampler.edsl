@@ -15,9 +15,12 @@ component ADC {
   extract: table("AD9201-SPECIFICATIONS") as specs;
   extract: outline("OUTLINE DIMENSIONS") as outline;
   }
+
+  
   
   location {
   at: 5 cm, 5 cm;
+  rotatable;
   }
 }
 

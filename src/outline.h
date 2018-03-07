@@ -73,6 +73,30 @@ class Outline
     compute_center();
   }
 
+  void rotate(double degrees)
+  {
+    layer_t layer = get_layer();
+    const double cs = cos(degrees);
+    const double sn = sin(degrees);
+
+    auto center = this->center();
+    for (auto &p : points)
+      {
+	auto k = p.sub(center);
+	
+	double px = (k.x * cs) - (k.y * sn); 
+	double py = (k.x * sn) + (k.y * cs);
+
+	Dummy dummy;
+	p = Point(dummy,
+		  px + center.x,
+		  py + center.y,
+		  layer);	
+      }
+  }
+
+  /** count the numnber of intersections when going out of the polygon.
+   */
   bool point_inside_polygon(const Point &P) const
   {
     unsigned    cn = 0;
@@ -95,7 +119,7 @@ class Outline
 	      }
 	  }
       }
-    return (cn & 1);    // 0 if even (out), and 1 if  odd (in)
+    return (cn & 1);
   }
 
   /** encloses if atleast one point of the outline is enclosed
