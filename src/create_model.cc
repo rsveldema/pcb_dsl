@@ -252,20 +252,24 @@ void process_location(Component *comp,
 
   for (auto loc : loc_prop_list)
     {
-      //model->current_component = comp;
-      auto sx = constant_fold_expr(model, comp, loc->expr()[0]);
-      auto sy = constant_fold_expr(model, comp, loc->expr()[1]);
-
       if (loc->rotatable)
 	{
 	  comp->info->is_rotateable = true;
 	}
-      
-      // constant fold already changed every position to millimeters:
-      comp->info->fixed_position = new Point(MillimeterPoint(sx,
-							     sy,
-							     0));
-      comp->transpose(*comp->info->fixed_position);
+
+      if (loc->expr().size() > 0)
+	{
+	  //model->current_component = comp;
+	  auto sx = constant_fold_expr(model, comp, loc->expr()[0]);
+	  auto sy = constant_fold_expr(model, comp, loc->expr()[1]);
+	  
+	  
+	  // constant fold already changed every position to millimeters:
+	  comp->info->fixed_position = new Point(MillimeterPoint(sx,
+								 sy,
+								 0));
+	  comp->transpose(*comp->info->fixed_position);
+	}
     }
 }
 

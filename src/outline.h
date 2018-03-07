@@ -73,13 +73,12 @@ class Outline
     compute_center();
   }
 
-  void rotate(double degrees)
+  void rotate(double degrees,
+	      const Point &center)
   {
     layer_t layer = get_layer();
     const double cs = cos(degrees);
-    const double sn = sin(degrees);
-
-    auto center = this->center();
+    const double sn = sin(degrees);    
     for (auto &p : points)
       {
 	auto k = p.sub(center);

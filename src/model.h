@@ -79,6 +79,7 @@ class Model
   void random_move_components(const Point &range);
   void initial_random_move_components();
   void crossover(Model *m);
+  void random_rotate_component();
   score_t score();
   void gather_layer_map(LayerMap &map);
   

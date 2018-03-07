@@ -56,8 +56,9 @@ pin_name: ID (',' ID)* ;
 pin_prop: (pinmode='input' | pinmode='output' | pinmode='digital_ground' | pinmode='analog_ground') ';';
 
 location_prop:
-        'at' ':' expr ',' expr ';'
-	(rotatable='rotatable' ';')?
+        ('at' ':' expr ',' expr)?
+	(rotatable='rotatable')?
+	 ';'
     ;
 
 datasheet_prop:

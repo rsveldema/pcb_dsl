@@ -57,15 +57,18 @@ class Component
   {
   }
 
-  ~Component()
-    {
+ ~Component()
+   {
       const unsigned count = pins.size();
       for (unsigned i=0;i<count;i++)
 	{
 	  delete pins[i];
 	}
-    }
+   }
 
+  void rotate(double degree);
+  void random_rotate();
+ 
   layer_t get_layer() const
   {
     return outline.get_layer();

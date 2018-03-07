@@ -20,6 +20,7 @@ constexpr auto SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
 constexpr auto CROSSOVER_PROBABILITY   = unsigned(0.8 * POPULATION_GROUP_SIZE);
 constexpr auto MUTATION_PROBABILITY    = unsigned(0.02 * POPULATION_GROUP_SIZE);
 constexpr auto FIX_PROBABILITY         = unsigned(0.1 * POPULATION_GROUP_SIZE);
+constexpr auto ROTATE_PROBABILITY      = unsigned(0.02 * POPULATION_GROUP_SIZE);
 
 static bool enable_gui;
 
@@ -181,6 +182,11 @@ public:
     return randrange(POPULATION_GROUP_SIZE) < FIX_PROBABILITY;
   }
 
+  bool should_rotate() const
+  {
+    return randrange(POPULATION_GROUP_SIZE) < ROTATE_PROBABILITY;
+  }
+
   bool should_crossover() const
   {
     return randrange(POPULATION_GROUP_SIZE) < CROSSOVER_PROBABILITY;
@@ -206,6 +212,10 @@ public:
 	else if (should_mutate())
 	  {
 	    model->remove_router_chain();
+	  }
+	else if (should_rotate())
+	  {
+	    model->random_rotate_component();
 	  }
 	else if (should_crossover())
 	  {

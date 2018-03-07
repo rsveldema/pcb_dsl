@@ -19,8 +19,7 @@ component ADC {
   
   
   location {
-  at: 5 cm, 5 cm;
-  rotatable;
+  at: 5 cm, 5 cm rotatable;
   }
 }
 

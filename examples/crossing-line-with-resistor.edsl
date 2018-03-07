@@ -17,6 +17,7 @@ component conn1 {
     
   location {
   at: 1 cm, 4 cm;
+    rotatable;	
   }
   
   dimensions {
@@ -83,6 +84,9 @@ component R5K_1 {
   }
   pin OUT {
     output;
+  }
+  location {
+    rotatable;
   }
 }
 

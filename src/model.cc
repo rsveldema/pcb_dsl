@@ -110,6 +110,34 @@ Model *Model::deepclone()
 }
 
 
+void Component::rotate(double degree)
+{
+  printf("rotating %f degrees\n", degree);
+  auto center = outline.center();
+  outline.rotate(degree, center);
+  for (auto p : pins)
+    {
+      p->outline.rotate(degree, center);
+    }
+}
+
+void Component::random_rotate()
+{
+  if (! info->is_rotateable)
+    {
+      return;
+    }
+  double degree = randrange(1, 4);
+  rotate(degree * (M_PI / 0.5));
+}
+
+void Model::random_rotate_component()
+{
+  for (auto comp : components)
+    {
+      comp->random_rotate();
+    }
+}
 
 
 void Model::writeDOT(const std::string filename)
