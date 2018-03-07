@@ -108,9 +108,8 @@ class Outline
 	if (((points[i].y <= P.y) && (points[ni].y  > P.y))  ||   
 	    ((points[i].y  > P.y) && (points[ni].y <=  P.y)))
 	  {
-	    
 	    // compute  the actual edge-ray intersect x-coordinate
-	    float vt = (float)(P.y  - points[i].y) / (points[ni].y - points[i].y);
+	    double vt = (double)(P.y  - points[i].y) / (points[ni].y - points[i].y);
 	    if (P.x <  points[i].x + vt * (points[ni].x - points[i].x)) // P.x < intersect
 	      {
 		++cn;   // a valid crossing of y=P.y right of P.x
