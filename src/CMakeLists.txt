@@ -39,6 +39,6 @@ add_executable(pcbgen count_overlaps.cc main.cc draw.cc sum_lengths.cc place_rou
 
 include_directories( ${Cairomm_INCLUDE_DIRS} ${Gtkmm_INCLUDE_DIRS} )
 
-add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
+#add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
 
 target_link_libraries(pcbgen antlr4-runtime  ${Sigcpp_LIBRARIES}  ${Boost_LIBRARIES} ${Cairomm_LIBRARIES} ${Gtkmm_LIBRARIES} ${Glibmm_LIBRARIES} -lsigc-2.0 -latkmm-1.6 -lX11 -lpthread -g2 -pg)

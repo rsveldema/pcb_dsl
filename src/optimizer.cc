@@ -4,41 +4,149 @@
 #include "create_model.h"
 #include "utils.h"
 
+
+enum class SelectionHeuristic
+{
+  PARETO_FRONT,
+  PLAIN_SORT
+    };
+
+static SelectionHeuristic selection_heuristic = SelectionHeuristic::PARETO_FRONT;
+//static SelectionHeuristic selection_heuristic = SelectionHeuristic::PLAIN_SORT;
+
 constexpr auto POPULATION_NUM_GROUPS =  1u;
-constexpr auto POPULATION_GROUP_SIZE = 10u;
-constexpr double OVERLAP_PENALTY = 3.0;
+constexpr auto POPULATION_GROUP_SIZE = 20u;
 constexpr auto SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
 constexpr auto CROSSOVER_PROBABILITY   = unsigned(0.8 * POPULATION_GROUP_SIZE);
-constexpr auto MUTATION_PROBABILITY    = unsigned(0.2 * POPULATION_GROUP_SIZE);
+constexpr auto MUTATION_PROBABILITY    = unsigned(0.02 * POPULATION_GROUP_SIZE);
+constexpr auto FIX_PROBABILITY         = unsigned(0.05 * POPULATION_GROUP_SIZE);
 
 static bool enable_gui;
 
 std::string score_t::str() const
 {
   return utils::str("score<",
-		    "L:", num_layers,
-		    ", O:", num_overlaps,
-		    ", CL:", connection_lengths,
-		    ", X:", crossing_lines,
+		    "#LAYER:", num_layers,
+		    "#COMP:", num_comp,
+		    ", OVERLAP:", num_overlaps,
+		    ", LEN:", connection_lengths,
+		    ", CROSS:", crossing_lines,
 		    ">");
 }
 
 
 bool score_t::operator <(const score_t &s)
 {
+  if (num_comp > s.num_comp) return false;
+  if (connection_lengths > s.connection_lengths) return false;
   if (crossing_lines > s.crossing_lines) return false;
   if (num_layers > s.num_layers) return false;
   if (num_overlaps > s.num_overlaps) return false;
-  if (connection_lengths > s.connection_lengths) return false;
   return true;
 }
 
+
+void score_t::add_penalties()
+{
+  if (crossing_lines)
+    {
+      // we're going to require crossing lines later which will
+      // require extra components.
+      num_comp *= 10 + crossing_lines;
+      connection_lengths *= 10 + crossing_lines;
+    }
+  if (num_overlaps)
+    {
+      // going to have to move which will cost extra distance
+      num_comp += 2;
+      connection_lengths *= num_overlaps;
+    }
+}
+
+struct ParetoFront
+{
+  enum Criteria
+    {
+      COMP,
+      LAYERS,
+      LEN,
+      NUM_CRITERIA
+    };
+  
+  std::map<Criteria, std::pair<score_t, Model *> > scores;
+
+  static constexpr double LEN_TOLERANCE = 10;
+  static constexpr double COMP_TOLERANCE = 3;
+
+  bool is_close(const score_t &newone,
+		const score_t &seen)
+  {
+    if ((newone.connection_lengths - LEN_TOLERANCE) < seen.connection_lengths)
+      {
+	if ((newone.num_comp - COMP_TOLERANCE) < seen.num_comp)
+	  {
+	    return true;
+	  }
+      }
+    return false;
+  }
+		
+  
+  bool acceptable(Criteria not_xc, const score_t &newone)
+  {
+    for (auto k : scores)
+      {
+	if (is_close(newone, k.second.first))
+	  {
+	    return true;
+	  }
+      }
+    return false;
+  }
+
+  void tryAddToFront(const score_t &score, Model *model)
+  {    
+    std::pair<score_t, Model *> p = {score, model};
+    if (scores.size() == 0)
+      {
+	scores[COMP]    = p;
+	scores[LAYERS]  = p;
+	scores[LEN]     = p;
+	return;
+      }
+    if (scores[LAYERS].first.num_layers > score.num_layers &&
+	acceptable(LAYERS, score))
+      {
+	scores[LAYERS] = p;
+      }
+    if (scores[COMP].first.num_comp > score.num_comp &&
+	acceptable(COMP, score))
+      {
+	scores[COMP] = p;
+      }
+    if (scores[LEN].first.connection_lengths > score.connection_lengths &&
+	acceptable(LEN, score))
+      {
+	scores[LEN] = p;
+      }
+  }
+
+  void push_selected(std::map<Model*, bool> &selected)
+  {
+    for (auto it : scores)
+      {
+	selected[it.second.second] = true;
+      }
+  }
+};
 
 /** 0 == perfect score, INF = forget it.
  */
 score_t Model::score()
 {
-  return { this->num_layers(),
+  return {
+    this->components.size(),
+      this->num_layers(),
       this->count_overlaps(),
       this->sum_connection_lengths(),
       this->count_crossing_lines()
@@ -68,10 +176,14 @@ public:
     return randrange(POPULATION_GROUP_SIZE) < MUTATION_PROBABILITY;
   }
 
+  bool should_fix() const
+  {
+    return randrange(POPULATION_GROUP_SIZE) < FIX_PROBABILITY;
+  }
+
   bool should_crossover() const
   {
-    return false;
-    //return randrange(POPULATION_GROUP_SIZE) < CROSSOVER_PROBABILITY;
+    return randrange(POPULATION_GROUP_SIZE) < CROSSOVER_PROBABILITY;
   }
 
   void change(unsigned iteration)
@@ -79,19 +191,23 @@ public:
     for (unsigned i=0;i<models.size();i++)
       {
 	Model *model = models[i];
-	if (this->should_mutate())
+	if (should_mutate())
 	  {
 	    static const Point min_range(MillimeterPoint(10, 10, 0));
 	    Point range = model->info->board_dim.div(iteration);
 	    range.inplace_max(1, 1);
 	    assert(range.x > 0 && range.y > 0);	    
-	    model->random_move_components(min_range.max(range));	    
+	    model->random_move_components(min_range.max(range));
 	  }
-	
-	model->add_layers_for_crossing_lines();
-	model->remove_router_chain();
-	
-	if (this->should_crossover())
+	else if (should_fix())
+	  {
+	    model->add_layers_for_crossing_lines();
+	  }
+	else if (should_mutate())
+	  {
+	    model->remove_router_chain();
+	  }
+	else if (should_crossover())
 	  {
 	    unsigned k = randrange(0, models.size());
 	    if (k != i)
@@ -102,14 +218,86 @@ public:
 	  }
       }
   }
+		      
+  void delete_non_selected_models(std::map<Model*, bool> &selected)
+  {
+    for (auto model : models)
+      {
+	if (selected.find(model) == selected.end())
+	  {
+	    delete model;
+	  }
+      }
+    
+    models.clear();
+    assert(models.size() == 0);
+  }
 
+  void create_new_generation(std::map<Model*, bool> &selected)
+  {
+    delete_non_selected_models(selected);
+    std::vector<Model*> array;
+    for (auto k : selected)
+      {
+	array.push_back(k.first);
+      }
+    assert(array.size() == selected.size());
+    assert(selected.size() <= POPULATION_GROUP_SIZE);
+    
+    for (unsigned i = 0; i < POPULATION_GROUP_SIZE; i++)
+      {
+	if (i < selected.size())
+	  {
+	    //printf("score[%d]: %d\n", i, (int)scores[i].first);
+	    models.push_back(array[i]);
+	  }
+	else
+	  {	    
+	    auto k = i % selected.size();
+	    assert(k < selected.size());
+	    
+	    auto cloned = array[k]->deepclone();
+	    static const Point range(MillimeterPoint(5, 5, 0));
+	    cloned->random_move_components(range);
+	    models.push_back(cloned);
+	  }	  
+      }
+  }
+
+  
   static bool comparer(std::pair<score_t,Model*> &p1,
 		       std::pair<score_t,Model*> &p2)
   {
     return p1.first < p2.first;
   }
-		      
-  
+
+  void use_plain_sort_selection(std::vector<std::pair<score_t, Model*>> &scores,
+				std::map<Model*, bool> &selected)
+  {
+    assert(scores.size() == POPULATION_GROUP_SIZE);    
+    std::sort(scores.begin(), scores.end(), comparer);    
+    for (unsigned i = 0; i < SELECTION_FILTER_SIZE; i++)
+      {
+	Model *model = scores[i].second;
+	selected[model] = true;
+      }
+  }
+
+  void use_pareto_front_selection(std::vector<std::pair<score_t, Model*>> &scores,
+				  std::map<Model*, bool> &selected)
+  {
+    ParetoFront front;
+    for (auto p : scores)
+      {
+	auto score  = p.first;
+	auto model = p.second;
+
+	front.tryAddToFront(score, model);
+      }
+    front.push_selected(selected);
+  }
+
+
   void selection(unsigned iteration)
   {
     std::vector<std::pair<score_t, Model*>> scores;
@@ -118,40 +306,23 @@ public:
     for (auto model : models)
       {
 	score_t score = model->score();
+	score.add_penalties();
 	scores.push_back( { score, model } );
       }
 
-    assert(scores.size() == POPULATION_GROUP_SIZE);    
-    std::sort(scores.begin(), scores.end(), comparer);
-
-    models.clear();
-    assert(models.size() == 0);
-    
-    for (unsigned i = 0; i < POPULATION_GROUP_SIZE; i++)
+    std::map<Model*, bool> selected;
+    switch (selection_heuristic)
       {
-	Model *model = scores[i].second;
-	
-	if (i < SELECTION_FILTER_SIZE)
-	  {
-	    //printf("score[%d]: %d\n", i, (int)scores[i].first);
-	    models.push_back(model);
-	  }
-	else
-	  {
-	    delete model;
-	    scores[i].second = NULL;
-	    
-	    auto k = i % SELECTION_FILTER_SIZE;
-	    assert(k < SELECTION_FILTER_SIZE);
-	    
-	    auto cloned = scores[k].second->deepclone();
-	    static const Point range(MillimeterPoint(5, 5, 0));
-	    cloned->random_move_components(range);
-	    models.push_back(cloned);
-	  }	  
+      case SelectionHeuristic::PARETO_FRONT: use_pareto_front_selection(scores, selected); break;
+      case SelectionHeuristic::PLAIN_SORT:   use_plain_sort_selection(scores, selected); break;
+      default: abort();
       }
+
+    assert(selected.size() > 0);
+    create_new_generation(selected);
   }
-        
+  
+  
   void optimize(unsigned iteration)
   {
     this->change(iteration);
@@ -165,6 +336,7 @@ public:
     for (auto m : this->models)
       {
 	score_t score = m->score();
+	score.add_penalties();
 	if (best == NULL)
 	  {
 	    best = m;
