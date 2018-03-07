@@ -1,6 +1,9 @@
 #ifndef POINT___H_H_H___
 #define POINT___H_H_H___
 
+#include <math.h>
+#include <assert.h>
+
 #include "utils.h"
 
 

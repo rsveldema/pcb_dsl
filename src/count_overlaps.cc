@@ -24,16 +24,7 @@ unsigned Model::count_overlaps()
 	      continue;
 	    }
 	  
-	  if (p1->info->dim.layer != p2->info->dim.layer)
-	    {
-	      // cannnot overlap...
-	      continue;
-	    }
-	  
-	  double      d = p1->outline.distance(p2->outline);
-	  double radius = p1->outline.getRadius();
-	  
-	  if (d < radius)
+	  if (p1->overlaps(*p2))
 	    {
 	      /*
 	      utils::print("overlap of ", p1->name,

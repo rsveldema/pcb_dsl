@@ -65,6 +65,11 @@ class Component
 	}
     }
 
+  layer_t get_layer() const
+  {
+    return outline.get_layer();
+  }
+
   // if its a pin-table, add the pins to this component
    void add_table(Table *table);
   
@@ -85,6 +90,43 @@ class Component
       ret += "}";
       return ret;
     }
+
+  bool overlaps(const Outline &c) const
+  {
+    if (outline.overlaps(c))
+      {
+	return true;
+      }
+    for (auto p : pins)
+      {
+	if (c.overlaps(p->outline))
+	  {
+	    return true;
+	  }
+      }
+    return false;
+  }
+  
+
+  bool overlaps(const Component &c) const
+  {
+    if (get_layer() != c.get_layer())
+      {
+	return false;
+      }
+    if (outline.overlaps(c.outline))
+      {
+	return true;
+      }
+    for (auto p : pins)
+      {
+	if (c.overlaps(p->outline))
+	  {
+	    return true;
+	  }
+      }
+    return false;
+  }
 
   void crossover(Component *other);
   double sum_connection_lengths();
