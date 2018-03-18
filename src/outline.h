@@ -5,6 +5,7 @@
 #include "point.h"
 #include "display.h"
 
+
 class Outline
 {
  private:
@@ -15,6 +16,14 @@ class Outline
   Outline()
     {
     }
+
+  void minmax(min_max_t &d)
+  {
+    for (auto p : points)
+      {
+	p.minmax(d);
+      }
+  }
   
   size_t size() const
   {
@@ -23,6 +32,7 @@ class Outline
   
   inline layer_t get_layer() const
   {
+    assert(points.size() > 0);
     assert(points[0].layer == cached_center.layer);
     return cached_center.layer; 
   }
@@ -73,12 +83,12 @@ class Outline
     compute_center();
   }
 
-  void rotate(double degrees,
+  void rotate(double radians,
 	      const Point &center)
   {
     layer_t layer = get_layer();
-    const double cs = cos(degrees);
-    const double sn = sin(degrees);    
+    const double cs = cos(radians);
+    const double sn = sin(radians);    
     for (auto &p : points)
       {
 	auto k = p.sub(center);
@@ -172,6 +182,7 @@ class Outline
 		     const Point &board_dim)
   {
     const unsigned count = points.size();
+    assert(count > 0);
     for (unsigned i = 0; i < count; i++)
        {
 	 if (! points[i].can_transpose(dir,

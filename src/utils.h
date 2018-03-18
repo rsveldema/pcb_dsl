@@ -4,7 +4,19 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <math.h>
 
+static inline
+double radians_to_degrees(double radians)
+{
+  return (radians / M_PI) * 180.0;
+}
+
+static inline
+double degrees_to_radians(double degrees)
+{
+  return (degrees / 180.0) * M_PI;
+}
 
 namespace utils
 {
@@ -23,6 +35,12 @@ namespace utils
       fprintf(stderr, "failed to find element\n");
       abort();
     }
+
+  static inline
+  const std::string type_to_string(const char *str)
+  {
+    return str;
+  }
   
   
   template<typename T>

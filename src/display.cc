@@ -20,11 +20,11 @@ private:
   Gtk::Window *window;
   
 public:
-  Viewer(CairoCanvas *c,
-	 Gtk::Window *window)
+  Viewer(CairoCanvas *_c,
+	 Gtk::Window *_window)
+    : c(_c),
+      window(_window)
   {
-    this->window = window;
-    this->c = c;
     //set_default_size (500, 500);
     set_has_window(false);
   }
@@ -86,8 +86,8 @@ private:
   Cairo::RefPtr<Cairo::SvgSurface> svg;
   Cairo::RefPtr<Cairo::Context>    ctxt;
 
-  Model *displayed_model = 0;
-  DemoWindow *window = 0;
+  Model *displayed_model = NULL;
+  DemoWindow *window = NULL;
   
 public:
   CairoCanvas()
@@ -97,8 +97,12 @@ public:
   
   CairoCanvas(const std::string &filename)
   {
-    svg = Cairo::SvgSurface::create(filename, 150, 150);
+    svg = Cairo::SvgSurface::create(filename, 1000, 1000);
     ctxt = Cairo::Context::create(svg);
+  }
+
+  virtual ~CairoCanvas()
+  {
   }
   
 public:

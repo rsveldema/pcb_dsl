@@ -28,6 +28,7 @@ struct score_t
   unsigned num_overlaps = 0;
   double   connection_lengths = 0;
   unsigned crossing_lines = 0;
+  unsigned sharp_angles = 0;
 
   void add_penalties();
   bool operator <(const score_t &s);
@@ -66,6 +67,7 @@ class Model
     }
   
  public:
+  unsigned get_num_sharp_angles();
   bool have_crossing_connection(const Connection &connection,
 				Connection *crossed);
   unsigned count_crossing_lines();
@@ -78,6 +80,7 @@ class Model
   void draw(Canvas *c);
   void random_move_components(const Point &range);
   void initial_random_move_components();
+  void move_components_close_to_already_placed_components();
   void crossover(Model *m);
   void random_rotate_component();
   score_t score();

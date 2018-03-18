@@ -19,8 +19,9 @@ void Outline::draw(Canvas *c,
 	c->draw_text(red,
 		     center(),
 		     name);
-      }
-  
+    }
+
+
   const unsigned count = points.size();
   for (unsigned i = 0; i < count; i++)
       {
@@ -56,7 +57,7 @@ void Pin::draw(Canvas *c)
   for (auto connection : connections)
     {
       outline.drawLineTo(connection->outline.center(),
-			   c);
+			 c);
     }
 }
 
@@ -75,6 +76,8 @@ void Component::draw(Canvas *c)
     {
       p->draw(c);
     }
+
+  bounding_box.draw(c, "");
 }
 
 

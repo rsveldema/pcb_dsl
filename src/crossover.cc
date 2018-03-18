@@ -14,6 +14,11 @@ void Component::crossover(Component *other)
   auto k = outline;
   outline  = other->outline;
   other->outline = k;
+
+  k = bounding_box;
+  bounding_box = other->bounding_box;
+  other->bounding_box = k;
+  
   //outline.xparent = this;
   //other->outline.xparent = other;
 

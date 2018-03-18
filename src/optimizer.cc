@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <thread>
 
+#include "optimizer.h"
 #include "create_model.h"
 #include "utils.h"
 
@@ -9,29 +10,35 @@ enum class SelectionHeuristic
 {
   PARETO_FRONT,
   PLAIN_SORT
-    };
+};
 
-//static SelectionHeuristic selection_heuristic = SelectionHeuristic::PARETO_FRONT;
-static SelectionHeuristic selection_heuristic = SelectionHeuristic::PLAIN_SORT;
+static SelectionHeuristic selection_heuristic = SelectionHeuristic::PARETO_FRONT;
+//static SelectionHeuristic selection_heuristic = SelectionHeuristic::PLAIN_SORT;
 
 constexpr auto POPULATION_NUM_GROUPS =  1u;
-constexpr auto POPULATION_GROUP_SIZE = 20u;
+constexpr auto POPULATION_GROUP_SIZE = 32u;
 constexpr auto SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
-constexpr auto CROSSOVER_PROBABILITY   = unsigned(0.8 * POPULATION_GROUP_SIZE);
-constexpr auto MUTATION_PROBABILITY    = unsigned(0.02 * POPULATION_GROUP_SIZE);
-constexpr auto FIX_PROBABILITY         = unsigned(0.1 * POPULATION_GROUP_SIZE);
-constexpr auto ROTATE_PROBABILITY      = unsigned(0.02 * POPULATION_GROUP_SIZE);
+
+constexpr auto CROSSOVER_PROBABILITY_PERCENTAGE   = 20;
+constexpr auto MUTATION_PROBABILITY_PERCENTAGE    = 4;
+constexpr auto FIX_PROBABILITY_PERCENTAGE         = 8;
+constexpr auto ROTATE_PROBABILITY_PERCENTAGE      = 4;
+
+static_assert(MUTATION_PROBABILITY_PERCENTAGE > 0);
+static_assert(ROTATE_PROBABILITY_PERCENTAGE > 0);
+
 
 static bool enable_gui;
 
 std::string score_t::str() const
 {
   return utils::str("score<",
-		    "#LAYER:", num_layers,
-		    "#COMP:", num_comp,
-		    ", OVERLAP:", num_overlaps,
+		    "#LYR:", num_layers,
+		    "#CMP:", num_comp,
+		    ", OLAP:", num_overlaps,
 		    ", LEN:", connection_lengths,
-		    ", CROSS:", crossing_lines,
+		    ", CRS:", crossing_lines,
+		    ", SHRP: ", sharp_angles,
 		    ">");
 }
 
@@ -43,6 +50,7 @@ bool score_t::operator <(const score_t &s)
   if (crossing_lines > s.crossing_lines) return false;
   if (num_layers > s.num_layers) return false;
   if (num_overlaps > s.num_overlaps) return false;
+  if (sharp_angles > s.sharp_angles) return false;
   return true;
 }
 
@@ -141,6 +149,7 @@ struct ParetoFront
   }
 };
 
+
 /** 0 == perfect score, INF = forget it.
  */
 score_t Model::score()
@@ -150,7 +159,8 @@ score_t Model::score()
       this->num_layers(),
       this->count_overlaps(),
       this->sum_connection_lengths(),
-      this->count_crossing_lines()
+      this->count_crossing_lines(),
+      this->get_num_sharp_angles()
       };
 }
 
@@ -174,22 +184,22 @@ public:
 
   bool should_mutate() const
   {
-    return randrange(POPULATION_GROUP_SIZE) < MUTATION_PROBABILITY;
+    return randrange(100) < MUTATION_PROBABILITY_PERCENTAGE;
   }
 
   bool should_fix() const
   {
-    return randrange(POPULATION_GROUP_SIZE) < FIX_PROBABILITY;
+    return randrange(100) < FIX_PROBABILITY_PERCENTAGE;
   }
 
   bool should_rotate() const
   {
-    return randrange(POPULATION_GROUP_SIZE) < ROTATE_PROBABILITY;
+    return randrange(100) < ROTATE_PROBABILITY_PERCENTAGE;
   }
 
   bool should_crossover() const
   {
-    return randrange(POPULATION_GROUP_SIZE) < CROSSOVER_PROBABILITY;
+    return randrange(100) < CROSSOVER_PROBABILITY_PERCENTAGE;
   }
 
   void change(unsigned iteration)
@@ -231,11 +241,14 @@ public:
 		      
   void delete_non_selected_models(std::map<Model*, bool> &selected)
   {
-    for (auto model : models)
+    const unsigned count = models.size();
+    for (unsigned i=0;i<count;i++)
       {
+	auto model = models[i];
 	if (selected.find(model) == selected.end())
 	  {
 	    delete model;
+	    models[i] = NULL;
 	  }
       }
     
@@ -415,7 +428,9 @@ public:
 };
 
 
-NestedGeneration* create_initial_generation(Model *initial_model)
+static
+NestedGeneration* create_initial_generation(Model *initial_model,
+					    InitialPlacement placement)
 {
   //auto dim = initial_model->info->board_dim;
   auto start_model = initial_model->deepclone();
@@ -430,10 +445,18 @@ NestedGeneration* create_initial_generation(Model *initial_model)
       for (unsigned j = 0; j < POPULATION_GROUP_SIZE; j++)
 	{
 	  auto clone = start_model->deepclone();
-	  clone->initial_random_move_components();
 
-	  //clone->writeSVG("random_routed2.svg");
+	  switch (placement)
+	    {
+	    case InitialPlacement::CLOSE_TO_ALREADY_PLACED:
+	      clone->move_components_close_to_already_placed_components();
+	      break;
+	    case InitialPlacement::RANDOM:
+	      clone->initial_random_move_components();
+	      break;
+	    }
 	  
+	  //clone->writeSVG("random_routed2.svg");	  
 	  inner->add(clone);
 	}
     }
@@ -488,12 +511,14 @@ void optimization_thread(NestedGeneration* nested,
 
 Model* optimize_model(Model *model,
 		      unsigned time_limit_secs,
-		      bool enable_gui)
+		      bool enable_gui,
+		      InitialPlacement initial_placement)
 {
   ::enable_gui = enable_gui;
   Canvas *gui = NULL;
     
-  auto nested = create_initial_generation(model);  
+  auto nested = create_initial_generation(model,
+					  initial_placement);  
   if (enable_gui)
     {
       gui = Canvas::create_canvas();

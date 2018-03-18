@@ -9,6 +9,21 @@ component board {
 }
 
 
+component AGND {
+  type:	 "ground";
+  pin GND {
+    analog_ground;
+  }
+}
+
+component DGND {
+  type:	 "ground";
+  pin GND {
+    digital_ground;
+  }
+}
+
+
 component conn1 {
   type: "single row pin header";
   

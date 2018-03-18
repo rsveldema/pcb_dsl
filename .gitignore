@@ -1,4 +1,5 @@
 *~
+*.svg
 *.tokens
 dslLexer.py
 dslListener.py
@@ -10,3 +11,4 @@ e
 f
 __pycache__
 *.xml
+gmon.out

@@ -1,6 +1,10 @@
 #ifndef IN_PIN_MAP__H____
 #define IN_PIN_MAP__H____
 
+#include <assert.h>
+#include <map>
+#include <vector>
+
 class Pin;
 class Model;
 
@@ -25,6 +29,12 @@ private:
 
 public:
   InMap(Model *m);
+
+  std::vector<Pin*> &get_in(Pin *to)
+  {
+    assert(map.find(to) != map.end());
+    return map[to];
+  }
   
   unsigned num_incoming_edges(Pin *pin)
   {

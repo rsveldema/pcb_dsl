@@ -117,6 +117,8 @@ class Dummy {
   int a;
 };
 
+class min_max_t;
+
 
 class Point
 {
@@ -304,7 +306,47 @@ class Point
     if (k.y > max.y) return false;
     return true;
   }
+
+  inline void minmax(min_max_t &d);
 };
 
+
+struct min_max_t
+{
+  bool init = false;
+  Point min;
+  Point max;
+};
+
+
+
+inline void Point::minmax(min_max_t &d)
+{
+  if (! d.init)
+    {
+      d.init = true;
+      d.min = d.max = *this;
+    }
+  else
+    {
+      if (d.min.x > x)
+	{
+	  d.min.x = x;
+	}
+      if (d.min.y > y)
+	{
+	  d.min.y = y;
+	}
+
+      if (d.max.x < x)
+	{
+	  d.max.x = x;
+	}
+      if (d.max.y < y)
+	{
+	  d.max.y = y;
+	}
+    }
+}
 
 #endif

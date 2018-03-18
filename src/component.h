@@ -37,6 +37,7 @@ class Component
   ComponentInfo *info;  
   std::vector<Pin *> pins;
   Outline outline;
+  Outline bounding_box;
   Model *model;
   unsigned id;
 
@@ -49,10 +50,11 @@ class Component
 
  Component(const Component &c) = delete;
   
- Component(ComponentInfo *_info, Model *m, unsigned _id, const Outline &_outline)
+ Component(ComponentInfo *_info, Model *m, unsigned _id, const Outline &_outline, const Outline &_bounding_box)
    : info(_info),
     outline(_outline),
-    model(m),
+   bounding_box(_bounding_box),
+   model(m),
     id(_id)
   {
   }
@@ -66,16 +68,20 @@ class Component
 	}
    }
 
-  void rotate(double degree);
+
+  std::pair<double,double> get_connection_angle_info(InMap &in_map);
+  void add_bounding_box();
+  void rotate(double radians);
   void random_rotate();
  
   layer_t get_layer() const
   {
+    assert(bounding_box.get_layer() == outline.get_layer());
     return outline.get_layer();
   }
 
   // if its a pin-table, add the pins to this component
-   void add_table(Table *table);
+  void add_table(Table *table);
   
   void move_pin_connection(Component *from,
 			   Component *to);
@@ -95,41 +101,9 @@ class Component
       return ret;
     }
 
-  bool overlaps(const Outline &c) const
-  {
-    if (outline.overlaps(c))
-      {
-	return true;
-      }
-    for (auto p : pins)
-      {
-	if (c.overlaps(p->outline))
-	  {
-	    return true;
-	  }
-      }
-    return false;
-  }
-  
-
   bool overlaps(const Component &c) const
   {
-    if (get_layer() != c.get_layer())
-      {
-	return false;
-      }
-    if (outline.overlaps(c.outline))
-      {
-	return true;
-      }
-    for (auto p : pins)
-      {
-	if (c.overlaps(p->outline))
-	  {
-	    return true;
-	  }
-      }
-    return false;
+    return bounding_box.overlaps(c.bounding_box);
   }
 
   void crossover(Component *other);
@@ -144,7 +118,12 @@ class Component
   void draw(Canvas *c);
 
   void check()
-  {
+  {    
+    if (bounding_box.size() == 0)
+      {
+	fprintf(stderr, "ERROR: component %s has no bounding box\n", info->name.c_str());
+	abort();
+      }
     if (outline.size() == 0)
       {
 	fprintf(stderr, "ERROR: component %s has no outline\n", info->name.c_str());
@@ -179,25 +158,14 @@ class Component
   bool can_transpose(const Point &dir,
 		     const Point &board_dim)
   {
-    if (! outline.can_transpose(dir, board_dim))
-      {
-	return false;
-      }
-    unsigned count = pins.size();
-    for (unsigned i=0;i<count;i++)
-      {
-	auto p = pins[i];
-	if (! p->can_transpose(dir, board_dim))
-	  {
-	    return false;
-	  }
-      }
-    return true;
+    return bounding_box.can_transpose(dir, board_dim);
   }  
 
   void transpose(const Point &dir)
   {
     outline.transpose(dir);
+    bounding_box.transpose(dir);
+    
     const unsigned count = pins.size();
     for (unsigned i=0;i<count;i++)
       {
@@ -225,6 +193,8 @@ class Component
     
   Pin *get_pin_by_suffixes(const std::vector<dslParser::Access_suffixContext*> &suffix,
 			   ModelContext &context, bool odd);
+
+  Point center() { return bounding_box.center(); }
 };
 
 

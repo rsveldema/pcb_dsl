@@ -1,6 +1,8 @@
 #include "create_model.h"
 #include <stdlib.h>
 
+static constexpr double BOUNDING_BOX_MARGIN_MM = 0.5;
+
 MillimeterPoint::MillimeterPoint(const Point &p)
   : x(((double)p.x) / Point::POINT_PRECISION),
     y(((double)p.y) / Point::POINT_PRECISION),
@@ -340,7 +342,7 @@ void process_component_type(Model *model,
 	}
       else
 	{
-	  printf("COMPONENT %s has no assigned type yet\n", comp->info->name.c_str());
+	  printf("COMPONENT '%s' has no assigned type yet\n", comp->info->name.c_str());
 	  comp->outline.addRect(Point(MillimeterPoint(0,
 						      0,
 						      comp->info->dim.layer)),
@@ -354,7 +356,8 @@ void process_component_type(Model *model,
 }
 
 
-void ModelCreatorListener::add_connections(ModelContext &mctxt, dslParser::NetworkContext *ctxt) {
+void ModelCreatorListener::add_connections(ModelContext &mctxt, dslParser::NetworkContext *ctxt)
+{
   for (auto conn : ctxt->connection())
     {
       for (unsigned k = 0; k < conn->access().size()-1; k++)
@@ -381,7 +384,8 @@ void ModelCreatorListener::enterConstant(dslParser::ConstantContext *ctxt) {
 }
 
 
-void ModelCreatorListener::enterNetwork(dslParser::NetworkContext *ctxt) {
+void ModelCreatorListener::enterNetwork(dslParser::NetworkContext *ctxt)
+{
   auto names = ctxt->object_name()->ID();
   if (names.size() == 1)
     {
@@ -402,6 +406,21 @@ void ModelCreatorListener::enterNetwork(dslParser::NetworkContext *ctxt) {
 }
 
 
+void Component::add_bounding_box()
+{
+  min_max_t d;
+  outline.minmax(d);
+  for (auto p : pins)
+    {
+      p->outline.minmax(d);
+    }
+
+  MillimeterLength ml(BOUNDING_BOX_MARGIN_MM);
+
+  d.min = d.min.sub(MillimeterPoint(ml, ml, d.min.layer));
+  d.max = d.max.add(MillimeterPoint(ml, ml, d.min.layer));
+  bounding_box.addRect(d.min, d.max);
+}
 
 
 void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
@@ -421,7 +440,8 @@ void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
       process_component_type(model, 
 			     comp);
       add_datasheet_props(comp, ctxt);
-      add_location(comp, ctxt);          
+      add_location(comp, ctxt);
+      comp->add_bounding_box();
     }
   else
     {
@@ -445,6 +465,7 @@ void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
 	    }
 	  process_component_type(model,
 				 comp);
+	  comp->add_bounding_box();
 	}
     }
 }

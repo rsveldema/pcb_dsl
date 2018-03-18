@@ -1,7 +1,100 @@
 #include "create_model.h"
 #include "utils.h"
+#include <math.h>
+#include <cmath>
 
 static float WIRE_WIDTH = 0.1;
+
+
+std::pair<double,double> Component::get_connection_angle_info(InMap &in_map)
+{
+  assert(pins.size() == 2);
+  
+  Pin *my_from_pin = pins[0];
+  Pin *my_to_pin   = pins[1];
+
+  bool found = false;
+  double min_angle = 0;
+  double max_angle = 0;
+
+  assert(in_map.get_in(my_from_pin).size() > 0);
+  assert(my_to_pin->connections.size() > 0);
+  
+  for (auto in : in_map.get_in(my_from_pin))
+    {
+      for (auto out : my_to_pin->connections)
+	{
+	  assert(in != out);
+	  assert(my_from_pin != in);
+	  assert(my_to_pin != in);
+	  assert(my_from_pin != out);
+	  assert(my_to_pin != out);
+	  
+	  Point p3 = center();
+	  Point p1 = in->center();
+	  Point p2 = out->center();
+
+	  Point v1 = p1.sub(p3);
+	  Point v2 = p2.sub(p3);
+
+	  double angleA = atan2(v2.y, v2.x) - atan2(v1.y, v1.x);
+	  
+	  angleA /= M_PI;
+	  int angle = angleA * 180.0;
+	  angle %= 360;
+	  angle = abs(angle);
+	  
+	  if (!found)
+	    {
+	      found = true;
+	      max_angle = min_angle = angle;
+	    }
+	  else
+	    {
+	      max_angle = std::max(max_angle, (double)angle);
+	      min_angle = std::min(min_angle, (double)angle);
+	    }
+	}
+    }
+  assert(found);
+  return {min_angle, max_angle};
+}
+
+unsigned Model::get_num_sharp_angles()
+{
+  unsigned sharp_angles = 0;
+  const unsigned num_comp = components.size();
+
+  InMap in_map(this);
+  
+  for (unsigned i=0;i<num_comp;i++)
+    {
+      auto c = components[i];
+      if (c->info->is_router)
+	{
+	  std::pair<double,double> angle_info = c->get_connection_angle_info(in_map);
+
+	  int min = std::abs(angle_info.first);
+	  int max = std::abs(angle_info.second);
+
+	  //min = min % 180;
+	  //max = max % 180;
+	  	  
+	  //printf("angle computed = %d - %d\n", min, max);
+	  if (min > 0 && min < 45)
+	    {
+	      sharp_angles++;
+	    }
+	  else if (max > 0 && max < 45)
+	    {
+	      sharp_angles++;
+	    }
+	}
+    }
+			    
+  return sharp_angles;
+}
+
 
 
 ComponentInfo::ComponentInfo(const std::string &_name, bool _is_router)
@@ -28,15 +121,14 @@ Pin *Pin::shallow_clone(Component *comp, clone_map_t &map)
 
 Component *Component::shallow_clone(Model *m, clone_map_t &map)
 {
-  auto c = new Component(info, m, id, outline);
-
+  auto c = new Component(info, m, id, outline, bounding_box);
   const unsigned count = pins.size();
   for (unsigned i=0;i<count;i++)
     {
       auto p = pins[i];
       auto cloned_pin = p->shallow_clone(c, map);
       c->pins.push_back(cloned_pin);
-    }    
+    }
   map[this] = c;
   return c;
 }
@@ -110,14 +202,15 @@ Model *Model::deepclone()
 }
 
 
-void Component::rotate(double degree)
+void Component::rotate(double radians)
 {
-  printf("rotating %f degrees\n", degree);
+  //printf("rotating %s over %f degrees\n", info->name.c_str(), radians_to_degrees(radians));
   auto center = outline.center();
-  outline.rotate(degree, center);
+  outline.rotate(radians, center);
+  bounding_box.rotate(radians, center);
   for (auto p : pins)
     {
-      p->outline.rotate(degree, center);
+      p->outline.rotate(radians, center);
     }
 }
 
@@ -127,8 +220,8 @@ void Component::random_rotate()
     {
       return;
     }
-  double degree = randrange(1, 4);
-  rotate(degree * (M_PI / 0.5));
+  double radians = randrange(1, 8) * (M_PI / 4.0);
+  rotate(radians);
 }
 
 void Model::random_rotate_component()

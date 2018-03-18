@@ -51,6 +51,7 @@ Component *Model::create_router(const Point &pos)
   pin_out->outline.addRect(s, e);
 
   comp->transpose( pos );
+  comp->add_bounding_box();
   return comp;
 }
 

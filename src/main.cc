@@ -21,6 +21,7 @@ int main(int argc, char **argv)
 {
   srand(10);
 
+  InitialPlacement initial_placement = InitialPlacement::CLOSE_TO_ALREADY_PLACED;
   bool enable_gui = false;
   const char *filename = NULL;
   int optimize_secs = 5;
@@ -83,7 +84,8 @@ int main(int argc, char **argv)
   Model *model = listener.get();
 
   model->check();
-  Model *best = optimize_model(model, optimize_secs, enable_gui);
+  
+  Model *best = optimize_model(model, optimize_secs, enable_gui, initial_placement);
   best->writeSVG("final.svg");
   
   return 0;
