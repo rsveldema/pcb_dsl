@@ -80,13 +80,13 @@ void Pin::route_around_conflict(Model *model,
   layer_t new_layer = outline.get_layer() + 1;
     
 
-  router1->pins[0]->move_to_layer(this->get_layer());
+  router1->pins[0]->set_layer(this->get_layer());
   router1->pins[1]->connections = { router2->pins[0] };
-  router1->pins[1]->move_to_layer(new_layer);
+  router1->pins[1]->set_layer(new_layer);
   
-  router2->pins[0]->move_to_layer(new_layer);  
+  router2->pins[0]->set_layer(new_layer);  
   router2->pins[1]->connections = this->connections;
-  router2->pins[1]->move_to_layer(this->get_layer());
+  router2->pins[1]->set_layer(this->get_layer());
   
   this->connections = { router1->pins[0] };
 

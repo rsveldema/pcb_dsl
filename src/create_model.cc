@@ -135,28 +135,37 @@ Pin *Component::get_pin_by_name(const std::string &s)
 }
 
 Pin *Component::get_pin_by_suffixes(const std::vector<dslParser::Access_suffixContext*> &suffixes,
-				    ModelContext &context, bool odd)
+				    ModelContext &context,
+				    bool odd)
 {
-  if (suffixes.size() == 0) {
-    if (this->pins.size() == 1) {
-      return this->pins[0];
+  if (suffixes.size() == 0)
+    {
+      if (pins.size() == 1)
+	{
+	  return pins[0];
+	}
+      
+      if (pins.size() > 2)
+	{
+	  printf("don't know which pin to address, please make it explicit: %s\n", this->info->name.c_str());
+	  abort();
+	}    
+      return pins[odd];
     }
-    
-    if (this->pins.size() > 2) {
-      printf("don't know which pin to address, please make it explicit: %s\n", this->info->name.c_str());
-      abort();
+  else
+    {
+      auto s0 = suffixes[0];
+      auto name = s0->ID()->getText();
+      if (s0->index() == 0)
+	{
+	  return get_pin_by_name(name);
+	}
+      else
+	{
+	  return get_pin_by_name(context.indexed_pin_name(name,
+							  s0->index()));
+	}
     }
-    
-    return this->pins[odd];
-
-  } else {
-    auto s0 = suffixes[0];
-    auto name = s0->ID()->getText();
-    if (s0->index() == 0)
-      return this->get_pin_by_name(name);
-    else
-      return this->get_pin_by_name(context.indexed_pin_name(name, s0->index()));
-  }
 }
 
 
@@ -248,32 +257,40 @@ void add_datasheet_props(Component *comp, dslParser::ComponentContext *ctxt)
 
 static
 void process_location(Component *comp,
-		      const std::vector<dslParser::Location_propContext *> &loc_prop_list)
+		      dslParser::Location_propContext * loc)
 {
+  if (!loc)
+    {
+      return;
+    }
+  
   auto model = comp->model;
 
-  for (auto loc : loc_prop_list)
+  if (loc->rotatable)
     {
-      if (loc->rotatable)
-	{
-	  comp->info->is_rotateable = true;
-	}
+      comp->info->is_rotateable = true;
+    }
+  
+  if (loc->x)
+    {
+      //model->current_component = comp;
+      auto sx = constant_fold_expr(model, comp, loc->x);
+      auto sy = constant_fold_expr(model, comp, loc->y);
 
-      if (loc->expr().size() > 0)
+      int layer = 0;
+      if (loc->layer)
 	{
-	  //model->current_component = comp;
-	  auto sx = constant_fold_expr(model, comp, loc->expr()[0]);
-	  auto sy = constant_fold_expr(model, comp, loc->expr()[1]);
-	  
-	  
-	  // constant fold already changed every position to millimeters:
-	  comp->info->fixed_position = new Point(MillimeterPoint(sx,
-								 sy,
-								 0));
-	  comp->transpose(*comp->info->fixed_position);
+	  layer = atoi(loc->layer->getText().c_str());
 	}
+	  
+      // constant fold already changed every position to millimeters:
+      comp->info->fixed_position = new Point(MillimeterPoint(sx,
+							     sy,
+							     layer));
+      comp->transpose(*comp->info->fixed_position);
     }
 }
+
 
 static
 void add_location(Component *comp, dslParser::ComponentContext *ctxt)
@@ -342,7 +359,10 @@ void process_component_type(Model *model,
 	}
       else
 	{
-	  printf("COMPONENT '%s' has no assigned type yet\n", comp->info->name.c_str());
+	  if (! comp->info->is_board)
+	    {
+	      printf("COMPONENT '%s' has no assigned type yet\n", comp->info->name.c_str());
+	    }
 	  comp->outline.addRect(Point(MillimeterPoint(0,
 						      0,
 						      comp->info->dim.layer)),
@@ -356,7 +376,8 @@ void process_component_type(Model *model,
 }
 
 
-void ModelCreatorListener::add_connections(ModelContext &mctxt, dslParser::NetworkContext *ctxt)
+void ModelCreatorListener::add_connections(ModelContext &mctxt,
+					   dslParser::NetworkContext *ctxt)
 {
   for (auto conn : ctxt->connection())
     {
@@ -364,9 +385,32 @@ void ModelCreatorListener::add_connections(ModelContext &mctxt, dslParser::Netwo
 	{
 	  auto from_access = conn->access()[k];
 	  auto to_access   = conn->access()[k + 1];
-	  auto from_pin   = access_to_component_pin(this->model, from_access, mctxt, true);
-	  auto to_pin     = access_to_component_pin(this->model, to_access, mctxt, false);
-	  from_pin->add_connection(to_pin);
+	  auto from_pin   = access_to_component_pin(this->model,
+						    from_access,
+						    mctxt,
+						    true); // odd
+	  auto to_pin     = access_to_component_pin(this->model,
+						    to_access,
+						    mctxt,
+						    false); // even
+
+	  if (from_pin->get_layer() != to_pin->get_layer())
+	    {
+	      // connection of something on one layer to something
+	      // on another layer. We hence must add a router.	      
+	      Component *router = this->model->create_router(from_pin->center());
+	      from_pin->add_connection(router->pins[0]);
+	      router->pins[1]->set_layer(to_pin->get_layer());
+	      router->pins[1]->add_connection(to_pin);
+
+	      assert(from_pin->get_layer() == router->pins[0]->get_layer());
+	      assert(to_pin->get_layer()   == router->pins[1]->get_layer());	    
+	    }
+	  else
+	    {
+	      assert(from_pin->get_layer() == to_pin->get_layer());
+	      from_pin->add_connection(to_pin);
+	    }
 	}
     }
 }

@@ -2,7 +2,7 @@
 #define CREATE_MODEL_H___
 
 #include "parser.h"
-#include "database.h"
+#include "known_packages.h"
 #include "model.h"
 
 static inline

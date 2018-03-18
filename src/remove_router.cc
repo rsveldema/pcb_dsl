@@ -88,8 +88,8 @@ void Model::remove_router_chain()
 		  if (in_map.num_incoming_edges(B->pins[0]) == 1 &&
 		      in_map.num_incoming_edges(C->pins[0]) == 1)
 		    {
-		      A->pins[1]->move_to_layer(B->pins[1]->get_layer());
-		      D->pins[0]->move_to_layer(B->pins[1]->get_layer());
+		      A->pins[1]->set_layer(B->pins[1]->get_layer());
+		      D->pins[0]->set_layer(B->pins[1]->get_layer());
 		      
 		      A->move_pin_connection(B,
 					     D);

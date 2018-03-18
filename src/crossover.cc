@@ -11,6 +11,9 @@ void Pin::crossover(Pin *other)
 
 void Component::crossover(Component *other)
 {
+  assert(get_layer() == other->get_layer());
+  assert(other->info->name == info->name);
+  
   auto k = outline;
   outline  = other->outline;
   other->outline = k;

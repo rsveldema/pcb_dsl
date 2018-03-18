@@ -61,9 +61,22 @@ void create_pins_RS28(KnownPackageInfo *config, Component *comp) {
     }
 }
 
-void create_single_row_pin_header(KnownPackageInfo *config, Component *comp) {
-  comp->info->dim.x  = config->w;
-  comp->info->dim.y  = config->h * comp->pins.size();
+
+void create_single_row_pin_header(KnownPackageInfo *config, Component *comp)
+{
+  if (config->name == "ground")
+    {
+      // skip, use dimensions set from DSL instead of the dummy values passed here.
+      comp->info->is_ground = true;
+    }
+  else
+    {
+      comp->info->dim.x  = config->w;
+      comp->info->dim.y  = config->h * comp->pins.size();
+    }
+  assert(comp->info->dim.x.get() > 0);
+  assert(comp->info->dim.y.get() > 0);
+  
   auto pos = Point();
   auto end = pos.add(comp->info->dim);
   comp->outline.addRect(pos,
@@ -80,8 +93,6 @@ void create_single_row_pin_header(KnownPackageInfo *config, Component *comp) {
       end = pos.add(MillimeterPoint(config->w,
 				    config->h,
 				    0));
-      //#print("creating pin: " + str(p.name) + ", at " + str(pos))
-	
       p->outline.addRect(pos, end);
     }
 }
@@ -90,6 +101,7 @@ void create_two_row_pin_header(KnownPackageInfo *config, Component *comp)
 {
   comp->info->dim.x = config->w * 2;
   comp->info->dim.y = config->h * (comp->pins.size() / 2);
+ 
   auto pos = Point();
   auto end = pos.add(comp->info->dim);
   comp->outline.addRect(pos,
@@ -117,14 +129,14 @@ void create_two_row_pin_header(KnownPackageInfo *config, Component *comp)
 }
 
 static std::vector<KnownPackageInfo*> packages = {
-	new KnownPackageInfo("ground",            
+  	new KnownPackageInfo("ground",
 			     2.35, //# w
-			     2.35, //# h
+			     2.35, // h
 			     0, 0, 0,
 			     create_single_row_pin_header),
 	new KnownPackageInfo("SMD condensator",            
 			     2.35, //# w
-								      2.35, //// h
+			     2.35, // h
 			     0, 0, 0,
 			     create_single_row_pin_header),
 	new KnownPackageInfo("SMD resistor",            
@@ -161,7 +173,8 @@ KnownPackageInfo* findKnownPackage(const std::string &name)
 	  return p;
 	}
     }
-  
+
+  fprintf(stderr, "failed to find known package: '%s'\n", name.c_str());
   abort();
 }
 

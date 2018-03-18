@@ -45,7 +45,7 @@ component: 'component' object_name '{' component_property*  '}';
 component_property:
         'dimensions' '{' dim_prop* '}'
     |   'datasheet'  '{' datasheet_prop* '}'
-    |   'location'   '{' location_prop* '}'
+    |   location_prop
     |   'pin'  pin_name   '{' pin_prop* '}'
     |   'value' ':' value=expr ';'
     |   'type'  ':' component_type=STRING ';'
@@ -56,8 +56,8 @@ pin_name: ID (',' ID)* ;
 pin_prop: (pinmode='input' | pinmode='output' | pinmode='digital_ground' | pinmode='analog_ground') ';';
 
 location_prop:
-        ('at' ':' expr ',' expr)?
-	(rotatable='rotatable')?
+        ('at' ':' x=expr ',' y=expr ('layer' layer=NUMBER)? )?
+	(rotatable='rotatable')?	
 	 ';'
     ;
 

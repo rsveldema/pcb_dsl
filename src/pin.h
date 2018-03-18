@@ -83,16 +83,11 @@ class Pin
       return ret;
     }
 
-  void check()
-  {
-    if (outline.size() == 0)
-      {
-	fprintf(stderr, "ERROR: pin %s has no outline\n", info->name.c_str());
-	abort();
-      }
-  }
+  void check();
   
   layer_t get_layer() const { return outline.get_layer(); }
+  void set_layer(layer_t l) { return outline.set_layer(l); }
+  
   void gather_layer_map(LayerMap &map);
   bool have_crossing_connection(const Connection &connection,
 				Connection *crossed);
@@ -103,10 +98,6 @@ class Pin
 				     Component *comp,
 				     MutationAdmin &admin);
   unsigned count_crossing_lines(Model *model);
-  void move_to_layer(layer_t layer)
-  {
-    outline.move_to_layer(layer);
-  }
 
   Point center() const { return outline.center(); }
 

@@ -97,13 +97,7 @@ class Model
   void remove(Component *c,
 	      InMap &in_map);
   
-  void check()
-  {
-     for (auto c : components)
-       {
-	 c->check();
-       }
-  }
+  void check();
 
   void writeDOT(const std::string filename);
 

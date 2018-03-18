@@ -158,7 +158,7 @@ class Point
     return CentimeterPoint(*this);
   }
   
-  inline void move_to_layer(layer_t layer)
+  inline void set_layer(layer_t layer)
   {
     this->layer = layer;
   }
@@ -174,7 +174,7 @@ class Point
     
     pos_t dx = other.x - x;
     pos_t dy = other.y - y;
-
+    
     return sqrt((dx*dx) + (dy*dy));
   }
 
@@ -193,11 +193,12 @@ class Point
     x = std::max(_x, x);
     y = std::max(_y, y);
   }
-  
+
   inline void add_inline(const Point &p)
   {
     x += p.x;
     y += p.y;
+    //layer = p.layer;
   }
 
   Point add(const Point &p) const

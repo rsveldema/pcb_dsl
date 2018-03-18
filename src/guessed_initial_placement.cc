@@ -23,7 +23,10 @@ public:
 
   void add_close_by(Pin *c)
   {
-    assert(c->get_layer() == component->get_layer());
+    if (! comp()->info->is_router)
+      {
+	assert(c->get_layer() == component->get_layer());
+      }
     close_by.push_back(c);
   }
 
@@ -54,9 +57,9 @@ void place_them(Model *self,
       auto dir = cluster->get_point_close_by();
       //if (cluster.comp()->can_transpose(dir,
       //				self->info->board_dim))
-	{
-	  cluster->comp()->transpose(dir);
-	}
+      {
+	cluster->comp()->transpose(dir);
+      }
     }
 }
 

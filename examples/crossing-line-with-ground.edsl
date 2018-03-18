@@ -14,26 +14,37 @@ component AGND {
   pin GND {
     analog_ground;
   }
+
+  at: 1 mm, 1 mm  layer 20;
+
+  dimensions {
+  width: 5 cm;	
+  height: 9 cm;
+  }
 }
+
 
 component DGND {
   type:	 "ground";
   pin GND {
     digital_ground;
   }
-}
 
+  at: 55 mm, 1 mm  layer 19;
+  
+  dimensions {
+  width: 4 cm;	
+  height: 9 cm;
+  }
+}
 
 component conn1 {
   type: "single row pin header";
   
-  pin P0
+  pin P0,P1
   {}
     
-  location {
   at: 1 cm, 4 cm;
-    rotatable;	
-  }
   
   dimensions {
   width: #pins * 2.54 mm;
@@ -44,12 +55,10 @@ component conn1 {
 component conn2 {
   type: "single row pin header";
   
-  pin P0
+  pin P0,P1
   {}
     
-  location {
   at: 9 cm, 4 cm;
-  }
   
   dimensions {
      width: #pins * 2.54 mm;
@@ -63,9 +72,7 @@ component conn3 {
   pin P0
   {}
     
-  location {
   at: 4 cm, 1 cm;
-  }
   
   dimensions {
      width: #pins * 2.54 mm;
@@ -79,9 +86,7 @@ component conn4 {
   pin P0
   {}
     
-  location {
-     at: 4 cm, 9 cm;
-  }
+  at: 4 cm, 9 cm;
   
   dimensions {
      width: #pins * 2.54 mm;
@@ -100,15 +105,41 @@ component R5K_1 {
   pin OUT {
     output;
   }
-  location {
-    rotatable;
+
+  rotatable;
+}
+
+component R5K_2 {
+ value: 5000 ohm;
+ type: "SMD resistor";
+   pin IN {
+    input;
   }
+  pin OUT {
+    output;
+  }
+  rotatable;
+}
+
+component R5K_3 {
+ value: 5000 ohm;
+ type: "SMD resistor";
+   pin IN {
+    input;
+  }
+  pin OUT {
+    output;
+  }
+  rotatable;
 }
 
 
 // 1V mode, single ended inputs for I/Q channels as per page 11 of AD9201
 network c2c {
   conn1.P0 -> R5K_1 -> conn2.P0;
-  conn3.P0 -> conn4.P0;	
+  conn3.P0 -> conn4.P0;
+
+  conn1.P1 -> R5K_2 -> AGND;
+  conn2.P1 -> R5K_3 -> DGND;
 }
 

@@ -214,7 +214,7 @@ public:
 	    range.inplace_max(1, 1);
 	    assert(range.x > 0 && range.y > 0);	    
 	    model->random_move_components(min_range.max(range));
-	  }
+	  }	
 	else if (should_fix())
 	  {
 	    model->add_layers_for_crossing_lines();
@@ -446,6 +446,9 @@ NestedGeneration* create_initial_generation(Model *initial_model,
 	{
 	  auto clone = start_model->deepclone();
 
+	  score_t initial_score = clone->score();
+	  printf("initial clone 1 score works okay\n");
+
 	  switch (placement)
 	    {
 	    case InitialPlacement::CLOSE_TO_ALREADY_PLACED:
@@ -455,7 +458,10 @@ NestedGeneration* create_initial_generation(Model *initial_model,
 	      clone->initial_random_move_components();
 	      break;
 	    }
-	  
+
+	  score_t initial_score2 = clone->score();
+	  printf("initial clone 2 score works okay\n");
+
 	  //clone->writeSVG("random_routed2.svg");	  
 	  inner->add(clone);
 	}
@@ -516,7 +522,7 @@ Model* optimize_model(Model *model,
 {
   ::enable_gui = enable_gui;
   Canvas *gui = NULL;
-    
+
   auto nested = create_initial_generation(model,
 					  initial_placement);  
   if (enable_gui)

@@ -16,8 +16,9 @@ class ComponentInfo
   bool has_data_sheet = false;
   Point *fixed_position = NULL;
   std::string name;
-  bool is_router;
-  bool is_board;
+  bool is_ground = false;
+  bool is_router = false;
+  bool is_board = false;
   bool is_rotateable = false;
   std::string component_type;
   std::vector<Table *> table_list;
@@ -117,24 +118,7 @@ class Component
   void create_outline();
   void draw(Canvas *c);
 
-  void check()
-  {    
-    if (bounding_box.size() == 0)
-      {
-	fprintf(stderr, "ERROR: component %s has no bounding box\n", info->name.c_str());
-	abort();
-      }
-    if (outline.size() == 0)
-      {
-	fprintf(stderr, "ERROR: component %s has no outline\n", info->name.c_str());
-	abort();
-      }
-    
-    for (auto c : pins)
-      {
-	c->check();
-      }
-  }
+  void check();
   
   int resolve_length(const std::string &name)
   {

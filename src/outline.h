@@ -37,13 +37,13 @@ class Outline
     return cached_center.layer; 
   }
   
-  void move_to_layer(layer_t layer)
+  void set_layer(layer_t layer)
   {
     for (Point &p : points)
       {
-	p.move_to_layer(layer);
+	p.set_layer(layer);
       }
-    cached_center.move_to_layer(layer);
+    cached_center.set_layer(layer);
   }
     
   std::string str() const
