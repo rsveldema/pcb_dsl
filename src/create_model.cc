@@ -288,6 +288,7 @@ void process_location(Component *comp,
 							     sy,
 							     layer));
       comp->transpose(*comp->info->fixed_position);
+      comp->set_layer(layer);
     }
 }
 
@@ -400,6 +401,8 @@ void ModelCreatorListener::add_connections(ModelContext &mctxt,
 	      // on another layer. We hence must add a router.	      
 	      Component *router = this->model->create_router(from_pin->center());
 	      from_pin->add_connection(router->pins[0]);
+	      router->pins[0]->set_layer(from_pin->get_layer());
+	      
 	      router->pins[1]->set_layer(to_pin->get_layer());
 	      router->pins[1]->add_connection(to_pin);
 
@@ -465,6 +468,7 @@ void Component::add_bounding_box()
   d.min = d.min.sub(MillimeterPoint(ml, ml, d.min.layer));
   d.max = d.max.add(MillimeterPoint(ml, ml, d.min.layer));
   bounding_box.addRect(d.min, d.max);
+  bounding_box.set_layer(outline.get_layer());
 }
 
 

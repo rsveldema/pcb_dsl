@@ -74,7 +74,16 @@ class Component
   void add_bounding_box();
   void rotate(double radians);
   void random_rotate();
- 
+
+  void set_layer(layer_t l)
+  {
+    outline.set_layer(l);
+    bounding_box.set_layer(l);
+    for (auto p : pins)
+      {
+	p->set_layer(l);
+      }
+  }
   layer_t get_layer() const
   {
     assert(bounding_box.get_layer() == outline.get_layer());

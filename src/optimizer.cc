@@ -154,10 +154,12 @@ struct ParetoFront
  */
 score_t Model::score()
 {
+  auto overlaps = count_overlaps();
+  //printf("overlaps == %d\n", (int) overlaps);
   return {
     this->components.size(),
-      this->num_layers(),
-      this->count_overlaps(),
+	this->num_layers(),
+	overlaps,
       this->sum_connection_lengths(),
       this->count_crossing_lines(),
       this->get_num_sharp_angles()
@@ -489,6 +491,7 @@ void optimization_thread(NestedGeneration* nested,
 	      else
 		{
 		  best->writeSVG(utils::str("best-iteration-", iteration, ".svg"));
+		  auto tmp = best->score();
 		}
 	    }
 	  else
@@ -497,7 +500,9 @@ void optimization_thread(NestedGeneration* nested,
 	    }
 	  
 	  old = now;
-	  utils::print("left: ", long(end - now), " secs, done ", iteration, ", got: ", score.str());
+	  utils::print("left: ", long(end - now),
+		       " secs, done ", iteration,
+		       ", got: ", score.str());
 	}
       iteration += 1;
     }

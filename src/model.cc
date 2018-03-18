@@ -5,7 +5,8 @@
 
 static float WIRE_WIDTH = 0.1;
 
-
+/** returns angles in degrees (not radians)
+ */
 std::pair<double,double> Component::get_connection_angle_info(InMap &in_map)
 {
   assert(pins.size() == 2);
@@ -24,6 +25,12 @@ std::pair<double,double> Component::get_connection_angle_info(InMap &in_map)
     {
       for (auto out : my_to_pin->connections)
 	{
+	  if (out->overlaps(in) ||
+	      in->overlaps(out))
+	    {
+	      continue;
+	    }
+	  
 	  assert(in != out);
 	  assert(my_from_pin != in);
 	  assert(my_to_pin != in);
@@ -74,8 +81,8 @@ unsigned Model::get_num_sharp_angles()
 	{
 	  std::pair<double,double> angle_info = c->get_connection_angle_info(in_map);
 
-	  int min = std::abs(angle_info.first);
-	  int max = std::abs(angle_info.second);
+	  auto min = std::abs(angle_info.first);
+	  auto max = std::abs(angle_info.second);
 
 	  //min = min % 180;
 	  //max = max % 180;
