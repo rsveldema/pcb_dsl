@@ -148,10 +148,23 @@ public:
     ctxt->show_text(text);
   }
   
-  virtual void draw_line(const RGB &color,
+  virtual void draw_line(const LineStyle style,
+			 const RGB &color,
 			 const MillimeterPoint &from,
 			 const MillimeterPoint &to) override
   {
+    switch (style)
+      {
+      case LineStyle::SOLID: ctxt->unset_dash(); break;
+      case LineStyle::DASHED:
+	{
+	  std::vector<double> vec = {2, 2};
+	  ctxt->set_dash(vec, 5);
+	  break;
+	}
+      default: abort();
+      }
+    
     ctxt->set_source_rgb (color.red(),
 			  color.green(),
 			  color.blue());

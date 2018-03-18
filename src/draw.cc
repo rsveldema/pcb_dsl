@@ -3,11 +3,12 @@
 #include "utils.h"
 
 
-void Outline::drawLineTo(const Point &to,
+void Outline::drawLineTo(LineStyle style,
+			 const Point &to,
 			 Canvas *c)
 {
   RGB color = RGB::getColor(to.layer);
-  c->draw_line(color, center(), to);
+  c->draw_line(style, color, center(), to);
 }
 
 void Outline::draw(Canvas *c,
@@ -31,12 +32,12 @@ void Outline::draw(Canvas *c,
 	if (i == (count - 1))
 	  {
 	    Point &to = points[0];
-	    c->draw_line(color, from, to);
+	    c->draw_line(LineStyle::SOLID, color, from, to);
 	  }
 	else
 	  {
 	    Point &to = points[i + 1];
-	    c->draw_line(color, from, to);
+	    c->draw_line(LineStyle::SOLID, color, from, to);
 	  }
       }
 }
@@ -54,9 +55,15 @@ void Pin::draw(Canvas *c)
     {
       outline.draw(c, info->name);
     }
-  for (auto connection : connections)
+  for (auto other_pin : connections)
     {
-      outline.drawLineTo(connection->outline.center(),
+      auto style = LineStyle::SOLID;
+      if (other_pin->overlaps(this))
+	{
+	  style = LineStyle::DASHED;
+	}
+      outline.drawLineTo(style,
+			 other_pin->outline.center(),
 			 c);
     }
 }

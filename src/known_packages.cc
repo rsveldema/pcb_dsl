@@ -42,14 +42,17 @@ void create_pins_RS28(KnownPackageInfo *config, Component *comp) {
       auto starty = k * 0.25; //#this->pin_dist.mul(0.5);
       
       MillimeterLength x, y;
-      if (ix >= mid) {
-	x = comp->info->dim.x;
-	y = starty + k * ((np-1) - ix);
-      } else {
-	//#print(">>>> " + str(ix))
-	x = config->pin_len * -1;
-	y = starty + (k * ix);
-      }
+      if (ix >= mid)
+	{
+	  x = comp->info->dim.x;
+	  y = starty + k * ((np-1) - ix);
+	}
+      else
+	{
+	  //#print(">>>> " + str(ix))
+	  x = config->pin_len * -1;
+	  y = starty + (k * ix);
+	}
       
       auto pos = Point(MillimeterPoint(x, y, 0));
       auto end = pos.add(MillimeterPoint(config->pin_len, 
@@ -61,19 +64,28 @@ void create_pins_RS28(KnownPackageInfo *config, Component *comp) {
     }
 }
 
+static
+void create_ground_poly(KnownPackageInfo *config, Component *comp)
+{
+  assert(comp->info->dim.x.get() > 0);
+  assert(comp->info->dim.y.get() > 0);
+  
+  comp->info->is_ground = true;
 
+  auto pos = Point();
+  auto end = pos.add(comp->info->dim);
+  comp->outline.addRect(pos,
+			end);
+  assert(comp->pins.size() == 1);
+  comp->pins[0]->outline = comp->outline;
+}
+
+static
 void create_single_row_pin_header(KnownPackageInfo *config, Component *comp)
 {
-  if (config->name == "ground")
-    {
-      // skip, use dimensions set from DSL instead of the dummy values passed here.
-      comp->info->is_ground = true;
-    }
-  else
-    {
-      comp->info->dim.x  = config->w;
-      comp->info->dim.y  = config->h * comp->pins.size();
-    }
+  comp->info->dim.x  = config->w;
+  comp->info->dim.y  = config->h * comp->pins.size();
+
   assert(comp->info->dim.x.get() > 0);
   assert(comp->info->dim.y.get() > 0);
   
@@ -133,7 +145,7 @@ static std::vector<KnownPackageInfo*> packages = {
 			     2.35, //# w
 			     2.35, // h
 			     0, 0, 0,
-			     create_single_row_pin_header),
+			     create_ground_poly),
 	new KnownPackageInfo("SMD condensator",            
 			     2.35, //# w
 			     2.35, // h

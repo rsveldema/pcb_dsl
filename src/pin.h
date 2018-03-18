@@ -83,6 +83,10 @@ class Pin
       return ret;
     }
 
+  bool overlaps(const Pin *p) const
+  {
+    return outline.overlaps(p->outline);
+  }
   void check();
   
   layer_t get_layer() const { return outline.get_layer(); }

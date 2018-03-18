@@ -61,7 +61,8 @@ class Outline
     }
 
 
-  void drawLineTo(const Point &to,
+  void drawLineTo(LineStyle style,
+		  const Point &to,
 		  Canvas *c);
   void draw(Canvas *c,
 	    const std::string &name);

@@ -33,12 +33,12 @@ static bool enable_gui;
 std::string score_t::str() const
 {
   return utils::str("score<",
-		    "#LYR:", num_layers,
-		    "#CMP:", num_comp,
-		    ", OLAP:", num_overlaps,
+		    "#LAYER:", num_layers,
+		    "#COMP:", num_comp,
+		    ", OVELAP:", num_overlaps,
 		    ", LEN:", connection_lengths,
-		    ", CRS:", crossing_lines,
-		    ", SHRP: ", sharp_angles,
+		    ", CROSS:", crossing_lines,
+		    ", SHARP: ", sharp_angles,
 		    ">");
 }
 

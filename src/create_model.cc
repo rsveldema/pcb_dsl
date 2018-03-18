@@ -416,7 +416,8 @@ void ModelCreatorListener::add_connections(ModelContext &mctxt,
 }
 
 
-void ModelCreatorListener::enterConstant(dslParser::ConstantContext *ctxt) {
+void ModelCreatorListener::enterConstant(dslParser::ConstantContext *ctxt)
+{
   //constant: 'const' ID '=' expr ';';
   auto name = ctxt->ID()->getText();
   auto expr = ctxt->expr();

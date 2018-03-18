@@ -2,6 +2,11 @@
 #define CANVAS__H___
 
 
+enum class LineStyle
+{
+  SOLID, DASHED
+};
+
 /** Wrap cairo to avoid importing cairo everywhere.
  * Now it is only used inside of display.cc
  */
@@ -11,7 +16,8 @@ class Canvas
   virtual void draw_text(const RGB &color,
 			 const MillimeterPoint &from,
 			 const std::string &text) = 0;
-  virtual void draw_line(const RGB &color,
+  virtual void draw_line(LineStyle style,
+			 const RGB &color,
 			 const MillimeterPoint &from,
 			 const MillimeterPoint &to) = 0;
   virtual void publish(Model *m) = 0;
