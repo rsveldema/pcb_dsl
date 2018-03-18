@@ -2,7 +2,7 @@
 #include <algorithm>
 #include "utils.h"
 
-static bool DUMP_INITIAL_PLACEMENTS = false;
+static bool DUMP_INITIAL_PLACEMENTS = true;
 
 class Cluster
 {
@@ -33,7 +33,7 @@ public:
   Point get_point_close_by() const
   {
     assert(close_by.size() > 0);
-    
+
     Point dir;
     for (auto pin : close_by)
       {
@@ -44,7 +44,9 @@ public:
     auto range = MillimeterPoint(MillimeterLength(3),
 				 MillimeterLength(3),
 				 comp()->get_layer());
-    return average.random_transpose(range);
+    auto ret = average.random_transpose(range);
+    //printf("computed avg: %s, range %s, ret %s\n", average.str().c_str(), range.str().c_str(), ret.str().c_str());
+    return ret;
   }
 };
 

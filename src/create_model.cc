@@ -398,8 +398,9 @@ void ModelCreatorListener::add_connections(ModelContext &mctxt,
 	  if (from_pin->get_layer() != to_pin->get_layer())
 	    {
 	      // connection of something on one layer to something
-	      // on another layer. We hence must add a router.	      
-	      Component *router = this->model->create_router(from_pin->center());
+	      // on another layer. We hence must add a router.
+	      Point zero_point;
+	      Component *router = this->model->create_router(zero_point);
 	      from_pin->add_connection(router->pins[0]);
 	      router->pins[0]->set_layer(from_pin->get_layer());
 	      
