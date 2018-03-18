@@ -445,10 +445,6 @@ NestedGeneration* create_initial_generation(Model *initial_model,
       for (unsigned j = 0; j < POPULATION_GROUP_SIZE; j++)
 	{
 	  auto clone = start_model->deepclone();
-
-	  score_t initial_score = clone->score();
-	  printf("initial clone 1 score works okay\n");
-
 	  switch (placement)
 	    {
 	    case InitialPlacement::CLOSE_TO_ALREADY_PLACED:
@@ -458,11 +454,6 @@ NestedGeneration* create_initial_generation(Model *initial_model,
 	      clone->initial_random_move_components();
 	      break;
 	    }
-
-	  score_t initial_score2 = clone->score();
-	  printf("initial clone 2 score works okay\n");
-
-	  //clone->writeSVG("random_routed2.svg");	  
 	  inner->add(clone);
 	}
     }

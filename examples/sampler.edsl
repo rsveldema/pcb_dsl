@@ -15,11 +15,8 @@ component ADC {
   extract: table("AD9201-SPECIFICATIONS") as specs;
   extract: outline("OUTLINE DIMENSIONS") as outline;
   }
-
     
-  location {
   at: 5 cm, 5 cm rotatable;
-  }
 }
 
 const ADC_BITS = ADC.specs.RESOLUTION;
@@ -30,9 +27,7 @@ component analog_connector {
   pin P0, P1, P2, P3, P4, P5, P6, P7, P8, P9
   {}
     
-  location {
   at: 1 cm, 4 cm;
-  }
   
   dimensions {
   width: #pins * 2.54 mm;
@@ -46,12 +41,26 @@ component AGND {
   pin GND {
     analog_ground;
   }
+
+  at: 1 mm, 1 mm  layer 20;
+
+  dimensions {
+  width: 5 cm;	
+  height: 9 cm;
+  }
 }
 
 component DGND {
   type:	 "ground";
   pin GND {
     digital_ground;
+  }
+  
+  at: 55 mm, 1 mm  layer 19;
+  
+  dimensions {
+  width: 4 cm;	
+  height: 9 cm;
   }
 }
 
@@ -80,9 +89,7 @@ component fpga_connector {
       P38, P39
   {}
   
-  location {
   at: 9 cm, 4 cm;
-  }
   
   dimensions {
   width: #pins * 2.54 mm;
@@ -100,9 +107,7 @@ component R[x:ADC_BITS] {
   pin OUT {
     output;
   }
-  location {
    rotatable;
-  }
 }
 
 component R5K_1 {
@@ -114,9 +119,7 @@ component R5K_1 {
   pin OUT {
     output;
   }
-  location {
    rotatable;
-  }
 }
 
 component R5K_2 {
@@ -128,9 +131,7 @@ component R5K_2 {
   pin OUT {
     output;
   }
-  location {
    rotatable;
-  }
 }
 
 component C_01_uF_1 {
@@ -138,18 +139,14 @@ component C_01_uF_1 {
   type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
-  location {
-   rotatable;
-  }
+  rotatable;
 }
 component C_10_uF_1 {
   value: 10 uF;
   type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
-  location {
-   rotatable;
-  }
+  rotatable;
 }
 
 component C_01_uF_2 {
@@ -157,18 +154,15 @@ component C_01_uF_2 {
   type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
-  location {
-   rotatable;
-  }
+  rotatable;
 }
+
 component C_10_uF_2 {
   value: 10 uF;
   type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
-  location {
-   rotatable;
-  }
+  rotatable;
 }
 
 
@@ -177,9 +171,7 @@ component C_01_uF_3 {
   type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
-  location {
-   rotatable;
-  }
+  rotatable;
 }
 
 component C_10_uF_3 {
@@ -187,27 +179,21 @@ component C_10_uF_3 {
   type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
-  location {
-   rotatable;
-  }
+  rotatable;
 }
 component C_01_uF_4 {
   value: 0.1 uF;
   type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
-  location {
-   rotatable;
-  }
+  rotatable;
 }
 component C_01_uF_5 {
   value: 0.1 uF;
   type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
-  location {
-   rotatable;
-  }
+  rotatable;
 }
 
 
@@ -218,36 +204,28 @@ component C_01_uF_6 {
   type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
-  location {
-   rotatable;
-  }
+  rotatable;
 }
 component C_10_uF_7 {
   value: 10 uF;
   type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
-  location {
    rotatable;
-  }
 }
 component C_01_uF_8 {
   value: 0.1 uF;
   type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
-  location {
    rotatable;
-  }
 }
 component C_01_uF_9 {
   value: 0.1 uF;
   type: "SMD condensator";
   pin IN  { input;  }
   pin OUT { output; }
-  location {
    rotatable;
-  }
 }
 
 
