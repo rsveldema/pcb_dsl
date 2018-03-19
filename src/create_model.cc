@@ -86,6 +86,8 @@ int constant_fold_primary(Model *model,
     return value;
   if (unit == "layer")
     return value;
+  if (unit == "integer")
+    return value;
   abort();
 }
 
@@ -461,7 +463,7 @@ void Component::add_bounding_box()
   outline.minmax(d);
   for (auto p : pins)
     {
-      p->outline.minmax(d);
+      p->minmax(d);
     }
 
   MillimeterLength ml(BOUNDING_BOX_MARGIN_MM);
@@ -473,25 +475,30 @@ void Component::add_bounding_box()
 }
 
 
+void ModelCreatorListener::create_new_component(const std::string &name,
+						dslParser::ComponentContext *ctxt)
+{
+  auto info = new ComponentInfo(name, false);      
+  auto comp = new Component(info, model);
+  this->current_component = comp;      
+  preprocess_component(model, comp, ctxt->component_property());
+  model->components.push_back(comp);	
+  add_dimensions(comp, ctxt);
+  process_component_type(model, 
+			 comp);
+  add_datasheet_props(comp, ctxt);
+  add_location(comp, ctxt);
+  comp->add_bounding_box();
+}
+
 void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
 {
   auto names = ctxt->object_name()->ID();
   //utils::print("EXAMINE COMPONENT: ", utils::str(names));
   if (names.size() == 1)
     {
-      ComponentInfo *info = new ComponentInfo(names[0]->getText(), false);
-      
-      auto comp = new Component(info, this->model);
-      this->current_component = comp;
-      preprocess_component(this->model, comp, ctxt->component_property());
-      this->model->components.push_back(comp);
-	
-      add_dimensions(comp, ctxt);
-      process_component_type(model, 
-			     comp);
-      add_datasheet_props(comp, ctxt);
-      add_location(comp, ctxt);
-      comp->add_bounding_box();
+      create_new_component(names[0]->getText(),
+			   ctxt);
     }
   else
     {
@@ -499,23 +506,8 @@ void ModelCreatorListener::enterComponent(dslParser::ComponentContext *ctxt)
       auto count = this->model->info->constants[limit];
       for (int i = 0; i< count; i++)
 	{
-	  auto info = new ComponentInfo(names[0]->getText() + str(i), false);
-	  
-	  auto comp = new Component(info, this->model);
-	  this->current_component = comp;	    
-	  preprocess_component(this->model, comp, ctxt->component_property());
-	  this->model->components.push_back(comp);
-	    
-	  for (auto p : ctxt->component_property())
-	    {
-	      if (p->dim_prop().size() > 0)
-		{
-		  do_process_dimensions(comp, p->dim_prop());
-		}	      
-	    }
-	  process_component_type(model,
-				 comp);
-	  comp->add_bounding_box();
+	  create_new_component(names[0]->getText() + str(i),
+			       ctxt);
 	}
     }
 }

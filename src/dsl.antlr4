@@ -105,6 +105,7 @@ unit: name='cm'
     | name='layer'
     | name='ohm'
     | name='uF'
+    | name='integer'
     ;
 
 // ---- TOKENS ----

@@ -40,6 +40,7 @@ class PinInfo
   std::string name;
   std::string description;
 
+ public:
  PinInfo(const std::string &_name)
    : id(get_unique_id()),
     name(_name)
@@ -49,10 +50,12 @@ class PinInfo
 
 class Pin
 {
+ private:
+  Outline outline;
+
  public:
   PinInfo *info;
   Component *component;
-  Outline outline;
   std::vector<Pin *> connections;
 
  public:
@@ -66,14 +69,37 @@ class Pin
    Pin(PinInfo *_info,
        Component *comp,
        const Outline &_outline)
-   : info(_info),
-    component(comp),
-    outline(_outline)
+     : outline(_outline),
+    info(_info),
+    component(comp)    
     {
     }
 
   Pin(const Pin &c) = delete;
 
+ public:
+  void set_outline(const Outline &outline)
+  {
+    this->outline = outline;
+  }
+  
+  void minmax(min_max_t &d)
+  {
+    outline.minmax(d);
+  }
+
+  void addRect(const Point &s,
+	       const Point &e)
+  {
+    outline.addRect(s, e);
+  }
+  
+  void rotate(double radians,
+	      const Point &center)
+  {
+    outline.rotate(radians, center);
+  }
+  
   std::string str() const
     {
       std::string ret = info->name;
@@ -87,6 +113,7 @@ class Pin
   {
     return outline.overlaps(p->outline);
   }
+  
   void check();
   
   layer_t get_layer() const { return outline.get_layer(); }

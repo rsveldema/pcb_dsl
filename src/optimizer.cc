@@ -24,10 +24,6 @@ constexpr auto MUTATION_PROBABILITY_PERCENTAGE    = 4;
 constexpr auto FIX_PROBABILITY_PERCENTAGE         = 8;
 constexpr auto ROTATE_PROBABILITY_PERCENTAGE      = 4;
 
-static_assert(MUTATION_PROBABILITY_PERCENTAGE > 0);
-static_assert(ROTATE_PROBABILITY_PERCENTAGE > 0);
-
-
 static bool enable_gui;
 
 std::string score_t::str() const
@@ -491,7 +487,7 @@ void optimization_thread(NestedGeneration* nested,
 	      else
 		{
 		  best->writeSVG(utils::str("best-iteration-", iteration, ".svg"));
-		  auto tmp = best->score();
+		  //auto tmp = best->score();
 		}
 	    }
 	  else

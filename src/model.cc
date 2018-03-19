@@ -217,7 +217,7 @@ void Component::rotate(double radians)
   bounding_box.rotate(radians, center);
   for (auto p : pins)
     {
-      p->outline.rotate(radians, center);
+      p->rotate(radians, center);
     }
 }
 

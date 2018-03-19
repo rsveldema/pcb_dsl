@@ -60,7 +60,7 @@ void create_pins_RS28(KnownPackageInfo *config, Component *comp) {
 					 0));
       //#print("creating pin: " + str(p.name) + ", at " + str(pos))
       
-      p->outline.addRect(pos, end);
+      p->addRect(pos, end);
     }
 }
 
@@ -77,7 +77,7 @@ void create_ground_poly(KnownPackageInfo *config, Component *comp)
   comp->outline.addRect(pos,
 			end);
   assert(comp->pins.size() == 1);
-  comp->pins[0]->outline = comp->outline;
+  comp->pins[0]->set_outline(comp->outline);
 }
 
 static
@@ -105,7 +105,7 @@ void create_single_row_pin_header(KnownPackageInfo *config, Component *comp)
       end = pos.add(MillimeterPoint(config->w,
 				    config->h,
 				    0));
-      p->outline.addRect(pos, end);
+      p->addRect(pos, end);
     }
 }
 
@@ -136,7 +136,7 @@ void create_two_row_pin_header(KnownPackageInfo *config, Component *comp)
 				    0));
       //print("creating pin: " + str(p.name) + ", at " + str(pos));
       
-      p->outline.addRect(pos, end);
+      p->addRect(pos, end);
     }
 }
 

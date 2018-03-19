@@ -92,6 +92,8 @@ class ModelCreatorListener : public dslBaseListener
   virtual void enterConstant(dslParser::ConstantContext *ctxt);
   virtual void enterNetwork(dslParser::NetworkContext *ctxt);
   virtual void enterComponent(dslParser::ComponentContext *ctxt);
+  void create_new_component(const std::string &name,
+			    dslParser::ComponentContext *ctxt);
 };
 
 			  

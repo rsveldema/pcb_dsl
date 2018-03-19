@@ -47,8 +47,8 @@ Component *Model::create_router(const Point &pos)
   auto e = s.add(comp->info->dim);
 
   comp->outline.addRect(s, e);
-  pin_in->outline.addRect(s, e);
-  pin_out->outline.addRect(s, e);
+  pin_in->addRect(s, e);
+  pin_out->addRect(s, e);
 
   comp->transpose( pos );
   comp->add_bounding_box();

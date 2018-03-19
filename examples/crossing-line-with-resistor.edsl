@@ -15,10 +15,7 @@ component conn1 {
   pin P0
   {}
     
-  location {
   at: 1 cm, 4 cm;
-    rotatable;	
-  }
   
   dimensions {
   width: #pins * 2.54 mm;
@@ -32,13 +29,11 @@ component conn2 {
   pin P0
   {}
     
-  location {
   at: 9 cm, 4 cm;
-  }
   
   dimensions {
-     width: #pins * 2.54 mm;
-     height: 2.54 mm;
+  width: #pins * 2.54 mm;
+  height: 2.54 mm;
   }
 }
 
@@ -48,13 +43,11 @@ component conn3 {
   pin P0
   {}
     
-  location {
   at: 4 cm, 1 cm;
-  }
   
   dimensions {
-     width: #pins * 2.54 mm;
-     height: 2.54 mm;
+  width: #pins * 2.54 mm;
+  height: 2.54 mm;
   }
 }
 
@@ -64,13 +57,11 @@ component conn4 {
   pin P0
   {}
     
-  location {
-     at: 4 cm, 9 cm;
-  }
+  at: 4 cm, 9 cm;
   
   dimensions {
-     width: #pins * 2.54 mm;
-     height: 2.54 mm;
+  width: #pins * 2.54 mm;
+  height: 2.54 mm;
   }
 }
 
@@ -85,9 +76,8 @@ component R5K_1 {
   pin OUT {
     output;
   }
-  location {
-    rotatable;
-  }
+
+  rotatable;
 }
 
 
