@@ -209,37 +209,6 @@ Model *Model::deepclone()
 }
 
 
-void Component::rotate(double radians)
-{
-  //printf("rotating %s over %f degrees\n", info->name.c_str(), radians_to_degrees(radians));
-  auto center = outline.center();
-  outline.rotate(radians, center);
-  bounding_box.rotate(radians, center);
-  for (auto p : pins)
-    {
-      p->rotate(radians, center);
-    }
-}
-
-void Component::random_rotate()
-{
-  if (! info->is_rotateable)
-    {
-      return;
-    }
-  double radians = randrange(1, 8) * (M_PI / 4.0);
-  rotate(radians);
-}
-
-void Model::random_rotate_component()
-{
-  for (auto comp : components)
-    {
-      comp->random_rotate();
-    }
-}
-
-
 void Model::writeDOT(const std::string filename)
 {
     FILE *f = fopen(filename.c_str(), "w");

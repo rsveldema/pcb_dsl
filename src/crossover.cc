@@ -13,6 +13,18 @@ void Component::crossover(Component *other)
 {
   assert(get_layer() == other->get_layer());
   assert(other->info->name == info->name);
+
+  for (unsigned i=0;i<pins.size();i++)
+    {
+      auto p1 = pins[i];
+      auto p2 = other->pins[i];
+      
+      if (p1->get_layer() != p2->get_layer())
+	{
+	  return;
+	}
+    }
+  
   
   auto k = outline;
   outline  = other->outline;
@@ -29,11 +41,9 @@ void Component::crossover(Component *other)
     {
       auto p1 = pins[i];
       auto p2 = other->pins[i];
-
-      if (p1->get_layer() == p2->get_layer())
-	{
-	  p1->crossover(p2);
-	}
+      
+      assert(p1->get_layer() == p2->get_layer());
+      p1->crossover(p2);
     }
 }
 

@@ -163,6 +163,9 @@ class Point
     this->layer = layer;
   }
 
+  void rotate(double radians,
+	      const Point &rotation_point);
+
   std::string str() const
     {
       return toCM().str();

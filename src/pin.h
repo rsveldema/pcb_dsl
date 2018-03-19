@@ -95,10 +95,7 @@ class Pin
   }
   
   void rotate(double radians,
-	      const Point &center)
-  {
-    outline.rotate(radians, center);
-  }
+	      const Point &center);
   
   std::string str() const
     {

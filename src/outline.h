@@ -85,25 +85,7 @@ class Outline
   }
 
   void rotate(double radians,
-	      const Point &center)
-  {
-    layer_t layer = get_layer();
-    const double cs = cos(radians);
-    const double sn = sin(radians);    
-    for (auto &p : points)
-      {
-	auto k = p.sub(center);
-	
-	double px = (k.x * cs) - (k.y * sn); 
-	double py = (k.x * sn) + (k.y * cs);
-
-	Dummy dummy;
-	p = Point(dummy,
-		  px + center.x,
-		  py + center.y,
-		  layer);	
-      }
-  }
+	      const Point &center);
 
   /** count the numnber of intersections when going out of the polygon.
    */

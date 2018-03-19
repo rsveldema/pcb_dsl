@@ -35,7 +35,7 @@ include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
 
 
-add_executable(pcbgen count_overlaps.cc check.cc guessed_initial_placement.cc main.cc draw.cc sum_lengths.cc place_routing_components.cc random_move.cc crossover.cc crossing.cc display.cc layer_map.cc remove_router.cc optimizer.cc utils.cc create_model.cc model.cc datasheet.cc known_packages.cc ${antlr4cpp_src_files_antlrcpp})
+add_executable(pcbgen count_overlaps.cc check.cc guessed_initial_placement.cc main.cc draw.cc sum_lengths.cc place_routing_components.cc random_move.cc crossover.cc crossing.cc display.cc layer_map.cc remove_router.cc optimizer.cc utils.cc create_model.cc model.cc datasheet.cc rotate.cc known_packages.cc ${antlr4cpp_src_files_antlrcpp})
 
 include_directories( ${Cairomm_INCLUDE_DIRS} ${Gtkmm_INCLUDE_DIRS} )
 
