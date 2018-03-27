@@ -12,8 +12,8 @@ enum class SelectionHeuristic
   PLAIN_SORT
 };
 
-static SelectionHeuristic selection_heuristic = SelectionHeuristic::PARETO_FRONT;
-//static SelectionHeuristic selection_heuristic = SelectionHeuristic::PLAIN_SORT;
+//static SelectionHeuristic selection_heuristic = SelectionHeuristic::PARETO_FRONT;
+static SelectionHeuristic selection_heuristic = SelectionHeuristic::PLAIN_SORT;
 
 constexpr auto POPULATION_NUM_GROUPS =  1u;
 constexpr auto POPULATION_GROUP_SIZE = 32u;
@@ -286,8 +286,8 @@ public:
   }
 
   
-  static bool comparer(std::pair<score_t,Model*> &p1,
-		       std::pair<score_t,Model*> &p2)
+  static bool comparer(std::pair<score_t, Model*> &p1,
+		       std::pair<score_t, Model*> &p2)
   {
     return p1.first < p2.first;
   }
