@@ -17,6 +17,7 @@ static SelectionHeuristic selection_heuristic = SelectionHeuristic::PLAIN_SORT;
 
 constexpr auto POPULATION_NUM_GROUPS =  1u;
 constexpr auto POPULATION_GROUP_SIZE = 32u;
+constexpr auto NUM_KEPT_GROUP_BEST   =  4u; 
 constexpr auto SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
 
 constexpr auto CROSSOVER_PROBABILITY_PERCENTAGE   = 20;
@@ -39,14 +40,23 @@ std::string score_t::str() const
 }
 
 
-bool score_t::operator <(const score_t &s)
+bool score_t::operator < (const score_t &s)
 {
-  if (num_comp > s.num_comp) return false;
-  if (connection_lengths > s.connection_lengths) return false;
-  if (crossing_lines > s.crossing_lines) return false;
-  if (num_layers > s.num_layers) return false;
-  if (num_overlaps > s.num_overlaps) return false;
-  if (sharp_angles > s.sharp_angles) return false;
+  if (num_overlaps < s.num_overlaps)
+    {
+      return true;
+    }
+
+  if (num_comp < s.num_comp)
+    {
+      return true;
+    }
+
+  if (num_layers >= s.num_layers) return false;
+  if (connection_lengths >= s.connection_lengths) return false;
+  if (crossing_lines >= s.crossing_lines) return false;
+  if (num_overlaps >= s.num_overlaps) return false;
+  if (sharp_angles >= s.sharp_angles) return false;
   return true;
 }
 
@@ -165,9 +175,10 @@ score_t Model::score()
 
 class Generation
 {
-private:
+private:  
   int group_id;
   std::vector<Model*> models;
+  std::vector<std::pair<score_t, Model*>> best_models;
   
 public:
   Generation(int _group_id)
@@ -243,6 +254,7 @@ public:
     for (unsigned i=0;i<count;i++)
       {
 	auto model = models[i];
+	assert(model);
 	if (selected.find(model) == selected.end())
 	  {
 	    delete model;
@@ -254,6 +266,26 @@ public:
     assert(models.size() == 0);
   }
 
+
+  void try_to_add_to_best_models(Model *m)
+  {
+    score_t m_score = m->score();
+    if (best_models.size() < NUM_KEPT_GROUP_BEST)
+      {
+	best_models.push_back({ m_score, m->clone() });
+	return;
+      }
+    for (unsigned i=0;i<NUM_KEPT_GROUP_BEST;i++)
+      {
+	if (m_score < best_models[i].first)
+	  {
+	    //delete best_models[i].second;
+	    best_models[i] = { m_score, m->clone() };
+	    return;
+	  }
+      }
+  }
+
   void create_new_generation(std::map<Model*, bool> &selected)
   {
     delete_non_selected_models(selected);
@@ -261,7 +293,9 @@ public:
     for (auto k : selected)
       {
 	array.push_back(k.first);
-      }
+	//	try_to_add_to_best_models(k.first);
+      }    
+    
     assert(array.size() == selected.size());
     assert(selected.size() <= POPULATION_GROUP_SIZE);
     
@@ -272,12 +306,19 @@ public:
 	    //printf("score[%d]: %d\n", i, (int)scores[i].first);
 	    models.push_back(array[i]);
 	  }
+#if 0
+	else if (i < (selected.size() + best_models.size()))
+	  {
+	    //printf("injection of best models\n");
+	    models.push_back(best_models[i-selected.size()].second->clone());
+	  }
+#endif
 	else
 	  {	    
 	    auto k = i % selected.size();
 	    assert(k < selected.size());
 	    
-	    auto cloned = array[k]->deepclone();
+	    auto cloned = array[k]->clone();
 	    static const Point range(MillimeterPoint(5, 5, 0));
 	    cloned->random_move_components(range);
 	    models.push_back(cloned);
@@ -296,9 +337,12 @@ public:
 				std::map<Model*, bool> &selected)
   {
     assert(scores.size() == POPULATION_GROUP_SIZE);    
-    std::sort(scores.begin(), scores.end(), comparer);    
+    std::sort(scores.begin(), scores.end(), comparer);
+
+    static_assert(SELECTION_FILTER_SIZE < POPULATION_GROUP_SIZE);
     for (unsigned i = 0; i < SELECTION_FILTER_SIZE; i++)
       {
+	assert(i < scores.size());
 	Model *model = scores[i].second;
 	selected[model] = true;
       }
@@ -354,9 +398,17 @@ public:
   {
     Model* best = NULL;
     score_t best_score;
+#if 1
     for (auto m : this->models)
       {
 	score_t score = m->score();
+#else
+    for (auto mi : this->best_models)
+      {
+	Model *m = mi.second;
+	score_t score = mi.first;//score();
+#endif
+	
 	score.add_penalties();
 	if (best == NULL)
 	  {
@@ -431,7 +483,7 @@ NestedGeneration* create_initial_generation(Model *initial_model,
 					    InitialPlacement placement)
 {
   //auto dim = initial_model->info->board_dim;
-  auto start_model = initial_model->deepclone();
+  auto start_model = initial_model->clone();
   start_model->writeSVG("random_routed.svg");
     
   auto nested = new NestedGeneration();
@@ -442,7 +494,7 @@ NestedGeneration* create_initial_generation(Model *initial_model,
 
       for (unsigned j = 0; j < POPULATION_GROUP_SIZE; j++)
 	{
-	  auto clone = start_model->deepclone();
+	  auto clone = start_model->clone();
 	  switch (placement)
 	    {
 	    case InitialPlacement::CLOSE_TO_ALREADY_PLACED:

@@ -65,7 +65,9 @@ class Component
       const unsigned count = pins.size();
       for (unsigned i=0;i<count;i++)
 	{
+	  assert(pins[i]);
 	  delete pins[i];
+	  pins[i] = NULL;
 	}
    }
 

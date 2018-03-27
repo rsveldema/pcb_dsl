@@ -35,6 +35,7 @@ class Model
  public:
   std::vector<Component *> components;
   ModelInfo *info;
+  unsigned live = 0xdeadbeed;
   
  public:
   Model(ModelInfo *_info)
@@ -42,8 +43,14 @@ class Model
     {
     }
 
+  Model(const Model &c) = delete;
+  Model &operator = (Model &m) = delete;
+
   ~Model()
     {
+      assert(live == 0xdeadbeed);
+      live = 0xdeadfeed;
+      
       const unsigned count = components.size();
       for (unsigned i=0;i<count;i++)
 	{
@@ -60,7 +67,7 @@ class Model
   double sum_connection_lengths();
   unsigned count_overlaps();  
   Component *create_router(const Point &pos);
-  Model *deepclone();
+  Model *clone();
   void writeSVG(const std::string &filename);
   void draw(Canvas *c);
   void random_move_components(const Point &range);

@@ -12,7 +12,7 @@ struct score_t
   unsigned sharp_angles = 0;
 
   void add_penalties();
-  bool operator <(const score_t &s);
+  bool operator < (const score_t &s);
 
   std::string str() const;
 };

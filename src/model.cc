@@ -87,7 +87,7 @@ void Component::relink(Model *m, clone_map_t &map)
 }
 
 
-Model *Model::deepclone()
+Model *Model::clone()
 {
   auto m = new Model(info);
 
