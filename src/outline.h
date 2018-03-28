@@ -87,6 +87,29 @@ class Outline
   void rotate(double radians,
 	      const Point &center);
 
+  bool intersects_line(const Point &p1,
+		       const Point &p2) const
+  {
+    if (get_layer() != p1.get_layer())
+      {
+	return false;
+      }
+    
+    const unsigned n = points.size();
+    for (unsigned i = 0; i < n; i++)
+      {
+	const Point &a = points[i];
+	const Point &b = points[(i + 1) % points.size()];
+	if (Point::intersection(a, b,
+				p1, p2,
+				NULL))
+	  {
+	    return true;
+	  }
+      }
+    return false;
+  }
+  
   /** count the numnber of intersections when going out of the polygon.
    */
   bool point_inside_polygon(const Point &P) const

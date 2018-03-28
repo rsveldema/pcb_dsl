@@ -2,7 +2,7 @@
 #include <algorithm>
 #include "utils.h"
 
-bool Connection::crosses(const Connection &connection)
+bool Connection::intersects_with(const Connection &connection)
 {
   return Point::intersection(p1, p2,
 			     connection.p1, connection.p2,
@@ -34,7 +34,7 @@ bool Pin::have_crossing_connection(const Connection &connection,
 	  continue;
 	}
 
-      if (other_connection.crosses(connection))
+      if (other_connection.intersects_with(connection))
 	{
 	  //printf("crossed connection found\n");
 	  //bool test = (connection.p1 == other_connection.p2);
@@ -166,6 +166,7 @@ bool Component::add_layers_for_crossing_lines(Model *model,
   return false;
 }
 
+
 unsigned Component::count_crossing_lines(Model *model)
 {
   unsigned c = 0;
@@ -189,6 +190,7 @@ unsigned Model::count_crossing_lines()
     }
   return c;
 }
+
 
 		
 void Model::add_layers_for_crossing_lines()

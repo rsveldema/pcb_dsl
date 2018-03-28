@@ -65,7 +65,11 @@ class Model
   unsigned get_num_sharp_angles();
   bool have_crossing_connection(const Connection &connection,
 				Connection *crossed);
+  void collect_crossing_pins(const Connection &connection,
+			     std::vector<Pin*> &crossed);
   unsigned count_crossing_lines();
+  unsigned count_crossing_pins();
+  
   void add_layers_for_crossing_lines();
   double sum_connection_lengths();
   unsigned count_overlaps();  

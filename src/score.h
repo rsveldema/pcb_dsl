@@ -10,6 +10,7 @@ struct score_t
   double   connection_lengths = 0;
   unsigned crossing_lines = 0;
   unsigned sharp_angles = 0;
+  size_t   crossing_pins = 0;
   unsigned magic = 0;
 
   static constexpr unsigned MAGIC = 1234;

@@ -157,6 +157,11 @@ class Point
   {
     return CentimeterPoint(*this);
   }
+
+  inline layer_t get_layer() const
+  {
+    return layer;
+  }
   
   inline void set_layer(layer_t layer)
   {

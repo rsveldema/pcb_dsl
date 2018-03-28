@@ -37,7 +37,8 @@ std::string score_t::str() const
 		    "#COMP:", num_comp,
 		    ", OVELAP:", num_overlaps,
 		    ", LEN:", connection_lengths,
-		    ", CROSS:", crossing_lines,
+		    ", CROSSW:", crossing_lines,
+		    ", CROSSP:", crossing_pins,
 		    ", SHARP: ", sharp_angles,
 		    ">");
 }
@@ -54,6 +55,7 @@ int score_t::int_comparer(const score_t &s) const
   assert(s.magic == MAGIC);
   if (num_overlaps != s.num_overlaps)             return num_overlaps - s.num_overlaps;
   if (crossing_lines     != s.crossing_lines)     return crossing_lines - s.crossing_lines;
+  if (crossing_pins     != s.crossing_pins)       return crossing_pins - s.crossing_pins;
   if (num_comp     != s.num_comp)                 return num_comp - s.num_comp;
   if (num_layers   != s.num_layers)               return num_layers - s.num_layers;
   if (connection_lengths != s.connection_lengths) return connection_lengths - s.connection_lengths;
@@ -155,7 +157,8 @@ score_t Model::score()
   
   auto overlaps = count_overlaps();
   auto conn_lengths = sum_connection_lengths();
-  auto crosses = count_crossing_lines();
+  auto crossing_wires = count_crossing_lines();
+  auto crossing_pins = count_crossing_pins();
   auto sharps = get_num_sharp_angles();
   //printf("overlaps == %d\n", (int) overlaps);
   return {
@@ -163,8 +166,9 @@ score_t Model::score()
       num_layers(),
       overlaps,
       conn_lengths,
-      crosses,
+      crossing_wires,
       sharps,
+      crossing_pins,
       score_t::MAGIC};
 }
 

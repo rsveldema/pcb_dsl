@@ -170,10 +170,13 @@ class Component
   }
 
   void gather_layer_map(LayerMap &map);
+  void collect_crossing_pins(const Connection &connection,
+			     std::vector<Pin*> &crossed);
   bool have_crossing_connection(const Connection &connection,
 				Connection *crossed);
   bool add_layers_for_crossing_lines(Model *model,
 				     MutationAdmin &admin);
+  unsigned count_crossing_pins(Model *model);
   unsigned count_crossing_lines(Model *model);
 
   Pin *add_pin(PinInfo *info)
