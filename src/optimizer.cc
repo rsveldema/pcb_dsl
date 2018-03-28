@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <thread>
+#include <string.h>
 
 #include "optimizer.h"
 #include "create_model.h"
@@ -14,6 +15,8 @@ enum class SelectionHeuristic
 
 //static SelectionHeuristic selection_heuristic = SelectionHeuristic::PARETO_FRONT;
 static SelectionHeuristic selection_heuristic = SelectionHeuristic::PLAIN_SORT;
+
+#define SUPPORT_MULTI_GEN_ELITE  1
 
 constexpr auto POPULATION_NUM_GROUPS =  1u;
 constexpr auto POPULATION_GROUP_SIZE = 32u;
@@ -39,43 +42,31 @@ std::string score_t::str() const
 		    ">");
 }
 
-
-bool score_t::operator < (const score_t &s)
+bool score_t::operator < (const score_t &s) const
 {
-  if (num_overlaps < s.num_overlaps)
-    {
-      return true;
-    }
-
-  if (num_comp < s.num_comp)
-    {
-      return true;
-    }
-
-  if (num_layers >= s.num_layers) return false;
-  if (connection_lengths >= s.connection_lengths) return false;
-  if (crossing_lines >= s.crossing_lines) return false;
-  if (num_overlaps >= s.num_overlaps) return false;
-  if (sharp_angles >= s.sharp_angles) return false;
-  return true;
+  return int_comparer(s) < 0;
 }
 
 
-void score_t::add_penalties()
+int score_t::int_comparer(const score_t &s) const
 {
-  if (crossing_lines)
-    {
-      // we're going to require crossing lines later which will
-      // require extra components.
-      num_comp *= 10 + crossing_lines;
-      connection_lengths *= 10 + crossing_lines;
-    }
-  if (num_overlaps)
-    {
-      // going to have to move which will cost extra distance
-      num_comp += 2;
-      connection_lengths *= num_overlaps;
-    }
+  assert(magic == MAGIC);
+  assert(s.magic == MAGIC);
+  if (num_overlaps != s.num_overlaps)             return num_overlaps - s.num_overlaps;
+  if (crossing_lines     != s.crossing_lines)     return crossing_lines - s.crossing_lines;
+  if (num_comp     != s.num_comp)                 return num_comp - s.num_comp;
+  if (num_layers   != s.num_layers)               return num_layers - s.num_layers;
+  if (connection_lengths != s.connection_lengths) return connection_lengths - s.connection_lengths;
+  if (sharp_angles       != s.sharp_angles)       return sharp_angles - s.sharp_angles;
+  return 0;
+}
+
+int int_comparer(const void *p1,
+		 const void *p2)
+{
+  compare_t *a = (compare_t*)p1;
+  compare_t *b = (compare_t*)p2;
+  return a->first.int_comparer(b->first);
 }
 
 struct ParetoFront
@@ -160,16 +151,21 @@ struct ParetoFront
  */
 score_t Model::score()
 {
+  assert(live == MAGIC);
+  
   auto overlaps = count_overlaps();
+  auto conn_lengths = sum_connection_lengths();
+  auto crosses = count_crossing_lines();
+  auto sharps = get_num_sharp_angles();
   //printf("overlaps == %d\n", (int) overlaps);
   return {
-    this->components.size(),
-	this->num_layers(),
-	overlaps,
-      this->sum_connection_lengths(),
-      this->count_crossing_lines(),
-      this->get_num_sharp_angles()
-      };
+    components.size(),
+      num_layers(),
+      overlaps,
+      conn_lengths,
+      crosses,
+      sharps,
+      score_t::MAGIC};
 }
 
 
@@ -178,7 +174,9 @@ class Generation
 private:  
   int group_id;
   std::vector<Model*> models;
+#if SUPPORT_MULTI_GEN_ELITE
   std::vector<std::pair<score_t, Model*>> best_models;
+#endif
   
 public:
   Generation(int _group_id)
@@ -266,7 +264,7 @@ public:
     assert(models.size() == 0);
   }
 
-
+#if SUPPORT_MULTI_GEN_ELITE
   void try_to_add_to_best_models(Model *m)
   {
     score_t m_score = m->score();
@@ -279,12 +277,13 @@ public:
       {
 	if (m_score < best_models[i].first)
 	  {
-	    //delete best_models[i].second;
+	    delete best_models[i].second;
 	    best_models[i] = { m_score, m->clone() };
 	    return;
 	  }
       }
   }
+#endif
 
   void create_new_generation(std::map<Model*, bool> &selected)
   {
@@ -293,7 +292,9 @@ public:
     for (auto k : selected)
       {
 	array.push_back(k.first);
-	//	try_to_add_to_best_models(k.first);
+#if SUPPORT_MULTI_GEN_ELITE
+	try_to_add_to_best_models(k.first);
+#endif
       }    
     
     assert(array.size() == selected.size());
@@ -306,7 +307,7 @@ public:
 	    //printf("score[%d]: %d\n", i, (int)scores[i].first);
 	    models.push_back(array[i]);
 	  }
-#if 0
+#if SUPPORT_MULTI_GEN_ELITE
 	else if (i < (selected.size() + best_models.size()))
 	  {
 	    //printf("injection of best models\n");
@@ -326,18 +327,17 @@ public:
       }
   }
 
-  
-  static bool comparer(std::pair<score_t, Model*> &p1,
-		       std::pair<score_t, Model*> &p2)
-  {
-    return p1.first < p2.first;
-  }
-
-  void use_plain_sort_selection(std::vector<std::pair<score_t, Model*>> &scores,
+  void use_plain_sort_selection(std::array<compare_t, POPULATION_GROUP_SIZE> &scores,
 				std::map<Model*, bool> &selected)
   {
-    assert(scores.size() == POPULATION_GROUP_SIZE);    
-    std::sort(scores.begin(), scores.end(), comparer);
+    assert(scores.size() == POPULATION_GROUP_SIZE);
+    for (auto it : scores)
+      {
+	assert(it.first.magic == score_t::MAGIC);
+      }
+    //std::sort(scores.begin(), scores.end(), comparer);
+    qsort(scores.data(), scores.size(), sizeof(std::pair<score_t, Model*>),
+	  int_comparer);
 
     static_assert(SELECTION_FILTER_SIZE < POPULATION_GROUP_SIZE);
     for (unsigned i = 0; i < SELECTION_FILTER_SIZE; i++)
@@ -348,7 +348,7 @@ public:
       }
   }
 
-  void use_pareto_front_selection(std::vector<std::pair<score_t, Model*>> &scores,
+  void use_pareto_front_selection(std::array<compare_t, POPULATION_GROUP_SIZE> &scores,
 				  std::map<Model*, bool> &selected)
   {
     ParetoFront front;
@@ -356,7 +356,8 @@ public:
       {
 	auto score  = p.first;
 	auto model = p.second;
-
+	assert(model);
+	
 	front.tryAddToFront(score, model);
       }
     front.push_selected(selected);
@@ -365,14 +366,15 @@ public:
 
   void selection(unsigned iteration)
   {
-    std::vector<std::pair<score_t, Model*>> scores;
+    std::array<compare_t, POPULATION_GROUP_SIZE> scores;
+    memset(&scores, 0, sizeof(scores));
 
-    assert(models.size() == POPULATION_GROUP_SIZE);    
-    for (auto model : models)
+    assert(models.size() == POPULATION_GROUP_SIZE);
+    for (unsigned i=0;i<models.size();i++)
       {
+	auto model = models[i];
 	score_t score = model->score();
-	score.add_penalties();
-	scores.push_back( { score, model } );
+	scores[i] = { score, model };
       }
 
     std::map<Model*, bool> selected;
@@ -409,7 +411,6 @@ public:
 	score_t score = mi.first;//score();
 #endif
 	
-	score.add_penalties();
 	if (best == NULL)
 	  {
 	    best = m;

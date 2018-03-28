@@ -33,9 +33,12 @@ class ModelInfo
 class Model
 {
  public:
+  static constexpr unsigned MAGIC = 0xdeadbeed;
+
+  
   std::vector<Component *> components;
   ModelInfo *info;
-  unsigned live = 0xdeadbeed;
+  unsigned live = MAGIC;
   
  public:
   Model(ModelInfo *_info)
@@ -48,8 +51,8 @@ class Model
 
   ~Model()
     {
-      assert(live == 0xdeadbeed);
-      live = 0xdeadfeed;
+      assert(live == MAGIC);
+      live = 0xfeeddead;
       
       const unsigned count = components.size();
       for (unsigned i=0;i<count;i++)

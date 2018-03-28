@@ -21,7 +21,7 @@ bool Pin::have_crossing_connection(const Connection &connection,
   const unsigned count = connections.size();
   for (unsigned i=0;i<count;i++)
     {
-      auto other_pin = connections[i];
+      auto other_pin = this->connections[i];
  
       auto p2 = other_pin->outline.center();
       Point dummy;
@@ -32,7 +32,7 @@ bool Pin::have_crossing_connection(const Connection &connection,
 	  (connection.p2 == other_connection.p1))
 	{
 	  continue;
-	}	  
+	}
 
       if (other_connection.crosses(connection))
 	{
@@ -60,7 +60,7 @@ bool Component::have_crossing_connection(const Connection &connection,
     {
       return false;
     }
-  
+
   const unsigned count = pins.size();
   for (unsigned i=0;i<count;i++)
     {
@@ -100,6 +100,8 @@ bool Pin::add_layers_for_crossing_lines(Model *model,
 	{
 	  continue;
 	}
+
+      // TODO: route around crossong compoments.
       
       auto center2 = other_pin->outline.center();
       Point dummy;
