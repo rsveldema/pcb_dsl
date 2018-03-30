@@ -74,32 +74,40 @@ void Component::move_pin_connection(Component *from,
  */
 void Model::remove_router_chain()
 {
-  InMap in_map(this);
-  
-  for (auto A : components)
+  static constexpr unsigned NUM_ROUTER_REMOVAL_RETRIES = 2;
+  for (int i=0;i<NUM_ROUTER_REMOVAL_RETRIES;i++)
     {
-      if (auto B = next_router(A))
+    retry:
+      
+      InMap in_map(this);
+      int success = 0;
+      for (auto A : components)
 	{
-	  if (auto C = next_router(B))
+	  if (auto B = next_router(A))
 	    {
-	      if (auto D = next_router(C))
+	      if (auto C = next_router(B))
 		{
-		  //fprintf(stderr, "found router chain!\n");
-		  if (in_map.num_incoming_edges(B->pins[0]) == 1 &&
-		      in_map.num_incoming_edges(C->pins[0]) == 1)
+		  if (auto D = next_router(C))
 		    {
-		      A->pins[1]->set_layer(B->pins[1]->get_layer());
-		      D->pins[0]->set_layer(B->pins[1]->get_layer());
-		      
-		      A->move_pin_connection(B,
-					     D);
-		      
-		      utils::erase(components, B);
-		      utils::erase(components, C);
-		      
-		      delete B;
-		      delete C;
-		      return;
+		      if (in_map.num_incoming_edges(B->pins[0]) == 1 &&
+			  in_map.num_incoming_edges(C->pins[0]) == 1)
+			{
+			  fprintf(stderr, "found router chain-2!\n");
+			  
+			  A->pins[1]->set_layer(B->pins[1]->get_layer());
+			  D->pins[0]->set_layer(B->pins[1]->get_layer());
+			  
+			  A->move_pin_connection(B,
+						 D);
+			  
+			  utils::erase(components, B);
+			  utils::erase(components, C);
+			  
+			  delete B;
+			  delete C;
+			  success++;
+			  goto retry;
+			}
 		    }
 		}
 	    }

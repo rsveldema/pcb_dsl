@@ -20,6 +20,8 @@ std::pair<double,double> Component::get_connection_angle_info(InMap &in_map)
 
   assert(in_map.get_in(my_from_pin).size() > 0);
   assert(my_to_pin->connections.size() > 0);
+
+  unsigned overlaps = 0;
   
   for (auto in : in_map.get_in(my_from_pin))
     {
@@ -28,6 +30,7 @@ std::pair<double,double> Component::get_connection_angle_info(InMap &in_map)
 	  if (out->overlaps(in) ||
 	      in->overlaps(out))
 	    {
+	      overlaps++;
 	      continue;
 	    }
 	  
@@ -63,7 +66,7 @@ std::pair<double,double> Component::get_connection_angle_info(InMap &in_map)
 	    }
 	}
     }
-  assert(found);
+  assert(found || overlaps);
   return {min_angle, max_angle};
 }
 

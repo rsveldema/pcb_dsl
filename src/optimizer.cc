@@ -20,9 +20,9 @@ constexpr auto POPULATION_GROUP_SIZE = 32u;
 constexpr auto SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
 
 constexpr auto CROSSOVER_PROBABILITY_PERCENTAGE   = 20;
-constexpr auto MUTATION_PROBABILITY_PERCENTAGE    = 4;
-constexpr auto FIX_PROBABILITY_PERCENTAGE         = 8;
-constexpr auto ROTATE_PROBABILITY_PERCENTAGE      = 4;
+constexpr auto MUTATION_PROBABILITY_PERCENTAGE    = 3;
+constexpr auto FIX_PROBABILITY_PERCENTAGE         = 20;
+constexpr auto ROTATE_PROBABILITY_PERCENTAGE      = 2;
 
 static bool enable_gui;
 
