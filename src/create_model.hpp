@@ -1,9 +1,9 @@
 #ifndef CREATE_MODEL_H___
 #define CREATE_MODEL_H___
 
-#include "parser.h"
-#include "known_packages.h"
-#include "model.h"
+#include "parser.hpp"
+#include "known_packages.hpp"
+#include "model.hpp"
 
 static inline
 std::string str(int i)
@@ -66,7 +66,8 @@ class ModelContext
 };
 
 
-void process_datasheet_prop(Component *comp,
+void process_datasheet_prop(Model *model,
+			    Component *comp,
 			    const std::vector<dslParser::Datasheet_propContext *> &p);
 
 

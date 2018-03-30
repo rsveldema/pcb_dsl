@@ -3,8 +3,8 @@
 #include <string.h>
 #include <iostream>
 
-#include "create_model.h"
-#include "optimizer.h"
+#include "create_model.hpp"
+#include "optimizer.hpp"
 
 void Usage(const char *format, ...)
 {

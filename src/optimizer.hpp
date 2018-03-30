@@ -1,7 +1,7 @@
 #ifndef OPTIMIZER__G__H__
 #define OPTIMIZER__G__H__
 
-#include "model.h"
+#include "model.hpp"
 
 enum class InitialPlacement
   {

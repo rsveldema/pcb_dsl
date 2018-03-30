@@ -1,5 +1,5 @@
-#include "create_model.h"
-#include "utils.h"
+#include "create_model.hpp"
+#include "utils.hpp"
 
 static
 Component *next_router(Component *comp)
@@ -103,8 +103,8 @@ void Model::remove_router_chain()
 			  utils::erase(components, B);
 			  utils::erase(components, C);
 			  
-			  delete B;
-			  delete C;
+			  this->mman.free(B);
+			  this->mman.free(C);
 
 			  did_something = true;
 			  goto retry;

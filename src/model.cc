@@ -1,7 +1,10 @@
-#include "create_model.h"
-#include "utils.h"
 #include <math.h>
 #include <cmath>
+
+#include "create_model.hpp"
+#include "utils.hpp"
+
+
 
 static float WIRE_WIDTH = 0.1;
 
@@ -27,22 +30,33 @@ std::string Pin::pretty() const
 }
 
 
-
-Pin *Pin::shallow_clone(Component *comp, clone_map_t &map)
+Pin *Component::add_pin(Model *m, PinInfo *info)
 {
-  auto c = new Pin(info, comp, outline);
+  Pin *storage = m->mman.alloc_pin();
+  Pin *p = new (storage) Pin(info, this);
+  pins.push_back(p);
+  return p;
+}
+
+
+
+Pin *Pin::shallow_clone(Model *m, Component *comp, clone_map_t &map)
+{
+  Pin *space = m->mman.alloc_pin();
+  auto c = new(space) Pin(info, comp, outline);
   return c;
 }
 
 
 Component *Component::shallow_clone(Model *m, clone_map_t &map)
 {
-  auto c = new Component(info, m, id, outline, bounding_box);
+  auto storage = m->mman.alloc_comp();
+  auto c = new (storage) Component(info, m, id, outline, bounding_box);
   const unsigned count = pins.size();
   for (unsigned i=0;i<count;i++)
     {
       auto p = pins[i];
-      auto cloned_pin = p->shallow_clone(c, map);
+      auto cloned_pin = p->shallow_clone(m, c, map);
       c->pins.push_back(cloned_pin);
     }
   map[this] = c;

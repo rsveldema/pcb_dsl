@@ -86,7 +86,7 @@ public:
     rules.push_back(r);
   }
   void check(Model *m);
-  void score(Model *m, std::vector<int32_t> &result);
+  void score(Model *m, score_data_t &result);
 };
 
 

@@ -4,7 +4,7 @@
 #include <math.h>
 #include <assert.h>
 
-#include "utils.h"
+#include "utils.hpp"
 
 
 class Point;

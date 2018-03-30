@@ -1,6 +1,6 @@
-#include "create_model.h"
+#include "create_model.hpp"
 #include <algorithm>
-#include "utils.h"
+#include "utils.hpp"
 
 auto NUM_BENDS_PER_ROUTE     = 2u;
 
@@ -38,10 +38,11 @@ static ComponentInfo *router_info = new ComponentInfo("router", true);
 Component *Model::create_router(const Point &pos)
 {
   //#print("creating router")
-  auto comp = new Component(router_info, this);
+  auto storage = this->mman.alloc_comp();
+  auto comp = new (storage) Component(router_info, this);
   components.push_back(comp);
-  auto pin_in  = comp->add_pin(router_in);
-  auto pin_out = comp->add_pin(router_out);
+  auto pin_in  = comp->add_pin(this, router_in);
+  auto pin_out = comp->add_pin(this, router_out);
   
   auto s = Point();
   auto e = s.add(comp->info->dim);

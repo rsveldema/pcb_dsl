@@ -5,9 +5,9 @@
 #include <vector>
 #include <map>
 
-#include "datasheet.h"
-#include "utils.h"
-#include "in_map.h"
+#include "datasheet.hpp"
+#include "utils.hpp"
+#include "in_map.hpp"
 
 struct score_t;
 class Model;
@@ -15,11 +15,11 @@ class ModelContext;
 class Component;
 typedef std::map<Component*, Component*> clone_map_t;
 
-#include "phys.h"
-#include "pin.h"
-#include "component.h"
-#include "score.h"
-#include "constraints.h"
+#include "phys.hpp"
+#include "pin.hpp"
+#include "component.hpp"
+#include "score.hpp"
+#include "constraints.hpp"
 
 
 class ModelInfo
@@ -31,11 +31,54 @@ class ModelInfo
 };
 
 
+class MemoryManager
+{
+ private:
+  static constexpr unsigned MAX_COMPONENTS = 128;
+  static constexpr unsigned MAX_PINS = 4 * MAX_COMPONENTS;
+
+  unsigned num_pins = 0;
+  Pin pins[MAX_PINS];
+
+  unsigned num_comp = 0;
+  Component comp[MAX_COMPONENTS];
+
+ public:
+  MemoryManager()
+    {
+    }
+
+  Pin *alloc_pin()
+  {
+    assert(num_pins < MAX_PINS);
+    return &pins[num_pins++];
+  }
+  
+  Component *alloc_comp()
+  {
+    assert(num_comp < MAX_COMPONENTS);
+    return &comp[num_comp++];
+  }
+  
+  void free(Pin *p)
+  {
+  }
+  
+  void free(Component *c)
+  {
+    for (auto p : c->pins)
+      {
+	free(p);
+      }
+  }
+};
+
 class Model
 {
  public:
+  MemoryManager mman;
+  
   static constexpr unsigned MAGIC = 0xdeadbeed;
-
   
   std::vector<Component *> components;
   ModelInfo *info;
@@ -49,18 +92,6 @@ class Model
 
   Model(const Model &c) = delete;
   Model &operator = (Model &m) = delete;
-
-  ~Model()
-    {
-      assert(live == MAGIC);
-      live = 0xfeeddead;
-      
-      const unsigned count = components.size();
-      for (unsigned i=0;i<count;i++)
-	{
-	  delete components[i];
-	}
-    }
   
  public:
   unsigned get_num_sharp_angles();

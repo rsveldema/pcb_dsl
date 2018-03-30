@@ -2,7 +2,7 @@
 #define KNOWN_PACKAGE_H___
 
 #include <string>
-#include "point.h"
+#include "point.hpp"
 
 class Component;
 class KnownPackageInfo;

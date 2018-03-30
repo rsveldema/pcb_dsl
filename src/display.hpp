@@ -5,7 +5,7 @@
 
 class Model;
 
-#include "RGB.h"
-#include "canvas.h"
+#include "RGB.hpp"
+#include "canvas.hpp"
 
 #endif

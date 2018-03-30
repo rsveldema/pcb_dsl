@@ -1,4 +1,4 @@
-#include "create_model.h"
+#include "create_model.hpp"
 #include <stdlib.h>
 
 RuleExpr *create_rule(Model *model,

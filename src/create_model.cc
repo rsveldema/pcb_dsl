@@ -1,4 +1,4 @@
-#include "create_model.h"
+#include "create_model.hpp"
 #include <stdlib.h>
 
 static constexpr double BOUNDING_BOX_MARGIN_MM = 0.5;
@@ -223,7 +223,7 @@ void preprocess_component(Model *model,
 	      //fprintf(stderr, "normalized to %s\n", normalized_pin_name.c_str());
 
 	      auto info = new PinInfo(normalized_pin_name);
-	      auto pin = comp->add_pin(info);
+	      auto pin = comp->add_pin(model, info);
 	      for (auto k : p->pin_prop())
 		{
 		  auto m = k->pinmode->getText();
@@ -249,11 +249,11 @@ void preprocess_component(Model *model,
 }
 
 static
-void add_datasheet_props(Component *comp, dslParser::ComponentContext *ctxt)
+void add_datasheet_props(Model *model, Component *comp, dslParser::ComponentContext *ctxt)
 {
   for (auto p : ctxt->component_property())
     {
-      process_datasheet_prop(comp, p->datasheet_prop());
+      process_datasheet_prop(model, comp, p->datasheet_prop());
     }
 }
 
@@ -479,15 +479,16 @@ void Component::add_bounding_box()
 void ModelCreatorListener::create_new_component(const std::string &name,
 						dslParser::ComponentContext *ctxt)
 {
-  auto info = new ComponentInfo(name, false);      
-  auto comp = new Component(info, model);
+  auto info = new ComponentInfo(name, false);
+  auto storage = model->mman.alloc_comp();
+  auto comp = new (storage)Component(info, model);
   this->current_component = comp;      
   preprocess_component(model, comp, ctxt->component_property());
   model->components.push_back(comp);	
   add_dimensions(comp, ctxt);
   process_component_type(model, 
 			 comp);
-  add_datasheet_props(comp, ctxt);
+  add_datasheet_props(model, comp, ctxt);
   add_location(comp, ctxt);
   comp->add_bounding_box();
 }

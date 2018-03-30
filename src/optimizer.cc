@@ -2,9 +2,9 @@
 #include <thread>
 #include <string.h>
 
-#include "optimizer.h"
-#include "create_model.h"
-#include "utils.h"
+#include "optimizer.hpp"
+#include "create_model.hpp"
+#include "utils.hpp"
 
 
 enum class SelectionHeuristic
@@ -33,10 +33,10 @@ std::string score_t::str() const
 {
   const char *comma = "";
   std::string str("score<");
-  for (auto it : values)
+  for (unsigned i=0;i<values.size();i++)
     {
       char buf[32];
-      sprintf(buf, "%d", it);
+      sprintf(buf, "%d", values.at(i));
       str += comma;
       str += buf;
       comma = ",";
@@ -58,8 +58,8 @@ int score_t::int_comparer(const score_t &s) const
   unsigned c = size();
   for (unsigned i = 0; i < c; i++)
     {
-      auto v1 = values[i];
-      auto v2 = s.values[i];
+      auto v1 = values.at(i);
+      auto v2 = s.values.at(i);
       if (v1 != v2)
 	{
 	  return v1 - v2;
@@ -73,8 +73,8 @@ bool score_t::is_better_at(unsigned ix, const score_t &s) const
   assert(size() == s.size());
   assert(ix < size());
 
-  auto v1 = values[ix];
-  auto v2 = s.values[ix];
+  auto v1 = values.at(ix);
+  auto v2 = s.values.at(ix);
   return v1 < v2;
 }
 

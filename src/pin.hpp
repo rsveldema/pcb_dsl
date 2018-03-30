@@ -24,7 +24,7 @@ struct Connection
   bool intersects_with(const Connection &connection);
 };
 
-#include "layer_map.h"
+#include "layer_map.hpp"
 
 /** holds info shared by all instances of a given pin type.
  */
@@ -59,6 +59,8 @@ class Pin
   std::vector<Pin *> connections;
 
  public:
+  Pin() {}
+  
  Pin(PinInfo *_info,
      Component *comp)
    : info(_info),
@@ -165,7 +167,7 @@ class Pin
       }
   }
 
-  Pin *shallow_clone(Component *c, clone_map_t &map);
+  Pin *shallow_clone(Model *m, Component *c, clone_map_t &map);
   void relink(Pin *m, clone_map_t &map);
 
   

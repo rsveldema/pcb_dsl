@@ -1,7 +1,7 @@
 #ifndef COMPONENT_H_H__H_
 #define COMPONENT_H_H__H_
 
-#include "parser.h"
+#include "parser.hpp"
 #include <map>
 
 class Pin;
@@ -41,35 +41,27 @@ class Component
   Outline bounding_box;
   Model *model;
   unsigned id;
-
- Component(ComponentInfo *_info, Model *m)
-   : info(_info),
-    model(m),
-    id(get_unique_id())
+  
+  Component() {}
+  
+  Component(ComponentInfo *_info, Model *m)
+    : info(_info),
+      model(m),
+      id(get_unique_id())
   {
   }
-
+  
  Component(const Component &c) = delete;
   
- Component(ComponentInfo *_info, Model *m, unsigned _id, const Outline &_outline, const Outline &_bounding_box)
+  Component(ComponentInfo *_info, Model *m, unsigned _id,
+	    const Outline &_outline, const Outline &_bounding_box)
    : info(_info),
-    outline(_outline),
-   bounding_box(_bounding_box),
-   model(m),
-    id(_id)
+     outline(_outline),
+     bounding_box(_bounding_box),
+     model(m),
+     id(_id)
   {
   }
-
- ~Component()
-   {
-      const unsigned count = pins.size();
-      for (unsigned i=0;i<count;i++)
-	{
-	  assert(pins[i]);
-	  delete pins[i];
-	  pins[i] = NULL;
-	}
-   }
 
 
  bool get_connection_angle_info(InMap &in_map,
@@ -94,7 +86,7 @@ class Component
   }
 
   // if its a pin-table, add the pins to this component
-  void add_table(Table *table);
+  void add_table(Model *m, Table *table);
   
   void move_pin_connection(Component *from,
 			   Component *to);
@@ -181,13 +173,7 @@ class Component
   unsigned count_crossing_pins(Model *model);
   unsigned count_crossing_lines(Model *model);
 
-  Pin *add_pin(PinInfo *info)
-  {
-    Pin *p = new Pin(info, this);
-    pins.push_back(p);
-    return p;
-  }
-  
+  Pin *add_pin(Model *m, PinInfo *info);  
   
   Pin *get_pin_by_name(const std::string &s);
     

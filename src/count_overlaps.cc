@@ -1,6 +1,6 @@
-#include "create_model.h"
+#include "create_model.hpp"
 #include <algorithm>
-#include "utils.h"
+#include "utils.hpp"
 
 unsigned Model::count_overlaps()
 {

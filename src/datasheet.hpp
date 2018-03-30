@@ -2,7 +2,7 @@
 #define TABLE_H___
 
 #include <vector>
-#include "utils.h"
+#include "utils.hpp"
 
 class Text
 {

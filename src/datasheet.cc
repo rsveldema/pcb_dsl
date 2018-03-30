@@ -1,7 +1,9 @@
-#include "create_model.h"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-#include <boost/foreach.hpp>
+//#include <boost/foreach.hpp>
+
+#include "create_model.hpp"
+
 
 using boost::property_tree::ptree;
 
@@ -15,7 +17,7 @@ bool valid_pin_name(const std::string &name)
 }
     
 
-void Component::add_table(Table *table)
+void Component::add_table(Model *m, Table *table)
 {
   info->table_list.push_back(table);
   if (table->name == "pins")
@@ -26,7 +28,7 @@ void Component::add_table(Table *table)
 	  if (valid_pin_name(name))
 	    {
 	      auto info = new PinInfo(name);
-	      auto pin = add_pin(info);
+	      auto pin = add_pin(m, info);
 	      pin->setDescription(row->get(1)->string);
 	    }
 	}
@@ -252,8 +254,9 @@ Table *extract_table(const std::string &tableName,
 }
     
 
-
-void extract_tables(Component *comp,
+static
+void extract_tables(Model *model,
+		    Component *comp,
 		    std::vector<Page *> pages,
 		    const std::vector<dslParser::Datasheet_propContext *> &ds_prop_list)
 {
@@ -274,7 +277,7 @@ void extract_tables(Component *comp,
 	  } else if (extractor->getText() == "table") {
 	    auto tab = extract_table(table, pages, title, createdTableName);
 	    tab->cleanup();
-	    comp->add_table(tab);
+	    comp->add_table(model, tab);
 	  } else {
 	    abort();
 	  }
@@ -282,7 +285,8 @@ void extract_tables(Component *comp,
     }
 }
 
-void process_datasheet_prop(Component *comp,
+void process_datasheet_prop(Model *model,
+			    Component *comp,
 			    const std::vector<dslParser::Datasheet_propContext *> &prop)
 {
   auto filename = getFileName(prop);
@@ -310,5 +314,5 @@ void process_datasheet_prop(Component *comp,
 
   parse_xml(xml, pages);
     
-  extract_tables(comp, pages, prop);
+  extract_tables(model, comp, pages, prop);
 }

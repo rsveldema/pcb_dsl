@@ -1,4 +1,4 @@
-#include "model.h"
+#include "model.hpp"
 #include <cairomm/surface.h>
 #include <cairomm/context.h>
 #include <gtkmm.h>

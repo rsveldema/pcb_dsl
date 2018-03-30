@@ -2,8 +2,8 @@
 #define OUTLINE__H_H_H__
 
 #include <vector>
-#include "point.h"
-#include "display.h"
+#include "point.hpp"
+#include "display.hpp"
 
 
 class Outline

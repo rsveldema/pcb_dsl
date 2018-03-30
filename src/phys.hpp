@@ -6,8 +6,8 @@
 #include <vector>
 
 
-#include "point.h"
-#include "display.h"
-#include "outline.h"
+#include "point.hpp"
+#include "display.hpp"
+#include "outline.hpp"
 
 #endif
