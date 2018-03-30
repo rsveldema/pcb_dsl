@@ -21,7 +21,7 @@ struct Connection
   Pin *from, *to;
   Point p1, p2, conflict;
 
-  bool crosses(const Connection &connection);
+  bool intersects_with(const Connection &connection);
 };
 
 #include "layer_map.h"
@@ -96,6 +96,8 @@ class Pin
   
   void rotate(double radians,
 	      const Point &center);
+
+  std::string pretty() const;
   
   std::string str() const
     {
@@ -117,6 +119,7 @@ class Pin
   void set_layer(layer_t l) { return outline.set_layer(l); }
   
   void gather_layer_map(LayerMap &map);
+  bool intersects_with(const Connection &connection) const;
   bool have_crossing_connection(const Connection &connection,
 				Connection *crossed);
   void route_around_conflict(Model *model,
@@ -125,6 +128,7 @@ class Pin
   bool add_layers_for_crossing_lines(Model *model,
 				     Component *comp,
 				     MutationAdmin &admin);
+  unsigned count_crossing_pins(Model *model);
   unsigned count_crossing_lines(Model *model);
 
   Point center() const { return outline.center(); }
@@ -169,7 +173,19 @@ class Pin
   {
     this->info->description = descr;
   }
-  
+
+  bool have_connection(Pin *to_pin)
+  {
+    for (unsigned ix = 0;ix < connections.size(); ix++)
+      {
+	auto p = connections[ix];
+	if (p == to_pin)
+	  {
+	    return true;
+	  }
+      }
+    return false;
+  }
   
   void add_connection(Pin *to_pin)
   {

@@ -74,13 +74,13 @@ void Component::move_pin_connection(Component *from,
  */
 void Model::remove_router_chain()
 {
-  static constexpr unsigned NUM_ROUTER_REMOVAL_RETRIES = 2;
-  for (int i=0;i<NUM_ROUTER_REMOVAL_RETRIES;i++)
+  bool did_something = true;
+  while (did_something)
     {
     retry:
-      
+
+      did_something = false;
       InMap in_map(this);
-      int success = 0;
       for (auto A : components)
 	{
 	  if (auto B = next_router(A))
@@ -105,7 +105,8 @@ void Model::remove_router_chain()
 			  
 			  delete B;
 			  delete C;
-			  success++;
+
+			  did_something = true;
 			  goto retry;
 			}
 		    }

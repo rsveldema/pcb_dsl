@@ -87,6 +87,29 @@ class Outline
   void rotate(double radians,
 	      const Point &center);
 
+  bool intersects_line(const Point &p1,
+		       const Point &p2) const
+  {
+    if (get_layer() != p1.get_layer())
+      {
+	return false;
+      }
+    
+    const unsigned n = points.size();
+    for (unsigned i = 0; i < n; i++)
+      {
+	const Point &a = points[i];
+	const Point &b = points[(i + 1) % points.size()];
+	if (Point::intersection(a, b,
+				p1, p2,
+				NULL))
+	  {
+	    return true;
+	  }
+      }
+    return false;
+  }
+
   /** count the numnber of intersections when going out of the polygon.
    */
   bool point_inside_polygon(const Point &P) const
@@ -128,6 +151,47 @@ class Outline
     return false;
   }
 
+  bool have_crossing_lines(const Point &op1,
+			   const Point &op2) const
+  {
+    const unsigned n = points.size();
+    for (unsigned i = 0; i < n; i++)
+      {
+	unsigned ni = (i + 1) % n;
+
+	auto p1 = points[i];
+	auto p2 = points[ni];
+
+	if (Point::intersection(p1, p2,
+				op1, op2,
+				NULL))
+	  {
+	    return true;
+	  }
+      }
+    
+    return false;
+  }
+
+  bool have_crossing_lines(const Outline &other) const
+  {
+    const unsigned n = points.size();
+    for (unsigned i = 0; i < n; i++)
+      {
+	unsigned ni = (i + 1) % n;
+
+	auto p1 = points[i];
+	auto p2 = points[ni];
+
+	if (other.have_crossing_lines(p1, p2))
+	  {
+	    return true;
+	  }
+      }
+    return false;
+  }
+  
+
   bool overlaps(const Outline &other) const
   {
     if (get_layer() != other.get_layer())
@@ -143,8 +207,7 @@ class Outline
       {
 	return true;
       }
-    
-    return false;
+    return have_crossing_lines(other);
   }
   
   void transpose(const Point &dir)

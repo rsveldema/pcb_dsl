@@ -105,6 +105,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitLen(dslParser::LenContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitExpr(dslParser::ExprContext *ctx) override {
     return visitChildren(ctx);
   }

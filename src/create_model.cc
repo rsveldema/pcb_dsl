@@ -12,10 +12,6 @@ MillimeterPoint::MillimeterPoint(const Point &p)
 
 
 
-static
-int constant_fold_expr(Model *model,
-		       Component *current_component,
-		       dslParser::ExprContext *expr);
 
 static
 int constant_fold_field(Component *comp,
@@ -47,6 +43,11 @@ int constant_fold_access(Model *model, dslParser::AccessContext *access)
     {
       if (access->index() == NULL)
 	{
+	  if (model->info->constants.find(name) == model->info->constants.end())
+	    {
+	      fprintf(stderr, "failed to resolve constant '%s'\n", name.c_str());
+	      abort();
+	    }
 	  return model->info->constants[name];
 	}
     }
@@ -60,7 +61,7 @@ int constant_fold_access(Model *model, dslParser::AccessContext *access)
 }
 
 
-static
+
 int constant_fold_primary(Model *model,
 			  Component *current_component,
 			  dslParser::PrimaryContext *p)
@@ -91,7 +92,7 @@ int constant_fold_primary(Model *model,
   abort();
 }
 
-static
+
 int constant_fold_expr(Model *model,
 		       Component *current_component,
 		       dslParser::ExprContext *expr)

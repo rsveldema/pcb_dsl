@@ -64,6 +64,8 @@ public:
 
     virtual antlrcpp::Any visitPrimary(dslParser::PrimaryContext *context) = 0;
 
+    virtual antlrcpp::Any visitLen(dslParser::LenContext *context) = 0;
+
     virtual antlrcpp::Any visitExpr(dslParser::ExprContext *context) = 0;
 
     virtual antlrcpp::Any visitOp(dslParser::OpContext *context) = 0;

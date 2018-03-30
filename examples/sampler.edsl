@@ -269,15 +269,16 @@ network ADC_ina1 {
 
 
 //----- constraints section:
+
+
+
 constraint equal_lengths_for_ADC_to_connector {
   for i in ADC_BITS {
-      for j in ADC_BITS {
 
-	  require Rx_to_Connector[i].length == 3mm;
-	  
-	  require
-	    (ADC_to_Rx[i].length + Rx_to_Connector[i].length) ==
-	    (ADC_to_Rx[j].length + Rx_to_Connector[j].length);
+      require len(R[i].OUT -> fpga_connector.D[i]) == 3mm;
+      
+      for j in ADC_BITS {
+	  require len(ADC.D[i] -> R[i].IN) == len(ADC.D[j] -> R[j].IN);
 	}
     }
 }

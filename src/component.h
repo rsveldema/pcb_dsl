@@ -65,12 +65,15 @@ class Component
       const unsigned count = pins.size();
       for (unsigned i=0;i<count;i++)
 	{
+	  assert(pins[i]);
 	  delete pins[i];
+	  pins[i] = NULL;
 	}
    }
 
 
-  std::pair<double,double> get_connection_angle_info(InMap &in_map);
+ bool get_connection_angle_info(InMap &in_map,
+				std::pair<double,double> &result);
   void add_bounding_box();
   void rotate(double radians);
   void random_rotate();
@@ -120,6 +123,7 @@ class Component
   double sum_connection_lengths();
 
   Pin *find_pin_by_id(unsigned id) const;
+  Pin *find_pin_by_name(const std::string &name);
   
   Component *shallow_clone(Model *m, clone_map_t &map);
   void relink(Model *m, clone_map_t &map);
@@ -168,10 +172,13 @@ class Component
   }
 
   void gather_layer_map(LayerMap &map);
+  void collect_crossing_pins(const Connection &connection,
+			     std::vector<Pin*> &crossed);
   bool have_crossing_connection(const Connection &connection,
 				Connection *crossed);
   bool add_layers_for_crossing_lines(Model *model,
 				     MutationAdmin &admin);
+  unsigned count_crossing_pins(Model *model);
   unsigned count_crossing_lines(Model *model);
 
   Pin *add_pin(PinInfo *info)

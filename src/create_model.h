@@ -92,9 +92,17 @@ class ModelCreatorListener : public dslBaseListener
   virtual void enterConstant(dslParser::ConstantContext *ctxt);
   virtual void enterNetwork(dslParser::NetworkContext *ctxt);
   virtual void enterComponent(dslParser::ComponentContext *ctxt);
+  virtual void enterConstraint(dslParser::ConstraintContext *ctxt);
   void create_new_component(const std::string &name,
 			    dslParser::ComponentContext *ctxt);
 };
 
-			  
+
+int constant_fold_expr(Model *model,
+		       Component *current_component,
+		       dslParser::ExprContext *expr);
+
+int constant_fold_primary(Model *model,
+			  Component *current_component,
+			  dslParser::PrimaryContext *p);
 #endif

@@ -122,7 +122,7 @@ public:
       {
 	delete displayed_model;
       }
-    displayed_model = m->deepclone();
+    displayed_model = m->clone();
     
     //fprintf(stderr, "signal!\n");
     //gtk_widget_queue_draw_area(&window->draw_area, 0, 0, 800, 600);

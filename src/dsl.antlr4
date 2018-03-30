@@ -14,7 +14,7 @@ strategy: 'strategy' ID '{' strategy_property* '}';
 
 strategy_property: strategy_foreach | strategy_call;
 
-strategy_foreach: 'for' ID 'in' ID '{' strategy_property* '}';
+strategy_foreach: 'for' ID 'in' expr '{' strategy_property* '}';
 
 strategy_call: access '('  ')' ';' ;
 
@@ -24,7 +24,7 @@ constraint: 'constraint' ID '{' constraint_property* '}';
 
 constraint_property: constraint_foreach | constraint_require;
 
-constraint_foreach: 'for' ID 'in' ID '{' constraint_property* '}';
+constraint_foreach: 'for' ID 'in' expr '{' constraint_property* '}';
 
 constraint_require: 'require' expr ';';
 
@@ -79,7 +79,10 @@ primary:
     |   '(' expr ')'
     |   access
     |   length='#' ID
+    |   len
     ;
+
+len : 'len' '(' access '->' access ')';
         
 
 expr: primary (op primary)?

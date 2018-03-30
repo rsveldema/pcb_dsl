@@ -22,11 +22,10 @@ void Point::rotate(double radians,
 void Outline::rotate(double radians,
 		     const Point &rotation_point)
 {
-  layer_t layer = get_layer();
   for (auto &p : points)
     {
       p.rotate(radians,
-		   rotation_point);
+	       rotation_point);
     }
   cached_center.rotate(radians,
 		       rotation_point);

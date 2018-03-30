@@ -18,23 +18,8 @@ typedef std::map<Component*, Component*> clone_map_t;
 #include "phys.h"
 #include "pin.h"
 #include "component.h"
-
-
-
-struct score_t
-{
-  size_t   num_comp = 0;
-  size_t   num_layers = 0;
-  unsigned num_overlaps = 0;
-  double   connection_lengths = 0;
-  unsigned crossing_lines = 0;
-  unsigned sharp_angles = 0;
-
-  void add_penalties();
-  bool operator <(const score_t &s);
-
-  std::string str() const;
-};
+#include "score.h"
+#include "constraints.h"
 
 
 class ModelInfo
@@ -42,14 +27,19 @@ class ModelInfo
  public:
   Point board_dim;
   std::map<std::string, int> constants;
+  std::vector<Constraint *> constraints;
 };
 
 
 class Model
 {
  public:
+  static constexpr unsigned MAGIC = 0xdeadbeed;
+
+  
   std::vector<Component *> components;
   ModelInfo *info;
+  unsigned live = MAGIC;
   
  public:
   Model(ModelInfo *_info)
@@ -57,8 +47,14 @@ class Model
     {
     }
 
+  Model(const Model &c) = delete;
+  Model &operator = (Model &m) = delete;
+
   ~Model()
     {
+      assert(live == MAGIC);
+      live = 0xfeeddead;
+      
       const unsigned count = components.size();
       for (unsigned i=0;i<count;i++)
 	{
@@ -70,12 +66,16 @@ class Model
   unsigned get_num_sharp_angles();
   bool have_crossing_connection(const Connection &connection,
 				Connection *crossed);
+  void collect_crossing_pins(const Connection &connection,
+			     std::vector<Pin*> &crossed);
   unsigned count_crossing_lines();
+  unsigned count_crossing_pins();
+  
   void add_layers_for_crossing_lines();
   double sum_connection_lengths();
   unsigned count_overlaps();  
   Component *create_router(const Point &pos);
-  Model *deepclone();
+  Model *clone();
   void writeSVG(const std::string &filename);
   void draw(Canvas *c);
   void random_move_components(const Point &range);
@@ -83,7 +83,7 @@ class Model
   void move_components_close_to_already_placed_components();
   void crossover(Model *m);
   void random_rotate_component();
-  score_t score();
+  void compute_score(score_t &s);
   void gather_layer_map(LayerMap &map);
   
   size_t num_layers()

@@ -67,9 +67,72 @@ void check_unconnected_components(Model *model)
     }
 }
 
+void RuleExpr::check(Model *m,
+		     bool root)
+{
+  if (lhs)
+    {
+      lhs->check(m, false);
+    }
+  if (rhs)
+    {
+      rhs->check(m, false);
+    }
+
+  if (! root)
+    {
+      switch (type)
+	{
+	default:
+	  break;
+	case LEN:
+	  {
+	    Pin *p1 = lhs->find_pin(m);
+	    Pin *p2 = rhs->find_pin(m);
+
+	    if (! p1->have_connection(p2))
+	      {
+		fprintf(stderr,
+			"ERROR: no connection from %s to %s\n",
+			p1->pretty().c_str(),
+			p2->pretty().c_str());
+		abort();
+	      }
+	    break;
+	  }
+	}
+    }
+  else
+    {
+      switch (type)
+	{
+	case EQ:
+	case NEQ:
+	  break;
+	  
+	default:
+	  fprintf(stderr, "ERROR: bad constraint operator: %s\n", str().c_str());
+	  abort();
+	}
+    }
+}
+
+void Constraint::check(Model *m)
+{
+  for (auto c : rules)
+    {
+      c->check(m, true);
+    }
+}
+
 void Model::check()    
 {
   check_unconnected_components(this);
+
+  for (auto c : info->constraints)
+    {
+      c->check(this);
+    }
   
   for (auto c : components)
     {
