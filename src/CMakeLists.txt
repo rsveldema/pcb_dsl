@@ -14,12 +14,12 @@ set(ANTLR4CPP_JAR_LOCATION ${PROJECT_SOURCE_DIR}/thirdparty/antlr/antlr-4.7.1-co
 
 
 include( ./cmake/ExternalAntlr4Cpp.cmake )
-include( ./cmake/FindBoost.cmake )
+#include( ./cmake/FindBoost.cmake )
 include( ./cmake/FindCairo.cmake )
 
-FIND_PACKAGE( Boost 1.58 COMPONENTS program_options REQUIRED )
+#FIND_PACKAGE( Boost 1.58 COMPONENTS program_options REQUIRED )
 
-include_directories( ${Boost_INCLUDE_DIR} )
+#include_directories( ${Boost_INCLUDE_DIR} )
 include_directories( ${ANTLR4CPP_INCLUDE_DIRS} )
 
 link_directories( ${ANTLR4CPP_LIBS} )
@@ -42,4 +42,6 @@ include_directories( ${Cairomm_INCLUDE_DIRS} ${Gtkmm_INCLUDE_DIRS} )
 # comment this out if you see too much recompilation.
 #add_dependencies(pcbgen antlr4cpp antlr4cpp_generation_antlrcpp)
 
-target_link_libraries(pcbgen antlr4-runtime  ${Sigcpp_LIBRARIES}  ${Boost_LIBRARIES} ${Cairomm_LIBRARIES} ${Gtkmm_LIBRARIES} ${Glibmm_LIBRARIES} -lsigc-2.0 -latkmm-1.6 -lX11 -lpthread -g2 -pg -lm)
+target_link_libraries(pcbgen antlr4-runtime ${Cairomm_LIBRARIES} ${Gtkmm_LIBRARIES} ${Glibmm_LIBRARIES} -lsigc-2.0 -latkmm-1.6 -lX11 -lpthread -g2 -pg -lm)
+
+# ${Sigcpp_LIBRARIES}  ${Boost_LIBRARIES} 
