@@ -30,6 +30,34 @@ class ModelInfo
   std::vector<Constraint *> constraints;
 };
 
+template<typename T, unsigned MAX>
+class MemoryPool
+{
+private:
+  char data[sizeof(T) * MAX];
+  unsigned count = 0;
+  
+private:
+  T *get(unsigned ix)
+  {
+    assert(ix < MAX);
+    return new (&data[sizeof(T) * ix]) T();
+  }
+
+public:
+  T *alloc()
+  {
+    assert(count < MAX);
+    T *data = get(count);
+    count++;
+    return data;
+  }
+
+  void free(T *a)
+  {
+    // TODO
+  }    
+};
 
 class MemoryManager
 {
@@ -37,11 +65,8 @@ class MemoryManager
   static constexpr unsigned MAX_COMPONENTS = 128;
   static constexpr unsigned MAX_PINS = 4 * MAX_COMPONENTS;
 
-  unsigned num_pins = 0;
-  Pin pins[MAX_PINS];
-
-  unsigned num_comp = 0;
-  Component comp[MAX_COMPONENTS];
+  MemoryPool<Pin, MAX_PINS> pins;
+  MemoryPool<Component, MAX_COMPONENTS> comp;
 
  public:
   MemoryManager()
@@ -50,26 +75,26 @@ class MemoryManager
 
   Pin *alloc_pin()
   {
-    assert(num_pins < MAX_PINS);
-    return &pins[num_pins++];
+    return pins.alloc();
   }
   
   Component *alloc_comp()
   {
-    assert(num_comp < MAX_COMPONENTS);
-    return &comp[num_comp++];
+    return comp.alloc();
   }
   
   void free(Pin *p)
   {
+    pins.free(p);
   }
   
   void free(Component *c)
-  {
+  {    
     for (auto p : c->pins)
       {
 	free(p);
       }
+    comp.free(c);
   }
 };
 

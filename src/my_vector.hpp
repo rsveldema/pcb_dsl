@@ -16,7 +16,7 @@ public:
     push_back(a);
   }
 
-  void set(unsigned ix, Pin *to_pin)
+  void set(unsigned ix, const T &to_pin)
   {
     assert(ix < count);
     data[ix] = to_pin;

@@ -1,11 +1,11 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-//#include <boost/foreach.hpp>
+using boost::property_tree::ptree;
+
 
 #include "create_model.hpp"
+#include "component_datasheet.hpp"
 
-
-using boost::property_tree::ptree;
 
 static
 bool valid_pin_name(const std::string &name)

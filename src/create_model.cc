@@ -1,5 +1,8 @@
-#include "create_model.hpp"
 #include <stdlib.h>
+
+#include "create_model.hpp"
+#include "component_datasheet.hpp"
+
 
 static constexpr double BOUNDING_BOX_MARGIN_MM = 0.5;
 

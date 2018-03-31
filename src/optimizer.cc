@@ -7,15 +7,8 @@
 #include "utils.hpp"
 
 
-enum class SelectionHeuristic
-{
-  PARETO_FRONT,
-  PLAIN_SORT
-};
-
-static SelectionHeuristic selection_heuristic = SelectionHeuristic::PARETO_FRONT;
-//static SelectionHeuristic selection_heuristic = SelectionHeuristic::PLAIN_SORT;
-
+#define USE_PARETO_FRONT          1
+#define SUPPORT_MULTI_GEN_ELITE   1
 
 constexpr auto POPULATION_NUM_GROUPS =  1u;
 constexpr auto POPULATION_GROUP_SIZE = 32u;
@@ -87,39 +80,7 @@ int int_comparer(const void *p1,
   return a->first.int_comparer(b->first);
 }
 
-struct ParetoFront
-{
-  std::map<unsigned, std::pair<score_t, Model *> > scores;
-
-  void tryAddToFront(const score_t &score, Model *model)
-  {    
-    std::pair<score_t, Model *> p = {score, model};
-    if (scores.size() == 0)
-      {
-	for (unsigned i = 0; i < score.size(); i++)
-	  {
-	    scores[i]    = p;
-	  }
-	return;
-      }
-
-    for (unsigned i = 0; i < score.size(); i++)
-      {
-	if (score.is_better_at(i, scores[i].first))
-	  {
-	    scores[i] = p;
-	  }
-      }
-  }
-
-  void push_selected(std::map<Model*, bool> &selected)
-  {
-    for (auto it : scores)
-      {
-	selected[it.second.second] = true;
-      }
-  }
-};
+#include "pareto.hpp"
 
 
 /** 0 == perfect score, INF = forget it.
@@ -156,7 +117,9 @@ class Generation
 private:  
   int group_id;
   std::vector<Model*> models;
+#if SUPPORT_MULTI_GEN_ELITE
   std::vector<std::pair<score_t, Model*>> best_models;
+#endif
   
 public:
   Generation(int _group_id)
@@ -359,13 +322,12 @@ public:
       }
 
     std::map<Model*, bool> selected;
-    switch (selection_heuristic)
-      {
-      case SelectionHeuristic::PARETO_FRONT: use_pareto_front_selection(scores, selected); break;
-      case SelectionHeuristic::PLAIN_SORT:   use_plain_sort_selection(scores, selected); break;
-      default: abort();
-      }
-
+#if USE_PARETO_FRONT
+    use_pareto_front_selection(scores, selected);
+#else
+    use_plain_sort_selection(scores, selected);
+#endif
+    
     assert(selected.size() > 0);
     create_new_generation(selected);
   }

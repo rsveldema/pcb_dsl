@@ -1,15 +1,19 @@
 #ifndef OUTLINE__H_H_H__
 #define OUTLINE__H_H_H__
 
-#include <vector>
+#include "my_vector.hpp"
+
+
 #include "point.hpp"
 #include "display.hpp"
 
 
 class Outline
 {
- private:
-  std::vector<Point> points;
+private:
+  static constexpr unsigned MAX_POINTS_PER_OUTLINE = 4;
+  
+  fixedsize_vector<Point, MAX_POINTS_PER_OUTLINE> points;
   Point cached_center;
   
  public:
@@ -19,8 +23,9 @@ class Outline
 
   void minmax(min_max_t &d)
   {
-    for (auto p : points)
+    for (unsigned i=0;i<points.size();i++)
       {
+	auto p = points[i];
 	p.minmax(d);
       }
   }
@@ -39,27 +44,30 @@ class Outline
   
   void set_layer(layer_t layer)
   {
-    for (Point &p : points)
+    for (unsigned i=0;i<points.size();i++)
       {
+	auto p = points[i];
 	p.set_layer(layer);
       }
     cached_center.set_layer(layer);
   }
     
   std::string str() const
-    {
-      const char *prefix = "";
-      std::string ret("outline<");
-      for (auto p : points)
-	{
-	  ret += prefix;
-	  ret += p.str();
-	  prefix = ", ";
-	}
-      ret += ">";
-      return ret;
-    }
-
+  {
+    const char *prefix = "";
+    std::string ret("outline<");
+    for (unsigned i=0;i<points.size();i++)
+      {
+	auto p = points[i];
+	
+	ret += prefix;
+	ret += p.str();
+	prefix = ", ";
+      }
+    ret += ">";
+    return ret;
+  }
+  
 
   void drawLineTo(LineStyle style,
 		  const Point &to,
@@ -141,8 +149,10 @@ class Outline
    */
   bool partially_encloses(const Outline &c) const
   {
-    for (auto p : points)
+    for (unsigned i=0;i<points.size();i++)
       {
+	auto p = points[i];
+
 	if (c.point_inside_polygon(p))
 	  {
 	    return true;
@@ -250,8 +260,10 @@ class Outline
   {
     Point c; // overwritten immediately, so we don't care about the layer here.
     bool first = true;
-    for (auto p : points)
+
+    for (unsigned i=0;i<points.size();i++)
       {
+	auto p = points[i];
 	if (first)
 	  {
 	    first = false;
