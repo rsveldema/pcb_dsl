@@ -2,15 +2,22 @@
 #include <algorithm>
 #include "utils.hpp"
 
-bool Pin::intersects_with(const Connection &o) const
+bool Pin::intersects_with(const Connection &connection) const
 {
-  return outline.intersects_line(o.p1, o.p2);
+  return outline.intersects_line(connection.p1,
+				 connection.p2);
 }
 
 void Component::collect_crossing_pins(const Connection &connection,
 				      std::vector<Pin*> &crossed)
 {
   if (info->is_board)
+    {
+      return;
+    }
+
+  if (! this->bounding_box.intersects_line(connection.p1,
+					   connection.p2))
     {
       return;
     }

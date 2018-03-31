@@ -15,10 +15,10 @@ constexpr auto POPULATION_GROUP_SIZE = 32u;
 constexpr auto NUM_KEPT_GROUP_BEST   =  4u; 
 constexpr auto SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
 
-constexpr auto CROSSOVER_PROBABILITY_PERCENTAGE   = 20;
-constexpr auto MUTATION_PROBABILITY_PERCENTAGE    = 3;
+constexpr auto CROSSOVER_PROBABILITY_PERCENTAGE   = 60;
+constexpr auto MUTATION_PROBABILITY_PERCENTAGE    = 5;
 constexpr auto FIX_PROBABILITY_PERCENTAGE         = 20;
-constexpr auto ROTATE_PROBABILITY_PERCENTAGE      = 2;
+constexpr auto ROTATE_PROBABILITY_PERCENTAGE      = 3;
 
 static
 void print_config()
@@ -42,62 +42,89 @@ std::string score_t::str() const
 {
   const char *comma = "";
   std::string str("score<");
-  for (unsigned i=0;i<values.size();i++)
+  for (unsigned prio = 0; prio < score_t::PRIO_LEVELS; prio++)
     {
-      char buf[32];
-      if (values.descr(i))
-	sprintf(buf, "%s:%d", values.descr(i), values.at(i));
-      else
-	sprintf(buf, "%d", values.at(i));
-      
-      str += comma;
-      str += buf;
-      comma = ",";
+      for (unsigned i=0;i<values[prio].size();i++)
+	{
+	  char buf[32];
+	  if (values[prio].descr(i))
+	    sprintf(buf, "%s:%d", values[prio].descr(i), values[prio].at(i));
+	  else
+	    sprintf(buf, "%d", values[prio].at(i));
+	  
+	  str += comma;
+	  str += buf;
+	  comma = ",";
+	}
     }
-  str += ">";
+      str += ">";
   return str;
 }
 
-bool score_t::operator < (const score_t &s) const
+bool score_t::is_better_than(const score_t &s, unsigned seed, unsigned prio) const
 {
-  return int_comparer(s) < 0;
+  if (int_comparer(s, seed, prio) < 0)
+    {
+      return true;
+    }
+  return false;
+}
+
+bool score_t::is_everywhere_better_than(const score_t &s, unsigned seed) const
+{
+  for (unsigned prio = 0; prio < score_t::PRIO_LEVELS; prio++)
+    {
+      if (int_comparer(s, seed, prio) > 0)
+	{
+	  return false;
+	}
+    }
+  return true;
 }
 
 
-int score_t::int_comparer(const score_t &s) const
+int score_t::int_comparer(const score_t &s, unsigned seed, unsigned prio) const
 {
-  assert(size() == s.size());
+  assert(size(prio) == s.size(prio));
 
-  unsigned c = size();
+  const unsigned c = size(prio);
+  unsigned ix = seed % c;
   for (unsigned i = 0; i < c; i++)
     {
-      auto v1 = values.at(i);
-      auto v2 = s.values.at(i);
+      auto v1 =   values[prio].at(ix);
+      auto v2 = s.values[prio].at(ix);
       if (v1 != v2)
 	{
 	  return v1 - v2;
+	}
+      ix++;
+      if (ix == c)
+	{
+	  ix = 0;
 	}
     }
   return 0;
 }
 
-bool score_t::is_better_at(unsigned ix, const score_t &s) const
-{
-  assert(size() == s.size());
-  assert(ix < size());
 
-  auto v1 = values.at(ix);
-  auto v2 = s.values.at(ix);
-  return v1 < v2;
-}
-
-
-int int_comparer(const void *p1,
-		 const void *p2)
+/** called by qsort
+ */
+int qsort_int_comparer(const void *p1,
+		       const void *p2)
 {
   compare_t *a = (compare_t*)p1;
   compare_t *b = (compare_t*)p2;
-  return a->first.int_comparer(b->first);
+
+  int v = 0;
+  for (unsigned prio=0;prio < score_t::PRIO_LEVELS; prio++)
+    {
+      v = a->first.int_comparer(b->first, 0, prio);
+      if (v < 0)
+	{
+	  break;
+	}
+    }
+  return v;
 }
 
 #include "pareto.hpp"
@@ -116,19 +143,19 @@ void Model::compute_score(score_t &s)
   auto sharps = get_num_sharp_angles();
   //printf("overlaps == %d\n", (int) overlaps);
 
-  s.add(overlaps, "OLAP");
+  s.add(0, overlaps, "OLAP");
   
   for (auto p : info->constraints)
     {
-      p->score(this, s.values);
+      p->score(this, s);
     }
 
-  s.add(crossing_wires, "XW");
-  s.add(crossing_pins, "XP");
-  s.add(conn_lengths, "D");
-  s.add(components.size(), "#C");
-  s.add(num_layers(), "#L");
-  s.add(sharps, "S");
+  s.add(0, crossing_wires, "XW");
+  s.add(0, crossing_pins, "XP");
+  s.add(1, conn_lengths, "D");
+  s.add(1, components.size(), "#C");
+  s.add(1, num_layers(), "#L");
+  s.add(1, sharps, "S");
 }
 
 
@@ -179,9 +206,9 @@ public:
 	Model *model = models[i];
 	if (should_mutate())
 	  {
-	    static const Point min_range(MillimeterPoint(10, 10, 0));
+	    static const Point min_range(MillimeterPoint(30, 30, 0));
 	    Point range = model->info->board_dim.div(iteration);
-	    range.inplace_max(1, 1);
+	    range.inplace_max(10, 10);
 	    assert(range.x > 0 && range.y > 0);	    
 	    model->random_move_components(min_range.max(range));
 	  }
@@ -241,7 +268,7 @@ public:
       }
     for (unsigned i=0;i<NUM_KEPT_GROUP_BEST;i++)
       {
-	if (m_score < best_models[i].first)
+	if (m_score.is_everywhere_better_than(best_models[i].first, 0))
 	  {
 	    delete best_models[i].second;
 	    best_models[i] = { m_score, m->clone() };
@@ -300,7 +327,7 @@ public:
 
     //std::sort(scores.begin(), scores.end(), comparer);
     qsort(scores.data(), scores.size(), sizeof(std::pair<score_t, Model*>),
-	  int_comparer);
+	  qsort_int_comparer);
 
     static_assert(SELECTION_FILTER_SIZE < POPULATION_GROUP_SIZE);
     for (unsigned i = 0; i < SELECTION_FILTER_SIZE; i++)
@@ -382,7 +409,7 @@ public:
 	  }
 	else
 	  {
-	    if (score < best_score)
+	    if (score.is_everywhere_better_than(best_score, 0))
 	      {
 		best_score = score;
 		best = m;
@@ -431,7 +458,7 @@ public:
 	  }
 	else
 	  {
-	    if (score < best_score)
+	    if (score.is_everywhere_better_than(best_score, 0))
 	      {
 		best_score = score;
 		best = model;

@@ -128,13 +128,15 @@ int RuleExpr::score(Model *m)
 }
 
 void Constraint::score(Model *m,
-		       score_data_t &result)
+		       score_t &result)
 {
   const unsigned k = rules.size();
   for (unsigned i = 0; i < k; i++)
     {
       RuleExpr *r = rules[i];
       int32_t score = r->score(m);
-      result.add(score, NULL);
+      unsigned prio = r->get_prio();
+
+      result.add(prio, score, NULL);
     }
 }

@@ -22,11 +22,11 @@ strategy_call: access '('  ')' ';' ;
 
 constraint: 'constraint' ID '{' constraint_property* '}';
 
-constraint_property: constraint_foreach | constraint_require;
+constraint_property: constraint_foreach | constraint_require | constraint_if;
 
 constraint_foreach: 'for' ID 'in' expr '{' constraint_property* '}';
-
-constraint_require: 'require' expr ';';
+constraint_if:      'if' expr '{' constraint_property* '}';
+constraint_require: 'require' '[' expr ']' expr ';';
 
 // ---- CONNECTION -----
 

@@ -40,6 +40,8 @@ public:
 
     virtual antlrcpp::Any visitConstraint_foreach(dslParser::Constraint_foreachContext *context) = 0;
 
+    virtual antlrcpp::Any visitConstraint_if(dslParser::Constraint_ifContext *context) = 0;
+
     virtual antlrcpp::Any visitConstraint_require(dslParser::Constraint_requireContext *context) = 0;
 
     virtual antlrcpp::Any visitNetwork(dslParser::NetworkContext *context) = 0;

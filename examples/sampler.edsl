@@ -67,17 +67,17 @@ component DGND {
 component fpga_connector {
   type: "two row pin header";
   
-  pin P0, D0,
-      P2, D1,
-      P4, D2,
-      P6, D3,
-      P8, D4,
-      P10, GND1,
-      P12, D5,
-      P14, D6,
-      P16, D7,
-      P18, D8,
-      P20, D9,
+  pin D9, P1,
+      D8, P3,
+      D7, P5,
+      D6, P7,
+      D5, P9,
+      D4, GND1,
+      D3, P11,
+      D2, P13,
+      D1, P15,
+      D0, P19,
+      P20, P21,
       P22, P23,
       P24, P25,
       P26, P27,
@@ -230,14 +230,6 @@ component C_01_uF_9 {
 
 
 
-network ADC_to_Rx[x:ADC_BITS] {
-  ADC.D[x] -> R[x].IN;
-}
-
-network Rx_to_Connector[x:ADC_BITS] {
-  R[x].OUT -> fpga_connector.D[x];
-}
-
 // 1V mode, single ended inputs for I/Q channels as per page 11 of AD9201
 network ADC_ina1 {
   DGND -> AGND;
@@ -267,18 +259,22 @@ network ADC_ina1 {
   ADC.REFB_Q -> C_01_uF_6.OUT -> C_10_uF_7.OUT -> C_01_uF_9 -> AGND;
 }
 
+network ADC_to_connector[x:ADC_BITS] {
+  ADC.D[x] -> R[x] -> fpga_connector.D[x];
+}
 
 //----- constraints section:
-
-
 
 constraint equal_lengths_for_ADC_to_connector {
   for i in ADC_BITS {
 
-      require len(R[i].OUT -> fpga_connector.D[i]) == 3mm;
-      
+      require[0] len(R[i].OUT -> fpga_connector.D[i]) == 3mm;
+
       for j in ADC_BITS {
-	  require len(ADC.D[i] -> R[i].IN) == len(ADC.D[j] -> R[j].IN);
+	  if i < j {
+	      require[1] len(ADC.D[i] -> R[i].IN)
+		 == len(ADC.D[j] -> R[j].IN);
+	  }
 	}
     }
 }
@@ -286,7 +282,7 @@ constraint equal_lengths_for_ADC_to_connector {
 
 strategy meandering {
   for j in ADC_BITS {
-      ADC_to_Rx[j].meander();
+        ADC_to_Rx[j].meander();
     }
 }
 

@@ -66,10 +66,12 @@ constraint equal_lengths_for_ADC_to_connector {
 
       require len(conn1.P[i] -> R[i].IN) == 3 mm;
 
-      for j in BITS
-	{
-	  require
-	    len(R[i].OUT -> conn2.P[i]) == len(R[j].OUT -> conn2.P[j]);
+      for j in BITS {
+      	  if i < j {
+	       require
+	       	    len(R[i].OUT -> conn2.P[i])
+		 == len(R[j].OUT -> conn2.P[j]);
+           }
 	}
     }
 }

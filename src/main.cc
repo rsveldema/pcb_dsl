@@ -64,16 +64,55 @@ int main(int argc, char **argv)
   Canvas::init(argc, argv);    
 
   ModelCreatorListener listener;
-
+  static unsigned parse_errors = 0;
+  
+  class LexerErrorListener : public antlr4::BaseErrorListener {
+  public:    
+    virtual void syntaxError(antlr4::Recognizer *recognizer,
+			     antlr4::Token *offendingSymbol,
+			     size_t line, size_t charPositionInLine,
+			     const std::string &msg, std::exception_ptr e) override
+    {
+      parse_errors++;
+    }
+  };
+  
+  class ParserErrorListener : public antlr4::BaseErrorListener {
+  public:
+    
+    virtual void syntaxError(antlr4::Recognizer *recognizer,
+			     antlr4::Token *offendingSymbol,
+			     size_t line, size_t charPositionInLine,
+			     const std::string &msg, std::exception_ptr e) override
+    {
+      parse_errors++;
+    }
+  };
+  
   try {
+    LexerErrorListener lexerErrorListener;
+    ParserErrorListener parserErrorListener;
+    
     std::ifstream stream;
     stream.open(filename);
     antlr4::ANTLRInputStream input(stream);
     dslLexer lexer(&input);
+    lexer.addErrorListener(&lexerErrorListener);
+    
     antlr4::CommonTokenStream tokens(&lexer);
     dslParser parser(&tokens);
+    //parser.removeErrorListeners();
+    parser.addErrorListener(&parserErrorListener);
     
     antlr4::tree::ParseTree *tree = parser.startRule();
+
+    if (parse_errors)
+      {
+	fprintf(stderr, "bailing out due to %d parse errors\n",
+		parse_errors);
+	abort();
+      }
+    
     antlr4::tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
   } catch (antlr4::RuntimeException &e) {
     fprintf(stderr, "caught exception!\n");

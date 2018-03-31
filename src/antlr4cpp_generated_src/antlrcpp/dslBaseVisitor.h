@@ -57,6 +57,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitConstraint_if(dslParser::Constraint_ifContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitConstraint_require(dslParser::Constraint_requireContext *ctx) override {
     return visitChildren(ctx);
   }

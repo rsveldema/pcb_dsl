@@ -28,8 +28,8 @@ class RuleExpr
   std::string name;
   RuleExpr *lhs = nullptr;
   RuleExpr *rhs = nullptr;
-
-
+  unsigned prio = 0;
+  
  public:
   RuleExpr(int c)
     {
@@ -53,7 +53,7 @@ class RuleExpr
   RuleExpr(const std::string &op,
 	   RuleExpr *lhs,
 	   RuleExpr *rhs);
- RuleExpr(Type t,
+  RuleExpr(Type t,
 	   RuleExpr *lhs,
 	   RuleExpr *rhs)
     : type(t)
@@ -63,6 +63,15 @@ class RuleExpr
     }
   void check(Model *m, bool root);
   std::string str() const;
+
+  unsigned get_prio() const
+  {
+    return prio;
+  }
+  void set_prio(unsigned p)
+  {
+    this->prio = p;
+  }
 
   Component *find_component(Model *m);
   Pin *find_pin(Model *m);
@@ -81,12 +90,14 @@ public:
     : name(_name)
   {
   }
-  void add(RuleExpr *r)
+  void add(unsigned prio,
+	   RuleExpr *r)
   {
+    r->set_prio(prio);
     rules.push_back(r);
   }
   void check(Model *m);
-  void score(Model *m, score_data_t &result);
+  void score(Model *m, score_t &result);
 };
 
 

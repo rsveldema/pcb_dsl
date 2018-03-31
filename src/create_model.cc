@@ -132,12 +132,33 @@ int constant_fold_expr(Model *model,
       auto operand = expr->op()->operand->getText();
       if (operand == "+")
 	return left + right;
+
       if (operand == "*")
 	return left * right;
+
       if (operand == "/")
 	return left / right;
+
       if (operand == "%")
 	return left % right;
+
+      if (operand == ">")
+	return left > right;
+
+      if (operand == "<")
+	return left < right;
+
+      if (operand == ">=")
+	return left >= right;
+
+      if (operand == "<=")
+	return left <= right;
+
+      if (operand == "==")
+	return left == right;
+      
+      if (operand == "!=")
+	return left != right;
       abort();
     }
   return 0;

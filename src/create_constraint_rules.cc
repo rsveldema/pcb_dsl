@@ -191,7 +191,16 @@ void add_constraint(Constraint *c,
 {
   for (auto p : code)
     {
-      if (auto fe = p->constraint_foreach())
+      if (auto ife = p->constraint_if())
+	{
+	  auto v = constant_fold_expr(model, NULL, ife->expr());
+	  if (v)
+	    {
+	      auto code       = ife->constraint_property();
+	      add_constraint(c, model, code);
+	    }
+	}
+      else if (auto fe = p->constraint_foreach())
 	{
 	  std::string loop_var   = fe->ID()->getText().c_str();
 	  auto loop_limit = fe->expr();
@@ -210,9 +219,12 @@ void add_constraint(Constraint *c,
 	}
       else if (auto cr = p->constraint_require())
 	{
-	  auto expr = cr->expr();
+	  auto prio_expr = cr->expr()[0];
+	  auto expr = cr->expr()[1];
+
+	  auto prio = constant_fold_expr(model, NULL, prio_expr);
 	  RuleExpr *r = create_rule(model, expr);
-	  c->add(r);
+	  c->add(prio, r);
 	}
       else
 	{

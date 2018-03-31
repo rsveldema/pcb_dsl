@@ -42,23 +42,26 @@ public:
 class score_t
 {
  public:
-  score_data_t values;
+  static constexpr unsigned PRIO_LEVELS = 2;
+  score_data_t values[PRIO_LEVELS];
 
-  bool operator < (const score_t &s) const;
-  int int_comparer(const score_t &s) const;
-
-  bool is_better_at(unsigned ix, const score_t &a) const;
+  bool is_better_than(const score_t &s, unsigned seed, unsigned prio) const;
+  bool is_everywhere_better_than(const score_t &s, unsigned seed) const;
+  int int_comparer(const score_t &s, unsigned seed, unsigned prio) const;
   std::string str() const;
   
-  size_t size() const
+  size_t size(unsigned prio) const
   {
-    return values.size();
+    assert(prio < PRIO_LEVELS);
+    return values[prio].size();
   }
 
-  void add(int32_t v,
+  void add(unsigned prio,
+	   int32_t v,
 	   const char *descr)
   {
-    values.add(v, descr);
+    assert(prio < PRIO_LEVELS);
+    values[prio].add(v, descr);
   }
 };
 
