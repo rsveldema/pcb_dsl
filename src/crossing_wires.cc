@@ -94,8 +94,10 @@ bool Pin::add_layers_for_crossing_lines(Model *model,
 {
   auto center1 = outline.center();
 
-  for (auto other_pin : connections)
+  for (unsigned i=0;i<size();i++)
     {
+      auto other_pin = get(i);
+
       if (admin.forbidden.find(other_pin) != admin.forbidden.end())
 	{
 	  continue;

@@ -82,14 +82,14 @@ void Pin::route_around_conflict(Model *model,
     
 
   router1->pins[0]->set_layer(this->get_layer());
-  router1->pins[1]->connections = { router2->pins[0] };
+  router1->pins[1]->connections.reset(router2->pins[0]);
   router1->pins[1]->set_layer(new_layer);
   
   router2->pins[0]->set_layer(new_layer);  
   router2->pins[1]->connections = this->connections;
   router2->pins[1]->set_layer(this->get_layer());
   
-  this->connections = { router1->pins[0] };
+  this->connections.reset(router1->pins[0]);
 
   //utils::print("done: ", model->str());
   model->writeDOT("routed.dot");

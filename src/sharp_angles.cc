@@ -15,12 +15,15 @@ bool Component::get_connection_angle_info(InMap &in_map,
   double max_angle = 0;
 
   assert(in_map.get_in(my_from_pin).size() > 0);
-  assert(my_to_pin->connections.size() > 0);
+  assert(my_to_pin->size() > 0);
   
   for (auto in : in_map.get_in(my_from_pin))
     {
-      for (auto out : my_to_pin->connections)
+      const unsigned SZE = my_to_pin->size();
+      for (unsigned it=0; it < SZE; it++)
 	{
+	  Pin *out = my_to_pin->get(it);
+
 	  if (out->overlaps(in) ||
 	      in->overlaps(out))
 	    {

@@ -55,8 +55,10 @@ void Pin::draw(Canvas *c)
     {
       outline.draw(c, info->name);
     }
-  for (auto other_pin : connections)
+  for (unsigned ix = 0; ix < size(); ix++)
     {
+      auto other_pin = connections[ix];
+
       auto style = LineStyle::SOLID;
       if (other_pin->overlaps(this))
 	{

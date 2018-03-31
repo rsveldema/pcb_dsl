@@ -40,8 +40,9 @@ void check_unconnected_components(Model *model)
     {
       for (auto pin : c->pins)
 	{
-	  for (auto other_pin : pin->connections)
+	  for (unsigned ix = 0; ix < pin->size(); ix++)
 	    {
+	      auto other_pin = pin->get(ix);
 	      connected[c] = true;
 	      connected[other_pin->component] = true;
 	    }

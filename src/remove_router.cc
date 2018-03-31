@@ -9,11 +9,11 @@ Component *next_router(Component *comp)
       assert(comp->info->is_router);
       assert(comp->pins.size() == 2);
       assert(comp->pins[1]->info->name == "out");
-      assert(comp->pins[1]->connections.size() > 0);
+      assert(comp->pins[1]->size() > 0);
       
-      if (comp->pins[1]->connections.size() == 1)
+      if (comp->pins[1]->size() == 1)
 	{	  
-	  auto to_pin = comp->pins[1]->connections[0];
+	  auto to_pin = comp->pins[1]->get(0);
 	  auto to_comp = to_pin->component;
 	  if (to_comp->info->is_router)
 	    {
@@ -31,8 +31,10 @@ InMap::InMap(Model *m)
     {
       for (auto pin : comp->pins)
 	{
-	  for (auto conn : pin->connections)
+	  for (unsigned i=0;i<pin->size();i++)
 	    {
+	      auto conn = pin->get(i);
+
 	      add_in(pin, conn);
 	    }
 	}
@@ -52,15 +54,15 @@ void Component::move_pin_connection(Component *from,
 {
   for (auto p : pins)
     {
-      const unsigned count = p->connections.size();
+      const unsigned count = p->size();
       for (unsigned i = 0; i < count; i++)
 	{
-	  auto from_pin = p->connections[i];
+	  auto from_pin = p->get(i);
 	  if (from_pin->component == from)
 	    {
 	      auto to_pin = to->find_pin_by_id(from_pin->info->id);
 	      assert(to_pin);
-	      p->connections[i] = to_pin;
+	      p->set(i, to_pin);
 	    }
 	}      
     }

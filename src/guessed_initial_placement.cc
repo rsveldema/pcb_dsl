@@ -106,9 +106,11 @@ void try_to_add_cluster(Component *comp,
   for (auto pin : comp->pins)
     {
       assert(pin->component == comp);
-      
-      for (auto conn_pin : pin->connections)
+
+      for (unsigned ix = 0; ix < pin->size(); ix++)
 	{
+	  auto conn_pin = pin->get(ix);
+	  
 	  if (is_placed(already_placed, conn_pin->component))
 	    {
 	      Cluster *cluster = find_or_add_cluster(placed, comp);

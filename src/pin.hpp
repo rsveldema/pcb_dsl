@@ -1,6 +1,9 @@
 #ifndef PIN_H__H_H__
 #define PIN_H__H_H__
 
+
+#include "my_vector.hpp"
+
 class Pin;
 
 
@@ -54,9 +57,13 @@ class Pin
   Outline outline;
 
  public:
+  static constexpr unsigned MAX_CONNECTIONS_PER_PIN = 2;
+  
   PinInfo *info;
   Component *component;
-  std::vector<Pin *> connections;
+
+private:
+  fixedsize_vector<Pin *, MAX_CONNECTIONS_PER_PIN> connections;
 
  public:
   Pin() {}
@@ -187,6 +194,20 @@ class Pin
 	  }
       }
     return false;
+  }
+
+  void set(unsigned ix, Pin *to_pin)
+  {
+    connections.set(ix, to_pin);
+  }
+
+  Pin *get(unsigned ix) const
+  {
+    return connections[ix];
+  }
+  unsigned size() const
+  {
+    return connections.size();
   }
   
   void add_connection(Pin *to_pin)

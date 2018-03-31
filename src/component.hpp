@@ -1,8 +1,10 @@
 #ifndef COMPONENT_H_H__H_
 #define COMPONENT_H_H__H_
 
-#include "parser.hpp"
 #include <map>
+#include "my_vector.hpp"
+
+#include "parser.hpp"
 
 class Pin;
 

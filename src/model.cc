@@ -146,8 +146,10 @@ void Model::writeDOT(const std::string filename)
 
 	    fprintf(f, "%s -> %s;\n", c->info->name.c_str(), from.c_str());	    
 	    fprintf(f, "%s [label=\"%s @ %d\"];\n", from.c_str(), from.c_str(), p->get_layer());
-	    for (auto to_pin : p->connections)
+	    for (unsigned i=0;i<p->size();i++)
 	      {
+		auto to_pin = p->get(i);
+
 		std::string to = to_pin->component->info->name + "_" + to_pin->info->name;
 		
 		fprintf(f, "%s -> %s;\n", from.c_str(), to.c_str());

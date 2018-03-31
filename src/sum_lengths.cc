@@ -8,8 +8,11 @@ double Pin::sum_connection_lengths()
 {
   double s = 0;
   auto center = outline.center();
-  for (Pin *other : connections)
+
+  for (unsigned i=0;i<size(); i++)
     {
+      Pin *other = connections[i];
+    
       if (this->overlaps(other))
 	{
 	  if (VERBOSE)
