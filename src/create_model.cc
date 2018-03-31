@@ -3,6 +3,23 @@
 
 static constexpr double BOUNDING_BOX_MARGIN_MM = 0.5;
 
+
+static std::map<std::string, ComponentDataSheet*> comp_datasheet_info;
+
+ComponentDataSheet *get_datasheet_info(const std::string &name)
+{
+  if (comp_datasheet_info.find(name) == comp_datasheet_info.end())
+    {
+      ComponentDataSheet *c = new ComponentDataSheet(name);
+      comp_datasheet_info[name] = c;
+      return c;
+    }
+  auto c = comp_datasheet_info[name];
+  assert(c);
+  return c;
+}
+
+
 MillimeterPoint::MillimeterPoint(const Point &p)
   : x(((double)p.x) / Point::POINT_PRECISION),
     y(((double)p.y) / Point::POINT_PRECISION),
@@ -21,7 +38,10 @@ int constant_fold_field(Component *comp,
   auto name1 = access_suffixes[1]->ID()->getText();
     
   //#print("constant fold in component " + str(names) + ", list = " + str(self.table_list));
-  auto table = comp->find_table(name0);
+  ComponentDataSheet *ci = get_datasheet_info(comp->info->name);
+  assert(ci);
+  
+  auto table = ci->find_table(name0);
   auto row = table->find_row_by_key(name1);
   if (! row)
     {
@@ -204,7 +224,8 @@ void preprocess_component(Model *model,
     {
       if (p->datasheet_prop().size() > 0)
 	{
-	  comp->info->has_data_sheet = true;
+	  ComponentDataSheet *ci = get_datasheet_info(comp->info->name);
+	  ci->has_data_sheet = true;
 	}
       if (p->component_type)
 	{
@@ -353,8 +374,9 @@ void add_dimensions(Component *comp, dslParser::ComponentContext *ctxt)
 static
 void process_component_type(Model *model,
 			    Component *comp)
-{  
-  if (! comp->info->has_data_sheet)
+{
+  ComponentDataSheet *ci = get_datasheet_info(comp->info->name);
+  if (! ci->has_data_sheet)
     {
       if (comp->info->component_type != "")
 	{

@@ -7,13 +7,47 @@
 class Pin;
 
 
+class ComponentDataSheet
+{
+public:
+  std::string name;
+  bool has_data_sheet = false;
+  std::vector<Table *> table_list;
+  std::vector<Page *> pkg_list;
+
+public:
+  ComponentDataSheet(const std::string &s)
+    : name(s)
+  {
+  }
+
+  void add_package(Page *p)
+  {
+    pkg_list.push_back(p);
+  }
+    
+  Table *find_table(const std::string &name)
+  {
+    for (auto t : table_list)
+      {
+	if (t->name == name)
+	  {
+	    return t;
+	  }
+      }
+    return NULL;
+  }
+};
+
+
+ComponentDataSheet *get_datasheet_info(const std::string &name);
+
 /** holds info shared by all instances of a given component type.
  */
 class ComponentInfo
 {
  public:
   MillimeterPoint dim; // width,height,layer
-  bool has_data_sheet = false;
   Point *fixed_position = NULL;
   std::string name;
   bool is_ground = false;
@@ -21,15 +55,8 @@ class ComponentInfo
   bool is_board = false;
   bool is_rotateable = false;
   std::string component_type;
-  std::vector<Table *> table_list;
-  std::vector<Page *> pkg_list;
 
   ComponentInfo(const std::string &_name, bool _is_router);
-
-  void add_package(Page *p)
-  {
-    pkg_list.push_back(p);
-  }
 };
 
 class Component
@@ -130,18 +157,6 @@ class Component
     if (name == "pins")
       return pins.size();
     abort();
-  }
-  
-  Table *find_table(const std::string &name)
-  {
-    for (auto t : info->table_list)
-      {
-	if (t->name == name)
-	  {
-	    return t;
-	  }
-      }
-    return NULL;
   }
 
   bool can_transpose(const Point &dir,

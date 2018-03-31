@@ -19,7 +19,9 @@ bool valid_pin_name(const std::string &name)
 
 void Component::add_table(Model *m, Table *table)
 {
-  info->table_list.push_back(table);
+  ComponentDataSheet *ci = get_datasheet_info(info->name);
+  ci->table_list.push_back(table);
+  
   if (table->name == "pins")
     {
       for (auto row : table->rows)
@@ -271,7 +273,10 @@ void extract_tables(Model *model,
 	  
 	  if (extractor->getText() == "package") {
 	    auto pkg = extract_package(table, pages, title, createdTableName);
-	    comp->info->add_package(pkg);
+
+	    ComponentDataSheet*ci = get_datasheet_info(comp->info->name);
+	    assert(ci);	    
+	    ci->add_package(pkg);
 	  } else if (extractor->getText() == "outline") {
 	    extract_outline(comp, pages, title);
 	  } else if (extractor->getText() == "table") {

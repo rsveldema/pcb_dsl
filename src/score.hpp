@@ -5,17 +5,21 @@ class score_data_t
 {
  private:
   unsigned count = 0;
-  static constexpr unsigned MAX_SCORE_DATA = 128;  
+  static constexpr unsigned MAX_SCORE_DATA = 128;
   int32_t values[MAX_SCORE_DATA];
 
  public:
-  int32_t at(unsigned ix) const
+  inline int32_t at(unsigned ix) const
   {
     assert(ix < size());
     return values[ix];
   }
     
-  unsigned size() const { return count; }
+  unsigned size() const
+  {
+    return count;
+  }
+  
   void push_back(int32_t a)
   {
     assert(count < MAX_SCORE_DATA);
