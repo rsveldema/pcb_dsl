@@ -20,9 +20,10 @@ void Component::gather_layer_map(LayerMap &map)
     {
       return;
     }
-  for (auto comp : pins)
+  for (unsigned ci=0;ci<pins.size();ci++)
     {
-      comp->gather_layer_map(map);
+      auto pin = pins[ci];
+      pin->gather_layer_map(map);
     }
 }
 

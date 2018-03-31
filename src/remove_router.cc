@@ -29,8 +29,10 @@ InMap::InMap(Model *m)
 {
   for (auto comp : m->components)
     {
-      for (auto pin : comp->pins)
+      for (unsigned ci=0;ci<comp->pins.size();ci++)
 	{
+	  auto pin = comp->pins[ci];
+
 	  for (unsigned i=0;i<pin->size();i++)
 	    {
 	      auto conn = pin->get(i);
@@ -52,8 +54,10 @@ void Model::remove(Component *c,
 void Component::move_pin_connection(Component *from,
 				    Component *to)
 {
-  for (auto p : pins)
+  for (unsigned ci=0; ci < pins.size(); ci++)
     {
+      auto p = pins[ci];
+
       const unsigned count = p->size();
       for (unsigned i = 0; i < count; i++)
 	{

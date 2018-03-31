@@ -1,16 +1,24 @@
 
+#include "my_vector.hpp"
+
 struct ParetoFront
 {
-  std::map<unsigned, std::pair<score_t, Model *> > scores;
+  static constexpr unsigned MAX_PARETO_FRONT_SIZE = score_data_t::MAX_SCORE_DATA;
+  
+  bool init = false;
+  fixedsize_vector<std::pair<score_t, Model *>, MAX_PARETO_FRONT_SIZE> scores;
 
   void tryAddToFront(const score_t &score, Model *model)
-  {    
+  {
+    assert(score.size() < MAX_PARETO_FRONT_SIZE);
+    
     std::pair<score_t, Model *> p = {score, model};
-    if (scores.size() == 0)
+    if (! init)
       {
+	init = true;
 	for (unsigned i = 0; i < score.size(); i++)
 	  {
-	    scores[i]    = p;
+	    scores.push_back(p);
 	  }
 	return;
       }
@@ -26,9 +34,11 @@ struct ParetoFront
 
   void push_selected(std::map<Model*, bool> &selected)
   {
-    for (auto it : scores)
+    for (unsigned i=0;i<scores.size();i++)
       {
-	selected[it.second.second] = true;
+	auto &it = scores[i];
+	
+	selected[it.second] = true;
       }
   }
 };

@@ -25,7 +25,7 @@ private:
   {
     for (unsigned i=0;i<points.size();i++)
       {
-	auto p = points[i];
+	auto &p = points[i];
 	p.minmax(d);
       }
   }
@@ -46,7 +46,7 @@ private:
   {
     for (unsigned i=0;i<points.size();i++)
       {
-	auto p = points[i];
+	auto &p = points[i];
 	p.set_layer(layer);
       }
     cached_center.set_layer(layer);
@@ -58,7 +58,7 @@ private:
     std::string ret("outline<");
     for (unsigned i=0;i<points.size();i++)
       {
-	auto p = points[i];
+	auto &p = points[i];
 	
 	ret += prefix;
 	ret += p.str();
@@ -151,7 +151,7 @@ private:
   {
     for (unsigned i=0;i<points.size();i++)
       {
-	auto p = points[i];
+	auto &p = points[i];
 
 	if (c.point_inside_polygon(p))
 	  {
@@ -169,8 +169,8 @@ private:
       {
 	unsigned ni = (i + 1) % n;
 
-	auto p1 = points[i];
-	auto p2 = points[ni];
+	auto &p1 = points[i];
+	auto &p2 = points[ni];
 
 	if (Point::intersection(p1, p2,
 				op1, op2,
@@ -190,8 +190,8 @@ private:
       {
 	unsigned ni = (i + 1) % n;
 
-	auto p1 = points[i];
-	auto p2 = points[ni];
+	auto &p1 = points[i];
+	auto &p2 = points[ni];
 
 	if (other.have_crossing_lines(p1, p2))
 	  {
@@ -263,7 +263,7 @@ private:
 
     for (unsigned i=0;i<points.size();i++)
       {
-	auto p = points[i];
+	auto &p = points[i];
 	if (first)
 	  {
 	    first = false;

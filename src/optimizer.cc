@@ -20,6 +20,22 @@ constexpr auto MUTATION_PROBABILITY_PERCENTAGE    = 3;
 constexpr auto FIX_PROBABILITY_PERCENTAGE         = 20;
 constexpr auto ROTATE_PROBABILITY_PERCENTAGE      = 2;
 
+static
+void print_config()
+{
+  fprintf(stderr, "================ CONFIG ====================\n");
+#if USE_PARETO_FRONT
+  fprintf(stderr, " ============> PARETO selector\n");
+#else
+  fprintf(stderr, " ============> LEX SORT selector\n");
+#endif
+  
+#if SUPPORT_MULTI_GEN_ELITE
+  fprintf(stderr, " ============> ELITE enabled\n");
+#endif
+  fprintf(stderr, "============================================\n");
+}
+
 static bool enable_gui;
 
 std::string score_t::str() const
@@ -29,7 +45,11 @@ std::string score_t::str() const
   for (unsigned i=0;i<values.size();i++)
     {
       char buf[32];
-      sprintf(buf, "%d", values.at(i));
+      if (values.descr(i))
+	sprintf(buf, "%s:%d", values.descr(i), values.at(i));
+      else
+	sprintf(buf, "%d", values.at(i));
+      
       str += comma;
       str += buf;
       comma = ",";
@@ -96,19 +116,19 @@ void Model::compute_score(score_t &s)
   auto sharps = get_num_sharp_angles();
   //printf("overlaps == %d\n", (int) overlaps);
 
-  s.add(overlaps);
+  s.add(overlaps, "OLAP");
   
   for (auto p : info->constraints)
     {
       p->score(this, s.values);
     }
 
-  s.add(crossing_wires);
-  s.add(crossing_pins);
-  s.add(conn_lengths);
-  s.add(components.size());
-  s.add(num_layers());
-  s.add(sharps);
+  s.add(crossing_wires, "XW");
+  s.add(crossing_pins, "XP");
+  s.add(conn_lengths, "D");
+  s.add(components.size(), "#C");
+  s.add(num_layers(), "#L");
+  s.add(sharps, "S");
 }
 
 
@@ -510,6 +530,8 @@ Model* optimize_model(Model *model,
 		      bool enable_gui,
 		      InitialPlacement initial_placement)
 {
+  print_config();
+  
   ::enable_gui = enable_gui;
   Canvas *gui = NULL;
 

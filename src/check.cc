@@ -23,10 +23,11 @@ void Component::check()
       fprintf(stderr, "ERROR: component %s has no outline\n", info->name.c_str());
       abort();
     }
-  
-  for (auto c : pins)
+
+  for (unsigned ci=0;ci<pins.size();ci++)
     {
-      c->check();
+      auto pin = pins[ci];
+      pin->check();
     }
 }
 
@@ -38,8 +39,10 @@ void check_unconnected_components(Model *model)
   
   for (auto c : model->components)
     {
-      for (auto pin : c->pins)
+      for (unsigned ci=0;ci<c->pins.size();ci++)
 	{
+	  auto pin = c->pins[ci];
+	  
 	  for (unsigned ix = 0; ix < pin->size(); ix++)
 	    {
 	      auto other_pin = pin->get(ix);

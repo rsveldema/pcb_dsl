@@ -77,8 +77,10 @@ int64_t compute_distance(Pin *p1,
       auto comp = c->component;
       assert(comp->info->is_router);
       
-      for (auto other_pin : comp->pins)
+      for (unsigned ci=0;ci<comp->pins.size();ci++)
 	{
+	  auto other_pin = comp->pins[ci];
+	
 	  if (other_pin != c)
 	    {
 	      int64_t a = compute_distance(other_pin, p2);
@@ -133,6 +135,6 @@ void Constraint::score(Model *m,
     {
       RuleExpr *r = rules[i];
       int32_t score = r->score(m);
-      result.push_back(score);
+      result.add(score, NULL);
     }
 }

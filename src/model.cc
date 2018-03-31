@@ -140,8 +140,10 @@ void Model::writeDOT(const std::string filename)
     fprintf(f, "digraph model {\n");
     for (auto c : components)
       {
-	for (auto p : c->pins)
+	for (unsigned ci=0;ci < c->pins.size();ci++)
 	  {
+	    auto p = c->pins[ci];
+	    
 	    std::string from = c->info->name + "_" + p->info->name;
 
 	    fprintf(f, "%s -> %s;\n", c->info->name.c_str(), from.c_str());	    

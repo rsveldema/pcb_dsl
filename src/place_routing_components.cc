@@ -23,8 +23,10 @@ void revector_connections_to_router(clone_map_t &routers,
     {
       if (! contains(routers, comp)) //not comp in routers
 	{
-	  for (auto other_pin : comp->pins)
+	  for (unsigned ci=0;ci<comp->pins.size();ci++)
 	    {
+	      auto other_pin = comp->pins[ci];
+
 	      other_pin->revector(from_pin, router->pins[0]);
 	    }
 	}

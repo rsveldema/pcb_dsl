@@ -24,7 +24,7 @@ void Outline::rotate(double radians,
 {
   for (unsigned i=0;i<points.size();i++)
     {
-      auto p = points[i];      
+      auto &p = points[i];      
       p.rotate(radians,
 	       rotation_point);
     }

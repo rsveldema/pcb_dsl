@@ -81,9 +81,10 @@ void Component::draw(Canvas *c)
     {
       outline.draw(c, info->name);
     }
-  for (auto p : pins)
+  for (unsigned ci=0;ci<pins.size();ci++)
     {
-      p->draw(c);
+      auto pin = pins[ci];
+      pin->draw(c);
     }
 
   bounding_box.draw(c, "");

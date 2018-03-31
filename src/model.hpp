@@ -89,9 +89,10 @@ class MemoryManager
   }
   
   void free(Component *c)
-  {    
-    for (auto p : c->pins)
+  {
+    for (unsigned i=0;i<c->pins.size();i++)
       {
+	auto p = c->pins[i];
 	free(p);
       }
     comp.free(c);

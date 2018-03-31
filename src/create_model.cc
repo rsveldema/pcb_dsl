@@ -487,8 +487,10 @@ void Component::add_bounding_box()
 {
   min_max_t d;
   outline.minmax(d);
-  for (auto p : pins)
+  
+  for (unsigned ci=0; ci < pins.size();ci++)
     {
+      auto p = pins[ci];
       p->minmax(d);
     }
 

@@ -34,9 +34,11 @@ double Pin::sum_connection_lengths()
 double Component::sum_connection_lengths()
 {
   double s = 0;
-  for (auto c : pins)
+
+  for (unsigned ci=0;ci<pins.size();ci++)
     {
-      s += c->sum_connection_lengths();
+      auto pin = pins[ci];
+      s += pin->sum_connection_lengths();
     }
   return s;  
 }

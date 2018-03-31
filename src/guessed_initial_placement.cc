@@ -103,10 +103,12 @@ void try_to_add_cluster(Component *comp,
 			std::vector<Cluster*> &placed,
 			InMap &map)
 {
-  for (auto pin : comp->pins)
+  for (unsigned ci=0;ci<comp->pins.size();ci++)
     {
+      auto pin = comp->pins[ci];
+      
       assert(pin->component == comp);
-
+      
       for (unsigned ix = 0; ix < pin->size(); ix++)
 	{
 	  auto conn_pin = pin->get(ix);

@@ -28,9 +28,11 @@ class ComponentInfo
 
 class Component
 {
+  static constexpr unsigned MAX_PINS_PER_COMPONENT = 64;
+  
  public:
   ComponentInfo *info;  
-  std::vector<Pin *> pins;
+  fixedsize_vector<Pin *, MAX_PINS_PER_COMPONENT> pins;
   Outline outline;
   Outline bounding_box;
   Model *model;
@@ -68,8 +70,10 @@ class Component
   {
     outline.set_layer(l);
     bounding_box.set_layer(l);
-    for (auto p : pins)
+
+    for (unsigned i=0;i<pins.size();i++)
       {
+	auto p = pins[i];
 	p->set_layer(l);
       }
   }
@@ -90,12 +94,14 @@ class Component
       std::string ret = info->name;
       ret += "{";
       const char *sep = "";
-      for (auto p : pins)
-	{
-	  ret += sep;
-	  ret += p->str();
-	  sep = ", ";
-	}
+
+      for (unsigned i=0;i<pins.size();i++)
+      {
+	auto p = pins[i];
+	ret += sep;
+	ret += p->str();
+	sep = ", ";
+      }
       ret += "}";
       return ret;
     }

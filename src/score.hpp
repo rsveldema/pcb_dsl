@@ -3,10 +3,13 @@
 
 class score_data_t
 {
+public:
+  static constexpr unsigned MAX_SCORE_DATA = 256;
+  
  private:
   unsigned count = 0;
-  static constexpr unsigned MAX_SCORE_DATA = 128;
   int32_t values[MAX_SCORE_DATA];
+  const char * _descr[MAX_SCORE_DATA];
 
  public:
   inline int32_t at(unsigned ix) const
@@ -14,16 +17,24 @@ class score_data_t
     assert(ix < size());
     return values[ix];
   }
+  
+  inline const char *descr(unsigned ix) const
+  {
+    assert(ix < size());
+    return _descr[ix];
+  }
     
   unsigned size() const
   {
     return count;
   }
   
-  void push_back(int32_t a)
+  void add(int32_t v,
+	   const char *name)
   {
     assert(count < MAX_SCORE_DATA);
-    values[count] = a;
+    values[count]  = v;
+    _descr[count]  = name;
     count++;
   }
 };
@@ -44,9 +55,10 @@ class score_t
     return values.size();
   }
 
-  void add(int32_t v)
+  void add(int32_t v,
+	   const char *descr)
   {
-    values.push_back(v);
+    values.add(v, descr);
   }
 };
 
