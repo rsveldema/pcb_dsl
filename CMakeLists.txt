@@ -29,7 +29,7 @@ message(STATUS "Found antlr4cpp libs: ${ANTLR4CPP_LIBS} and includes: ${ANTLR4CP
 # Call macro to add lexer and grammar to your build dependencies.
 antlr4cpp_process_grammar(pcbgen
 	  antlrcpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dsl.antlr4)
+	${CMAKE_CURRENT_SOURCE_DIR}/src/dsl.antlr4)
 
 include_directories(${antlr4cpp_include_dirs} antlr4cpp_generated_src/antlrcpp )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
