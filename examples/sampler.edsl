@@ -9,7 +9,7 @@ component board {
 
 component ADC {
   datasheet {
-  file: "../docs/AD9201.pdf";
+  file: "./docs/AD9201.pdf";
   extract: package("PIN CONFIGURATION") as package;
   extract: table("PIN FUNCTION DESCRIPTIONS") as pins;
   extract: table("AD9201-SPECIFICATIONS") as specs;

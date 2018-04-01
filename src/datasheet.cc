@@ -302,7 +302,11 @@ void process_datasheet_prop(Model *model,
   char cmd[64];
   sprintf(cmd, "pdftohtml -xml %s out.xml",  filename.c_str());
   int ret = system(cmd);
-  assert(ret == 0);
+  if (ret != 0)
+    {
+      fprintf(stderr, "failed to run pdftohtml\n");
+      abort();
+    }
 
   const char *xml ="out.xml";
   FILE *f = fopen(xml, "rb");

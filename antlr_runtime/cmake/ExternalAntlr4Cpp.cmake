@@ -137,7 +137,7 @@ ExternalProject_ADD(
   TIMEOUT            10
   LOG_DOWNLOAD       ON
   #--Update step----------
-  UPDATE_COMMAND     echo ${GIT_EXECUTABLE} pull
+  UPDATE_COMMAND     ${GIT_EXECUTABLE} pull
   #--Patch step----------
   # PATCH_COMMAND sh -c "cp <SOURCE_DIR>/scripts/CMakeLists.txt <SOURCE_DIR>"
   #--Configure step-------------
@@ -182,6 +182,7 @@ set(ANTLR4CPP_LIBS "${INSTALL_DIR}/lib")
 macro(antlr4cpp_process_grammar
     antlr4cpp_project
     antlr4cpp_project_namespace
+    antlr4cpp_grammar_lexer
     antlr4cpp_grammar_parser)
 
   if(EXISTS "${ANTLR4CPP_JAR_LOCATION}")
@@ -194,9 +195,9 @@ macro(antlr4cpp_process_grammar
     COMMAND
     ${CMAKE_COMMAND} -E make_directory ${ANTLR4CPP_GENERATED_SRC_DIR}
     COMMAND
-    "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4CPP_JAR_LOCATION}" -Werror -Dlanguage=Cpp -listener -visitor -o "${ANTLR4CPP_GENERATED_SRC_DIR}/${antlr4cpp_project_namespace}" -package ${antlr4cpp_project_namespace}  "${antlr4cpp_grammar_parser}"
+    "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4CPP_JAR_LOCATION}" -Werror -Dlanguage=Cpp -listener -visitor -o "${ANTLR4CPP_GENERATED_SRC_DIR}/${antlr4cpp_project_namespace}" -package ${antlr4cpp_project_namespace} "${antlr4cpp_grammar_lexer}" "${antlr4cpp_grammar_parser}"
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-    DEPENDS "${antlr4cpp_grammar_parser}"
+    DEPENDS "${antlr4cpp_grammar_lexer}" "${antlr4cpp_grammar_parser}"
     )
 
   # Find all the input files
@@ -217,7 +218,6 @@ macro(antlr4cpp_process_grammar
 
   # export generated include directory
   set(antlr4cpp_include_dirs_${antlr4cpp_project_namespace} ${ANTLR4CPP_GENERATED_SRC_DIR}/${antlr4cpp_project_namespace})
-
   message(STATUS "Antlr4Cpp ${antlr4cpp_project_namespace} include: ${ANTLR4CPP_GENERATED_SRC_DIR}/${antlr4cpp_project_namespace}")
 
 endmacro()
