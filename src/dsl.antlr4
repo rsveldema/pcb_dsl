@@ -26,7 +26,7 @@ constraint_property: constraint_foreach | constraint_require | constraint_if;
 
 constraint_foreach: 'for' ID 'in' expr '{' constraint_property* '}';
 constraint_if:      'if' expr '{' constraint_property* '}';
-constraint_require: 'require' '[' expr ']' expr ';';
+constraint_require: 'require' '[' prio=NUMBER ']' expr ';';
 
 // ---- CONNECTION -----
 

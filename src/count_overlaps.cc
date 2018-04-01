@@ -5,25 +5,25 @@
 unsigned Model::count_overlaps()
 {
   unsigned c = 0;
-  for (auto p1 : components)
+
+  for (unsigned i = 0; i<components.size(); i++)
     {
+      auto p1 = components[i];
+      
       if (p1->info->is_board)
 	{
 	  continue;
 	}
-      
-      for (auto p2 : components)
+
+      for (unsigned j = i+1; j<components.size(); j++)
 	{
+	  auto p2 = components[j];
 	  if (p2->info->is_board)
 	    {
 	      continue;
 	    }
-	  
-	  if (p1 == p2)
-	    {
-	      continue;
-	    }
-	  
+
+	  assert(p1 != p2);	  
 	  if (p1->overlaps(*p2))
 	    {
 	      /*

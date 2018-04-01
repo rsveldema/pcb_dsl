@@ -41,6 +41,13 @@ class MillimeterLength
   
   double get() const { return x; }
 
+  std::string str()
+  {
+    char b[64];
+    sprintf(b, "%d", (int) x);
+    return b;
+  }
+  
   MillimeterLength operator / (double d) {
     return MillimeterLength(x / d);
   }
@@ -140,8 +147,8 @@ class Point
   
   Point(const MillimeterPoint &p)
   {
-    x = p.x.get() * POINT_PRECISION;
-    y = p.y.get() * POINT_PRECISION;
+    x = getPointLen(p.x); //.get() * POINT_PRECISION;
+    y = getPointLen(p.y); //.get() * POINT_PRECISION;
     layer = p.layer;
   }
 
@@ -151,6 +158,11 @@ class Point
       this->y = y;
       this->layer = layer;
     }
+
+  static pos_t getPointLen(const MillimeterLength &d)
+  {
+    return d.get() * POINT_PRECISION;
+  }
 					 
 
   CentimeterPoint toCM() const

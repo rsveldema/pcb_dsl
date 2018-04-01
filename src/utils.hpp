@@ -6,6 +6,13 @@
 #include <sstream>
 #include <math.h>
 
+template<typename T>
+T sqr(T t)
+{
+  return t * t;
+}
+
+
 static inline
 double radians_to_degrees(double radians)
 {

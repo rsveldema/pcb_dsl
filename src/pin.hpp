@@ -3,6 +3,7 @@
 
 
 #include "my_vector.hpp"
+#include "score.hpp"
 
 class Pin;
 
@@ -160,8 +161,8 @@ private:
     outline.transpose(dir);
   }
   
-  
-  double sum_connection_lengths();
+
+  void add_connection_lengths(length_score_t &s, Model *m);
   void revector(Pin *from_pin, Pin *to_pin)
   {
     for (unsigned ix = 0;ix < connections.size(); ix++)

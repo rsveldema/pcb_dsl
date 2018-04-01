@@ -7,7 +7,6 @@
 #include "utils.hpp"
 
 
-#define USE_PARETO_FRONT          1
 #define SUPPORT_MULTI_GEN_ELITE   1
 
 constexpr auto POPULATION_NUM_GROUPS =  1u;
@@ -16,7 +15,7 @@ constexpr auto NUM_KEPT_GROUP_BEST   =  4u;
 constexpr auto SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
 
 constexpr auto CROSSOVER_PROBABILITY_PERCENTAGE   = 60;
-constexpr auto MUTATION_PROBABILITY_PERCENTAGE    = 5;
+constexpr auto MUTATION_PROBABILITY_PERCENTAGE    = 15;
 constexpr auto FIX_PROBABILITY_PERCENTAGE         = 20;
 constexpr auto ROTATE_PROBABILITY_PERCENTAGE      = 3;
 
@@ -24,11 +23,7 @@ static
 void print_config()
 {
   fprintf(stderr, "================ CONFIG ====================\n");
-#if USE_PARETO_FRONT
-  fprintf(stderr, " ============> PARETO selector\n");
-#else
   fprintf(stderr, " ============> LEX SORT selector\n");
-#endif
   
 #if SUPPORT_MULTI_GEN_ELITE
   fprintf(stderr, " ============> ELITE enabled\n");
@@ -40,70 +35,109 @@ static bool enable_gui;
 
 std::string score_t::str() const
 {
-  const char *comma = "";
   std::string str("score<");
-  for (unsigned prio = 0; prio < score_t::PRIO_LEVELS; prio++)
+  
+  const char *comma = "";
+  for (unsigned i=0;i<values.size();i++)
     {
-      for (unsigned i=0;i<values[prio].size();i++)
+      char buf[32];
+      uint32_t n = values.at(i).raw();
+      if (values.descr(i))
 	{
-	  char buf[32];
-	  if (values[prio].descr(i))
-	    sprintf(buf, "%s:%d", values[prio].descr(i), values[prio].at(i));
-	  else
-	    sprintf(buf, "%d", values[prio].at(i));
-	  
-	  str += comma;
-	  str += buf;
-	  comma = ",";
+	  sprintf(buf, "%s:%d", values.descr(i), n);
 	}
+      else
+	sprintf(buf, "%d", n);
+      
+      str += comma;
+      str += buf;
+      comma = ",";
     }
-      str += ">";
+  
+  str += ">";
   return str;
 }
 
-bool score_t::is_better_than(const score_t &s, unsigned seed, unsigned prio) const
-{
-  if (int_comparer(s, seed, prio) < 0)
-    {
-      return true;
-    }
-  return false;
-}
 
-bool score_t::is_everywhere_better_than(const score_t &s, unsigned seed) const
+bool score_t::is_better_than(score_t &s)
 {
-  for (unsigned prio = 0; prio < score_t::PRIO_LEVELS; prio++)
+  if (int_comparer(s) >= 0)
     {
-      if (int_comparer(s, seed, prio) > 0)
-	{
-	  return false;
-	}
+      return false;
     }
   return true;
 }
 
 
-int score_t::int_comparer(const score_t &s, unsigned seed, unsigned prio) const
+/** negative values => this better than s
+ */
+int score_t::int_comparer(score_t &s) 
 {
-  assert(size(prio) == s.size(prio));
-
-  const unsigned c = size(prio);
-  unsigned ix = seed % c;
+  assert(values.size() == s.values.size());
+  
+  values.sort();
+  s.values.sort();
+  
+  const unsigned c = size();
+  assert(c == s.size());
+  int num_better = 0;
+  int64_t num_better_score = 0;
+  int num_worse = 0;
   for (unsigned i = 0; i < c; i++)
     {
-      auto v1 =   values[prio].at(ix);
-      auto v2 = s.values[prio].at(ix);
-      if (v1 != v2)
+      auto &k1 = values.at(i);
+      auto &k2 = s.values.at(i);
+      
+      auto v1 = k1.normalized();
+      auto v2 = k2.normalized();
+
+      // shouldn't compare apples and oranges:
+      assert(k1.get_importance() == k2.get_importance());
+      assert(k1.descr() == k2.descr());
+
+      if (v1 < v2)
 	{
-	  return v1 - v2;
+	  num_better++;
+	  num_better_score += (v1 - v2);
 	}
-      ix++;
-      if (ix == c)
+      else if (v1 > v2)
 	{
-	  ix = 0;
+	  num_worse++;
+	}
+
+      if ((i + 1) < c)
+	{
+	  auto next_v1 =   values.at(i + 1);
+	  assert(next_v1.get_importance() >= k1.get_importance());
+
+	  // same importance: keep going, otherwise, we should stop early
+	  // to allow first the high-prio stuff to be optimized.
+	  if (next_v1.get_importance() > k1.get_importance())
+	    {
+	      if (num_better > 0 &&
+		  num_worse > 0)
+		{
+		  if (num_worse > num_better)
+		    {
+		      return num_worse - num_better;
+		    }
+		  else
+		    {
+		      return num_better_score;
+		    }
+		}
+	    }
 	}
     }
-  return 0;
+  
+  if (num_worse > num_better)
+    {
+      return num_worse - num_better;
+    }
+  else
+    {
+      return num_better_score;
+    }
 }
 
 
@@ -114,20 +148,8 @@ int qsort_int_comparer(const void *p1,
 {
   compare_t *a = (compare_t*)p1;
   compare_t *b = (compare_t*)p2;
-
-  int v = 0;
-  for (unsigned prio=0;prio < score_t::PRIO_LEVELS; prio++)
-    {
-      v = a->first.int_comparer(b->first, 0, prio);
-      if (v < 0)
-	{
-	  break;
-	}
-    }
-  return v;
+  return a->first.int_comparer(b->first);
 }
-
-#include "pareto.hpp"
 
 
 /** 0 == perfect score, INF = forget it.
@@ -137,25 +159,35 @@ void Model::compute_score(score_t &s)
   assert(live == MAGIC);
   
   auto overlaps = count_overlaps();
-  auto conn_lengths = sum_connection_lengths();
+
+  length_score_t ls;
+  add_connection_lengths(ls);
+
   auto crossing_wires = count_crossing_lines();
+  uint32_t max_crossing_wires = sqr(components.size());
+
   auto crossing_pins = count_crossing_pins();
+  uint32_t max_crossing_pins = sqr(components.size() * 4);
+  
   auto sharps = get_num_sharp_angles();
   //printf("overlaps == %d\n", (int) overlaps);
-
-  s.add(0, overlaps, "OLAP");
+  
+  s.add(score_elt_t(overlaps,
+		    sqr(components.size()),
+		    "OLAP",
+		    Importance::OVERLAP));
   
   for (auto p : info->constraints)
     {
       p->score(this, s);
     }
 
-  s.add(0, crossing_wires, "XW");
-  s.add(0, crossing_pins, "XP");
-  s.add(1, conn_lengths, "D");
-  s.add(1, components.size(), "#C");
-  s.add(1, num_layers(), "#L");
-  s.add(1, sharps, "S");
+  s.add(score_elt_t(num_layers(), 10, "#L", Importance::NUM_LAYERS));
+  s.add(score_elt_t(crossing_pins,  max_crossing_pins, "XP", Importance::CROSSING_PINS));
+  s.add(score_elt_t(crossing_wires, max_crossing_wires, "XW", Importance::CROSSING_WIRES));
+  s.add(score_elt_t(sharps, components.size(), "S", Importance::SHARP_TURNS));
+  s.add(ls);
+  s.add(score_elt_t(components.size(), 1000, "#C", Importance::NUM_COMPONENTS));
 }
 
 
@@ -206,11 +238,15 @@ public:
 	Model *model = models[i];
 	if (should_mutate())
 	  {
-	    static const Point min_range(MillimeterPoint(30, 30, 0));
+	    static const Point min_range(MillimeterPoint(2, 2, 0));
+#if USE_FAST_CHANGE_AT_START
 	    Point range = model->info->board_dim.div(iteration);
 	    range.inplace_max(10, 10);
-	    assert(range.x > 0 && range.y > 0);	    
+	    assert(range.x > 0 && range.y > 0);
 	    model->random_move_components(min_range.max(range));
+#else
+	    model->random_move_components(min_range);
+#endif
 	  }
 	/*
 	 if (should_fix())
@@ -268,7 +304,7 @@ public:
       }
     for (unsigned i=0;i<NUM_KEPT_GROUP_BEST;i++)
       {
-	if (m_score.is_everywhere_better_than(best_models[i].first, 0))
+	if (m_score.is_better_than(best_models[i].first))
 	  {
 	    delete best_models[i].second;
 	    best_models[i] = { m_score, m->clone() };
@@ -313,7 +349,7 @@ public:
 	    assert(k < selected.size());
 	    
 	    auto cloned = array[k]->clone();
-	    static const Point range(MillimeterPoint(5, 5, 0));
+	    static const Point range(MillimeterPoint(1, 1, 0));
 	    cloned->random_move_components(range);
 	    models.push_back(cloned);
 	  }	  
@@ -338,22 +374,6 @@ public:
       }
   }
 
-  void use_pareto_front_selection(std::array<compare_t, POPULATION_GROUP_SIZE> &scores,
-				  std::map<Model*, bool> &selected)
-  {
-    ParetoFront front;
-    for (auto p : scores)
-      {
-	auto score  = p.first;
-	auto model = p.second;
-	assert(model);
-	
-	front.tryAddToFront(score, model);
-      }
-    front.push_selected(selected);
-  }
-
-
   void selection(unsigned iteration)
   {
     std::array<compare_t, POPULATION_GROUP_SIZE> scores;
@@ -369,12 +389,7 @@ public:
       }
 
     std::map<Model*, bool> selected;
-#if USE_PARETO_FRONT
-    use_pareto_front_selection(scores, selected);
-#else
     use_plain_sort_selection(scores, selected);
-#endif
-    
     assert(selected.size() > 0);
     create_new_generation(selected);
   }
@@ -409,7 +424,7 @@ public:
 	  }
 	else
 	  {
-	    if (score.is_everywhere_better_than(best_score, 0))
+	    if (score.is_better_than(best_score))
 	      {
 		best_score = score;
 		best = m;
@@ -458,7 +473,7 @@ public:
 	  }
 	else
 	  {
-	    if (score.is_everywhere_better_than(best_score, 0))
+	    if (score.is_better_than(best_score))
 	      {
 		best_score = score;
 		best = model;

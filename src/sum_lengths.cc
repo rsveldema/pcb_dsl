@@ -4,15 +4,17 @@
 
 static constexpr bool VERBOSE = false;
 
-double Pin::sum_connection_lengths()
+
+void Pin::add_connection_lengths(length_score_t &s,
+				 Model *m)
 {
-  double s = 0;
   auto center = outline.center();
 
   for (unsigned i=0;i<size(); i++)
     {
       Pin *other = connections[i];
-    
+
+      uint32_t max_dist = m->info->get_max_distance();
       if (this->overlaps(other))
 	{
 	  if (VERBOSE)
@@ -21,35 +23,36 @@ double Pin::sum_connection_lengths()
 		     this->component->info->name.c_str(),
 		     other->component->info->name.c_str());
 	    }
-	  s += 0; // no distance to cover...
-	}
+	  s.add(score_elt_t(0,
+			    max_dist,
+			    "LEN",
+			    Importance::SUM_LENGTHS));
+	}      
       else
 	{
-	  s += center.distance(other->outline.center());
+	  uint32_t d = center.distance(other->outline.center());
+	  s.add(score_elt_t(d,
+			    max_dist,
+			    "LEN",
+			    Importance::SUM_LENGTHS));
 	}
     }
-  return s;
 }
 
-double Component::sum_connection_lengths()
+void Component::add_connection_lengths(length_score_t &s,
+				       Model *m)
 {
-  double s = 0;
-
   for (unsigned ci=0;ci<pins.size();ci++)
     {
       auto pin = pins[ci];
-      s += pin->sum_connection_lengths();
+      pin->add_connection_lengths(s, m);
     }
-  return s;  
 }
 
-
-double Model::sum_connection_lengths()
+void Model::add_connection_lengths(length_score_t &s)
 {
-  double s = 0;
   for (auto c : components)
     {
-      s += c->sum_connection_lengths();
+      c->add_connection_lengths(s, this);
     }
-  return s;
 }

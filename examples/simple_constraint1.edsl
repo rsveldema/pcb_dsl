@@ -64,12 +64,12 @@ network Connector_to_Rx[x:BITS] {
 constraint equal_lengths_for_ADC_to_connector {
   for i in BITS {
 
-      require len(conn1.P[i] -> R[i].IN) == 3 mm;
+      require[1] len(conn1.P[i] -> R[i].IN) == 5 mm;
 
       /*
       for j in BITS
 	{
-	  require
+	  require[2]
 	    len(R[i].OUT -> conn1.P[i]) == len(R[j].OUT -> conn1.P[j]);
 	}
 	*/

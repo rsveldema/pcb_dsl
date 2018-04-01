@@ -99,11 +99,12 @@ int64_t RuleExpr::eval(Model *m)
 {
   switch (type)
     {
-    case INT_CONST: return iconst;
+    case DIST: return dist;
     case LEN:
       {
 	Pin *p1 = lhs->find_pin(m);
 	Pin *p2 = rhs->find_pin(m);
+	assert(p1 != p2);
 	int64_t ret = compute_distance(p1, p2);
 	assert(ret >= 0);
 	return ret;
@@ -113,15 +114,30 @@ int64_t RuleExpr::eval(Model *m)
     }
 }
 
-int RuleExpr::score(Model *m)
+score_elt_t RuleExpr::score(Model *m)
 {
   int64_t a = lhs->eval(m);
   int64_t b = rhs->eval(m);
   
   switch (type)
     {
-    case EQ:    return std::abs(a - b);
-    case NEQ:   return a != b ? 0 : 1000;
+    case EQ:
+      {
+	//fprintf(stderr, "L1: %ld, L2: %ld\n", a, b);
+	uint32_t distance     = std::abs(a - b);
+
+	uint32_t max_distance = m->info->get_max_distance();
+
+	unsigned int_prio = get_prio();
+	switch (int_prio)
+	  {
+	  default:
+	    fprintf(stderr, "ERROR: can't handle user constraint prio %d\n", int_prio);
+	    abort();
+	  case 1: return score_elt_t(distance, max_distance, "CON1",  Importance::USER_1);
+	  case 2: return score_elt_t(distance, max_distance, "CON2",  Importance::USER_2);
+	  }
+      }
     default:
       abort();
     }
@@ -134,9 +150,8 @@ void Constraint::score(Model *m,
   for (unsigned i = 0; i < k; i++)
     {
       RuleExpr *r = rules[i];
-      int32_t score = r->score(m);
-      unsigned prio = r->get_prio();
+      score_elt_t score = r->score(m);
 
-      result.add(prio, score, NULL);
+      result.add(score);
     }
 }

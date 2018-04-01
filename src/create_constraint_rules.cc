@@ -10,10 +10,10 @@ std::string RuleExpr::str() const
   switch (type)
     {
     case NONE: abort();
-    case INT_CONST: {
-      char buf[32];
-      sprintf(buf, "%d", iconst);
-      return buf;
+    case DIST: {
+      char b[64];
+      sprintf(b, "%ld", (long)dist);
+      return b;
     }
     case COMP_ACCESS:
       return name;
@@ -219,10 +219,9 @@ void add_constraint(Constraint *c,
 	}
       else if (auto cr = p->constraint_require())
 	{
-	  auto prio_expr = cr->expr()[0];
-	  auto expr = cr->expr()[1];
+	  auto expr = cr->expr();
 
-	  auto prio = constant_fold_expr(model, NULL, prio_expr);
+	  auto prio = atoi(cr->prio->getText().c_str());
 	  RuleExpr *r = create_rule(model, expr);
 	  c->add(prio, r);
 	}

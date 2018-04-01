@@ -24,10 +24,25 @@ typedef std::map<Component*, Component*> clone_map_t;
 
 class ModelInfo
 {
- public:
+private:
+  uint32_t cached_max_distance = 0;
+  
+public:
   Point board_dim;
   std::map<std::string, int> constants;
   std::vector<Constraint *> constraints;
+
+  uint32_t get_max_distance()
+  {
+    if (cached_max_distance == 0)
+      {	
+	Point::pos_t w = board_dim.x;
+	Point::pos_t h = board_dim.y;
+	cached_max_distance = sqrt((w * w) + (h * h));
+	assert(cached_max_distance > 0);
+      }
+    return cached_max_distance;
+  }
 };
 
 template<typename T, unsigned MAX>
@@ -129,7 +144,7 @@ class Model
   unsigned count_crossing_pins();
   
   void add_layers_for_crossing_lines();
-  double sum_connection_lengths();
+  void add_connection_lengths(length_score_t &s);
   unsigned count_overlaps();  
   Component *create_router(const Point &pos);
   Model *clone();

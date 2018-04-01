@@ -112,7 +112,8 @@ class Component
   }
 
   void crossover(Component *other);
-  double sum_connection_lengths();
+  void add_connection_lengths(length_score_t &s,
+			      Model *m);
 
   Pin *find_pin_by_id(unsigned id) const;
   Pin *find_pin_by_name(const std::string &name);

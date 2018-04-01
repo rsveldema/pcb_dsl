@@ -17,6 +17,33 @@ void Usage(const char *format, ...)
   exit(1);  
 }
 
+static unsigned parse_errors = 0;
+  
+class LexerErrorListener : public antlr4::BaseErrorListener {
+public:    
+  virtual void syntaxError(antlr4::Recognizer *recognizer,
+			   antlr4::Token *offendingSymbol,
+			   size_t line, size_t charPositionInLine,
+			   const std::string &msg, std::exception_ptr e) override
+  {
+    parse_errors++;
+  }
+};
+  
+class ParserErrorListener : public antlr4::BaseErrorListener {
+public:
+    
+  virtual void syntaxError(antlr4::Recognizer *recognizer,
+			   antlr4::Token *offendingSymbol,
+			   size_t line, size_t charPositionInLine,
+			   const std::string &msg, std::exception_ptr e) override
+  {
+    parse_errors++;
+  }
+};
+  
+
+
 int main(int argc, char **argv)
 {
   srand(10);
@@ -64,31 +91,6 @@ int main(int argc, char **argv)
   Canvas::init(argc, argv);    
 
   ModelCreatorListener listener;
-  static unsigned parse_errors = 0;
-  
-  class LexerErrorListener : public antlr4::BaseErrorListener {
-  public:    
-    virtual void syntaxError(antlr4::Recognizer *recognizer,
-			     antlr4::Token *offendingSymbol,
-			     size_t line, size_t charPositionInLine,
-			     const std::string &msg, std::exception_ptr e) override
-    {
-      parse_errors++;
-    }
-  };
-  
-  class ParserErrorListener : public antlr4::BaseErrorListener {
-  public:
-    
-    virtual void syntaxError(antlr4::Recognizer *recognizer,
-			     antlr4::Token *offendingSymbol,
-			     size_t line, size_t charPositionInLine,
-			     const std::string &msg, std::exception_ptr e) override
-    {
-      parse_errors++;
-    }
-  };
-  
   try {
     LexerErrorListener lexerErrorListener;
     ParserErrorListener parserErrorListener;

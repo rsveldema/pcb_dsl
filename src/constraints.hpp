@@ -8,7 +8,7 @@ class RuleExpr
   enum Type
     {
       NONE,
-      INT_CONST,
+      DIST,
       COMP_ACCESS,
       PIN_ACCESS,
       LEN,
@@ -24,17 +24,17 @@ class RuleExpr
  private:
   Type type = NONE;
 
-  int iconst = 0;
+  Point::pos_t dist;
   std::string name;
   RuleExpr *lhs = nullptr;
   RuleExpr *rhs = nullptr;
   unsigned prio = 0;
   
  public:
-  RuleExpr(int c)
+  RuleExpr(const MillimeterLength &d)
+    : dist(Point::getPointLen(d))
     {
-      type = INT_CONST;
-      iconst = c;
+      type = DIST;
     }
 
   RuleExpr(const std::string &s)
@@ -76,7 +76,7 @@ class RuleExpr
   Component *find_component(Model *m);
   Pin *find_pin(Model *m);
   int64_t eval(Model *m);
-  int score(Model *m);
+  score_elt_t score(Model *m);
 };
 
 
