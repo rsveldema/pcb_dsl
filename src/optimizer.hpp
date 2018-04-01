@@ -6,13 +6,19 @@
 enum class InitialPlacement
   {
     RANDOM,
-      CLOSE_TO_ALREADY_PLACED,
+    CLOSE_TO_ALREADY_PLACED,
   };
 
 
-Model* optimize_model(Model *model,
-		      unsigned time_limit_secs,
-		      bool enable_gui,
-		      InitialPlacement initial_placement);
+Model* cpu_optimize_model(Model *model,
+			  unsigned time_limit_secs,
+			  bool enable_gui,
+			  InitialPlacement initial_placement);
+
+
+Model* opencl_optimize_model(Model *model,
+			     unsigned time_limit_secs,
+			     bool enable_gui,
+			     InitialPlacement initial_placement);
 
 #endif

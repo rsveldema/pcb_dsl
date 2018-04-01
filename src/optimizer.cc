@@ -582,10 +582,10 @@ void optimization_thread(NestedGeneration* nested,
 }
 
 
-Model* optimize_model(Model *model,
-		      unsigned time_limit_secs,
-		      bool enable_gui,
-		      InitialPlacement initial_placement)
+Model* cpu_optimize_model(Model *model,
+			  unsigned time_limit_secs,
+			  bool enable_gui,
+			  InitialPlacement initial_placement)
 {
   print_config();
   

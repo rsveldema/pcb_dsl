@@ -142,6 +142,8 @@ class Model
 			     std::vector<Pin*> &crossed);
   unsigned count_crossing_lines();
   unsigned count_crossing_pins();
+
+  void gen_opencl();
   
   void add_layers_for_crossing_lines();
   void add_connection_lengths(length_score_t &s);
