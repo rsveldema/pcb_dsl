@@ -8,6 +8,8 @@ enum class Importance
   {
     USER_1,
     USER_2,
+    USER_3,
+    USER_4,
     OVERLAP,
     SUM_LENGTHS,
     CROSSING_PINS,

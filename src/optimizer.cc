@@ -9,15 +9,23 @@
 
 #define SUPPORT_MULTI_GEN_ELITE   1
 
-constexpr auto POPULATION_NUM_GROUPS =  1u;
-constexpr auto POPULATION_GROUP_SIZE = 32u;
-constexpr auto NUM_KEPT_GROUP_BEST   =  4u; 
-constexpr auto SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
+constexpr unsigned POPULATION_NUM_GROUPS =  1u;
+constexpr unsigned POPULATION_GROUP_SIZE = 32u;
+constexpr unsigned SELECTION_FILTER_SIZE   = unsigned(0.3 * POPULATION_GROUP_SIZE);
 
-constexpr auto CROSSOVER_PROBABILITY_PERCENTAGE   = 60;
-constexpr auto MUTATION_PROBABILITY_PERCENTAGE    = 15;
-constexpr auto FIX_PROBABILITY_PERCENTAGE         = 20;
-constexpr auto ROTATE_PROBABILITY_PERCENTAGE      = 3;
+static_assert(SELECTION_FILTER_SIZE > 0);
+
+#if SUPPORT_MULTI_GEN_ELITE   
+constexpr unsigned NUM_KEPT_GROUP_BEST   =  (POPULATION_GROUP_SIZE / 2);
+static_assert(NUM_KEPT_GROUP_BEST > 0);
+#endif
+
+
+
+constexpr unsigned CROSSOVER_PROBABILITY_PERCENTAGE   = 60;
+constexpr unsigned MUTATION_PROBABILITY_PERCENTAGE    = 15;
+constexpr unsigned FIX_PROBABILITY_PERCENTAGE         = 20;
+constexpr unsigned ROTATE_PROBABILITY_PERCENTAGE      = 3;
 
 static
 void print_config()
@@ -249,20 +257,20 @@ public:
 #endif
 	  }
 	/*
-	 if (should_fix())
+	 else if (should_fix())
 	  {
 	    model->add_layers_for_crossing_lines();
 	  }
-	 if (should_mutate())
+	  else if (should_mutate())
 	  {
 	    model->remove_router_chain();
 	  }
-	 */
-	if (should_rotate())
+	*/
+	else if (should_rotate())
 	  {
 	    model->random_rotate_component();
 	  }
-	 if (should_crossover())
+	else if (should_crossover())
 	  {
 	    unsigned k = randrange(0, models.size());
 	    if (k != i)
@@ -328,7 +336,14 @@ public:
     
     assert(array.size() == selected.size());
     assert(selected.size() <= POPULATION_GROUP_SIZE);
-    
+
+    /*
+    fprintf(stderr,
+	    "going to use %d selected, %d best and %d mutated selected\n",
+	    selected.size(),
+	    best_models.size(),
+	    POPULATION_GROUP_SIZE - (selected.size() + best_models.size()));
+    */
     for (unsigned i = 0; i < POPULATION_GROUP_SIZE; i++)
       {
 	if (i < selected.size())
