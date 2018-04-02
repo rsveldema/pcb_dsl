@@ -548,7 +548,7 @@ void optimization_thread(NestedGeneration* nested,
       nested->optimize(iteration);
       now = currentTimeSecs();
       
-      if (int(now) != int(old))
+      if (now != old)
 	{
 	  auto pair = nested->find_best();
 	  Model *best = pair.second;

@@ -124,10 +124,8 @@ public:
 			while (SDL_PollEvent(&event)) {
 			}
 
-			auto duration = std::chrono::microseconds(100);
-
 			std::unique_lock<std::mutex> lk(::mutex);
-			cv.wait_for(lk, duration);
+			cv.wait(lk);
 			gtkwin->lock();
 			gtkwin->clear();
 			assert(gtkwin);
