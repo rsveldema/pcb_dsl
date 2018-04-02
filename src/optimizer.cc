@@ -1,5 +1,7 @@
 #include <algorithm>
 #include <thread>
+#include <array>
+
 #include <string.h>
 
 #include "optimizer.hpp"

@@ -1,13 +1,16 @@
 #include "utils.hpp"
 
-#include <sys/time.h>
 #include <boost/algorithm/string/replace.hpp>
+#include <chrono>
 
 uint64_t currentTimeMillis()
 {
-  timeval tv;
-  gettimeofday(&tv, NULL);
-  return ((uint64_t) tv.tv_sec*1000) + (tv.tv_usec/1000);
+	auto now = std::chrono::system_clock::now();
+	auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
+	auto epoch = now_ms.time_since_epoch();
+	auto value = std::chrono::duration_cast<std::chrono::milliseconds>(epoch);
+	long duration = value.count();
+	return duration;
 }
 
 int randrange(int min, int max) 

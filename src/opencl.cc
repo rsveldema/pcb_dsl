@@ -6,8 +6,6 @@
 #include "create_model.hpp"
 #include "utils.hpp"
 
-#include <boost/compute.hpp>
-
 
 Model* opencl_optimize_model(Model *model,
 			     unsigned time_limit_secs,

@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{3F475404-2C37-4CA5-9C5E-B4A6E525D133}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\Ronald\source\repos\pcb_dsl\antlr4cpp_generated_src\antlrcpp;C:\Users\Ronald\source\repos\pcb_dsl\antlr_runtime\runtime\src;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="antlr4cpp_generated_src\antlrcpp\dslBaseListener.cpp" />
+    <ClCompile Include="antlr4cpp_generated_src\antlrcpp\dslBaseVisitor.cpp" />
+    <ClCompile Include="antlr4cpp_generated_src\antlrcpp\dslLexer.cpp" />
+    <ClCompile Include="antlr4cpp_generated_src\antlrcpp\dslListener.cpp" />
+    <ClCompile Include="antlr4cpp_generated_src\antlrcpp\dslParser.cpp" />
+    <ClCompile Include="antlr4cpp_generated_src\antlrcpp\dslVisitor.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\ANTLRErrorListener.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\ANTLRErrorStrategy.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\ANTLRFileStream.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\ANTLRInputStream.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\AbstractPredicateTransition.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ActionTransition.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\AmbiguityInfo.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ArrayPredictionContext.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ATN.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ATNConfig.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ATNConfigSet.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ATNDeserializationOptions.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ATNDeserializer.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ATNSerializer.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ATNSimulator.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ATNState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\AtomTransition.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\BasicBlockStartState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\BasicState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\BlockEndState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\BlockStartState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ContextSensitivityInfo.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\DecisionEventInfo.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\DecisionInfo.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\DecisionState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\EmptyPredictionContext.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\EpsilonTransition.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ErrorInfo.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerAction.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerActionExecutor.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerATNConfig.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerATNSimulator.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerChannelAction.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerCustomAction.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerIndexedCustomAction.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerModeAction.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerMoreAction.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerPopModeAction.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerPushModeAction.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerSkipAction.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LexerTypeAction.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LL1Analyzer.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LookaheadEventInfo.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\LoopEndState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\NotSetTransition.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\OrderedATNConfigSet.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ParseInfo.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ParserATNSimulator.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\PlusBlockStartState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\PlusLoopbackState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\PrecedencePredicateTransition.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\PredicateEvalInfo.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\PredicateTransition.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\PredictionContext.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\PredictionMode.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\ProfilingATNSimulator.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\RangeTransition.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\RuleStartState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\RuleStopState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\RuleTransition.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\SemanticContext.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\SetTransition.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\SingletonPredictionContext.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\StarBlockStartState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\StarLoopbackState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\StarLoopEntryState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\TokensStartState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\Transition.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\atn\WildcardTransition.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\BailErrorStrategy.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\BaseErrorListener.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\BufferedTokenStream.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\CharStream.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\CommonToken.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\CommonTokenFactory.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\CommonTokenStream.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\ConsoleErrorListener.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\DefaultErrorStrategy.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\dfa\DFA.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\dfa\DFASerializer.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\dfa\DFAState.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\dfa\LexerDFASerializer.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\DiagnosticErrorListener.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\Exceptions.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\FailedPredicateException.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\InputMismatchException.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\InterpreterRuleContext.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\IntStream.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\Lexer.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\LexerInterpreter.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\LexerNoViableAltException.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\ListTokenSource.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\misc\InterpreterDataReader.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\misc\Interval.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\misc\IntervalSet.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\misc\MurmurHash.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\misc\Predicate.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\NoViableAltException.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\Parser.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\ParserInterpreter.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\ParserRuleContext.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\ProxyErrorListener.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\RecognitionException.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\Recognizer.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\RuleContext.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\RuleContextWithAltNum.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\RuntimeMetaData.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\support\Any.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\support\Arrays.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\support\CPPUtils.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\support\guid.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\support\StringUtils.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\Token.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\TokenSource.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\TokenStream.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\TokenStreamRewriter.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\ErrorNode.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\ErrorNodeImpl.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\IterativeParseTreeWalker.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\ParseTree.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\ParseTreeListener.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\ParseTreeVisitor.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\ParseTreeWalker.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\pattern\Chunk.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\pattern\ParseTreeMatch.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\pattern\ParseTreePattern.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\pattern\ParseTreePatternMatcher.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\pattern\RuleTagToken.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\pattern\TagChunk.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\pattern\TextChunk.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\pattern\TokenTagToken.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\TerminalNode.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\TerminalNodeImpl.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\Trees.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\xpath\XPath.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\xpath\XPathElement.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\xpath\XPathLexer.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\xpath\XPathLexerErrorListener.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\xpath\XPathRuleAnywhereElement.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\xpath\XPathRuleElement.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\xpath\XPathTokenAnywhereElement.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\xpath\XPathTokenElement.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\xpath\XPathWildcardAnywhereElement.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\tree\xpath\XPathWildcardElement.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\UnbufferedCharStream.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\UnbufferedTokenStream.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\Vocabulary.cpp" />
+    <ClCompile Include="antlr_runtime\runtime\src\WritableToken.cpp" />
+    <ClCompile Include="src\check.cc" />
+    <ClCompile Include="src\constraints.cc" />
+    <ClCompile Include="src\count_overlaps.cc" />
+    <ClCompile Include="src\create_constraint_rules.cc" />
+    <ClCompile Include="src\create_model.cc" />
+    <ClCompile Include="src\crossing_pins.cc" />
+    <ClCompile Include="src\crossing_wires.cc" />
+    <ClCompile Include="src\crossover.cc" />
+    <ClCompile Include="src\datasheet.cc" />
+    <ClCompile Include="src\display_gtk.cc" />
+    <ClCompile Include="src\display_windows.cpp" />
+    <ClCompile Include="src\draw.cc" />
+    <ClCompile Include="src\guessed_initial_placement.cc" />
+    <ClCompile Include="src\known_packages.cc" />
+    <ClCompile Include="src\layer_map.cc" />
+    <ClCompile Include="src\main.cc" />
+    <ClCompile Include="src\model.cc" />
+    <ClCompile Include="src\opencl.cc" />
+    <ClCompile Include="src\optimizer.cc" />
+    <ClCompile Include="src\place_routing_components.cc" />
+    <ClCompile Include="src\random_move.cc" />
+    <ClCompile Include="src\remove_router.cc" />
+    <ClCompile Include="src\rotate.cc" />
+    <ClCompile Include="src\sharp_angles.cc" />
+    <ClCompile Include="src\sum_lengths.cc" />
+    <ClCompile Include="src\utils.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="antlr4cpp_generated_src\antlrcpp\dslBaseListener.h" />
+    <ClInclude Include="antlr4cpp_generated_src\antlrcpp\dslBaseVisitor.h" />
+    <ClInclude Include="antlr4cpp_generated_src\antlrcpp\dslLexer.h" />
+    <ClInclude Include="antlr4cpp_generated_src\antlrcpp\dslListener.h" />
+    <ClInclude Include="antlr4cpp_generated_src\antlrcpp\dslParser.h" />
+    <ClInclude Include="antlr4cpp_generated_src\antlrcpp\dslVisitor.h" />
+    <ClInclude Include="antlr_runtime\runtime\antlrcpp-ios\antlrcpp_ios.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\antlr4-common.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\antlr4-runtime.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\ANTLRErrorListener.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\ANTLRErrorStrategy.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\ANTLRFileStream.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\ANTLRInputStream.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\AbstractPredicateTransition.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ActionTransition.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\AmbiguityInfo.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ArrayPredictionContext.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ATN.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ATNConfig.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ATNConfigSet.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ATNDeserializationOptions.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ATNDeserializer.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ATNSerializer.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ATNSimulator.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ATNState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ATNType.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\AtomTransition.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\BasicBlockStartState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\BasicState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\BlockEndState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\BlockStartState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ContextSensitivityInfo.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\DecisionEventInfo.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\DecisionInfo.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\DecisionState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\EmptyPredictionContext.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\EpsilonTransition.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ErrorInfo.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerAction.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerActionExecutor.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerActionType.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerATNConfig.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerATNSimulator.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerChannelAction.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerCustomAction.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerIndexedCustomAction.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerModeAction.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerMoreAction.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerPopModeAction.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerPushModeAction.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerSkipAction.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LexerTypeAction.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LL1Analyzer.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LookaheadEventInfo.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\LoopEndState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\NotSetTransition.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\OrderedATNConfigSet.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ParseInfo.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ParserATNSimulator.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\PlusBlockStartState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\PlusLoopbackState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\PrecedencePredicateTransition.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\PredicateEvalInfo.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\PredicateTransition.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\PredictionContext.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\PredictionMode.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\ProfilingATNSimulator.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\RangeTransition.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\RuleStartState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\RuleStopState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\RuleTransition.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\SemanticContext.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\SetTransition.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\SingletonPredictionContext.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\StarBlockStartState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\StarLoopbackState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\StarLoopEntryState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\TokensStartState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\Transition.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\atn\WildcardTransition.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\BailErrorStrategy.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\BaseErrorListener.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\BufferedTokenStream.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\CharStream.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\CommonToken.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\CommonTokenFactory.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\CommonTokenStream.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\ConsoleErrorListener.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\DefaultErrorStrategy.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\dfa\DFA.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\dfa\DFASerializer.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\dfa\DFAState.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\dfa\LexerDFASerializer.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\DiagnosticErrorListener.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\Exceptions.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\FailedPredicateException.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\InputMismatchException.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\InterpreterRuleContext.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\IntStream.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\Lexer.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\LexerInterpreter.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\LexerNoViableAltException.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\ListTokenSource.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\misc\InterpreterDataReader.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\misc\Interval.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\misc\IntervalSet.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\misc\MurmurHash.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\misc\Predicate.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\NoViableAltException.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\Parser.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\ParserInterpreter.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\ParserRuleContext.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\ProxyErrorListener.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\RecognitionException.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\Recognizer.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\RuleContext.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\RuleContextWithAltNum.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\RuntimeMetaData.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\support\Any.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\support\Arrays.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\support\BitSet.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\support\CPPUtils.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\support\Declarations.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\support\guid.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\support\StringUtils.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\Token.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\TokenFactory.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\TokenSource.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\TokenStream.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\TokenStreamRewriter.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\AbstractParseTreeVisitor.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\ErrorNode.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\ErrorNodeImpl.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\IterativeParseTreeWalker.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\ParseTree.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\ParseTreeListener.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\ParseTreeProperty.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\ParseTreeVisitor.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\ParseTreeWalker.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\pattern\Chunk.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\pattern\ParseTreeMatch.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\pattern\ParseTreePattern.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\pattern\ParseTreePatternMatcher.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\pattern\RuleTagToken.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\pattern\TagChunk.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\pattern\TextChunk.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\pattern\TokenTagToken.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\TerminalNode.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\TerminalNodeImpl.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\Trees.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\xpath\XPath.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\xpath\XPathElement.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\xpath\XPathLexer.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\xpath\XPathLexerErrorListener.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\xpath\XPathRuleAnywhereElement.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\xpath\XPathRuleElement.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\xpath\XPathTokenAnywhereElement.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\xpath\XPathTokenElement.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\xpath\XPathWildcardAnywhereElement.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\tree\xpath\XPathWildcardElement.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\UnbufferedCharStream.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\UnbufferedTokenStream.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\Vocabulary.h" />
+    <ClInclude Include="antlr_runtime\runtime\src\WritableToken.h" />
+    <ClInclude Include="src\canvas.hpp" />
+    <ClInclude Include="src\component.hpp" />
+    <ClInclude Include="src\component_datasheet.hpp" />
+    <ClInclude Include="src\constraints.hpp" />
+    <ClInclude Include="src\create_model.hpp" />
+    <ClInclude Include="src\datasheet.hpp" />
+    <ClInclude Include="src\display.hpp" />
+    <ClInclude Include="src\in_map.hpp" />
+    <ClInclude Include="src\known_packages.hpp" />
+    <ClInclude Include="src\layer_map.hpp" />
+    <ClInclude Include="src\model.hpp" />
+    <ClInclude Include="src\my_vector.hpp" />
+    <ClInclude Include="src\optimizer.hpp" />
+    <ClInclude Include="src\outline.hpp" />
+    <ClInclude Include="src\parser.hpp" />
+    <ClInclude Include="src\phys.hpp" />
+    <ClInclude Include="src\pin.hpp" />
+    <ClInclude Include="src\point.hpp" />
+    <ClInclude Include="src\RGB.hpp" />
+    <ClInclude Include="src\score.hpp" />
+    <ClInclude Include="src\utils.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\boost.1.66.0.0\build\native\boost.targets" Condition="Exists('packages\boost.1.66.0.0\build\native\boost.targets')" />
+    <Import Project="packages\boost_atomic-vc141.1.66.0.0\build\native\boost_atomic-vc141.targets" Condition="Exists('packages\boost_atomic-vc141.1.66.0.0\build\native\boost_atomic-vc141.targets')" />
+    <Import Project="packages\boost_bzip2-vc141.1.66.0.0\build\native\boost_bzip2-vc141.targets" Condition="Exists('packages\boost_bzip2-vc141.1.66.0.0\build\native\boost_bzip2-vc141.targets')" />
+    <Import Project="packages\boost_chrono-vc141.1.66.0.0\build\native\boost_chrono-vc141.targets" Condition="Exists('packages\boost_chrono-vc141.1.66.0.0\build\native\boost_chrono-vc141.targets')" />
+    <Import Project="packages\boost_container-vc141.1.66.0.0\build\native\boost_container-vc141.targets" Condition="Exists('packages\boost_container-vc141.1.66.0.0\build\native\boost_container-vc141.targets')" />
+    <Import Project="packages\boost_context-vc141.1.66.0.0\build\native\boost_context-vc141.targets" Condition="Exists('packages\boost_context-vc141.1.66.0.0\build\native\boost_context-vc141.targets')" />
+    <Import Project="packages\boost_coroutine-vc141.1.66.0.0\build\native\boost_coroutine-vc141.targets" Condition="Exists('packages\boost_coroutine-vc141.1.66.0.0\build\native\boost_coroutine-vc141.targets')" />
+    <Import Project="packages\boost_date_time-vc141.1.66.0.0\build\native\boost_date_time-vc141.targets" Condition="Exists('packages\boost_date_time-vc141.1.66.0.0\build\native\boost_date_time-vc141.targets')" />
+    <Import Project="packages\boost_exception-vc141.1.66.0.0\build\native\boost_exception-vc141.targets" Condition="Exists('packages\boost_exception-vc141.1.66.0.0\build\native\boost_exception-vc141.targets')" />
+    <Import Project="packages\boost_fiber-vc141.1.66.0.0\build\native\boost_fiber-vc141.targets" Condition="Exists('packages\boost_fiber-vc141.1.66.0.0\build\native\boost_fiber-vc141.targets')" />
+    <Import Project="packages\boost_filesystem-vc141.1.66.0.0\build\native\boost_filesystem-vc141.targets" Condition="Exists('packages\boost_filesystem-vc141.1.66.0.0\build\native\boost_filesystem-vc141.targets')" />
+    <Import Project="packages\boost_graph-vc141.1.66.0.0\build\native\boost_graph-vc141.targets" Condition="Exists('packages\boost_graph-vc141.1.66.0.0\build\native\boost_graph-vc141.targets')" />
+    <Import Project="packages\boost_iostreams-vc141.1.66.0.0\build\native\boost_iostreams-vc141.targets" Condition="Exists('packages\boost_iostreams-vc141.1.66.0.0\build\native\boost_iostreams-vc141.targets')" />
+    <Import Project="packages\boost_locale-vc141.1.66.0.0\build\native\boost_locale-vc141.targets" Condition="Exists('packages\boost_locale-vc141.1.66.0.0\build\native\boost_locale-vc141.targets')" />
+    <Import Project="packages\boost_log-vc141.1.66.0.0\build\native\boost_log-vc141.targets" Condition="Exists('packages\boost_log-vc141.1.66.0.0\build\native\boost_log-vc141.targets')" />
+    <Import Project="packages\boost_log_setup-vc141.1.66.0.0\build\native\boost_log_setup-vc141.targets" Condition="Exists('packages\boost_log_setup-vc141.1.66.0.0\build\native\boost_log_setup-vc141.targets')" />
+    <Import Project="packages\boost_math_c99-vc141.1.66.0.0\build\native\boost_math_c99-vc141.targets" Condition="Exists('packages\boost_math_c99-vc141.1.66.0.0\build\native\boost_math_c99-vc141.targets')" />
+    <Import Project="packages\boost_math_c99f-vc141.1.66.0.0\build\native\boost_math_c99f-vc141.targets" Condition="Exists('packages\boost_math_c99f-vc141.1.66.0.0\build\native\boost_math_c99f-vc141.targets')" />
+    <Import Project="packages\boost_math_c99l-vc141.1.66.0.0\build\native\boost_math_c99l-vc141.targets" Condition="Exists('packages\boost_math_c99l-vc141.1.66.0.0\build\native\boost_math_c99l-vc141.targets')" />
+    <Import Project="packages\boost_math_tr1-vc141.1.66.0.0\build\native\boost_math_tr1-vc141.targets" Condition="Exists('packages\boost_math_tr1-vc141.1.66.0.0\build\native\boost_math_tr1-vc141.targets')" />
+    <Import Project="packages\boost_math_tr1f-vc141.1.66.0.0\build\native\boost_math_tr1f-vc141.targets" Condition="Exists('packages\boost_math_tr1f-vc141.1.66.0.0\build\native\boost_math_tr1f-vc141.targets')" />
+    <Import Project="packages\boost_math_tr1l-vc141.1.66.0.0\build\native\boost_math_tr1l-vc141.targets" Condition="Exists('packages\boost_math_tr1l-vc141.1.66.0.0\build\native\boost_math_tr1l-vc141.targets')" />
+    <Import Project="packages\boost_prg_exec_monitor-vc141.1.66.0.0\build\native\boost_prg_exec_monitor-vc141.targets" Condition="Exists('packages\boost_prg_exec_monitor-vc141.1.66.0.0\build\native\boost_prg_exec_monitor-vc141.targets')" />
+    <Import Project="packages\boost_program_options-vc141.1.66.0.0\build\native\boost_program_options-vc141.targets" Condition="Exists('packages\boost_program_options-vc141.1.66.0.0\build\native\boost_program_options-vc141.targets')" />
+    <Import Project="packages\boost_python-vc141.1.66.0.0\build\native\boost_python-vc141.targets" Condition="Exists('packages\boost_python-vc141.1.66.0.0\build\native\boost_python-vc141.targets')" />
+    <Import Project="packages\boost_random-vc141.1.66.0.0\build\native\boost_random-vc141.targets" Condition="Exists('packages\boost_random-vc141.1.66.0.0\build\native\boost_random-vc141.targets')" />
+    <Import Project="packages\boost_regex-vc141.1.66.0.0\build\native\boost_regex-vc141.targets" Condition="Exists('packages\boost_regex-vc141.1.66.0.0\build\native\boost_regex-vc141.targets')" />
+    <Import Project="packages\boost_serialization-vc141.1.66.0.0\build\native\boost_serialization-vc141.targets" Condition="Exists('packages\boost_serialization-vc141.1.66.0.0\build\native\boost_serialization-vc141.targets')" />
+    <Import Project="packages\boost_signals-vc141.1.66.0.0\build\native\boost_signals-vc141.targets" Condition="Exists('packages\boost_signals-vc141.1.66.0.0\build\native\boost_signals-vc141.targets')" />
+    <Import Project="packages\boost_stacktrace_noop-vc141.1.66.0.0\build\native\boost_stacktrace_noop-vc141.targets" Condition="Exists('packages\boost_stacktrace_noop-vc141.1.66.0.0\build\native\boost_stacktrace_noop-vc141.targets')" />
+    <Import Project="packages\boost_stacktrace_windbg-vc141.1.66.0.0\build\native\boost_stacktrace_windbg-vc141.targets" Condition="Exists('packages\boost_stacktrace_windbg-vc141.1.66.0.0\build\native\boost_stacktrace_windbg-vc141.targets')" />
+    <Import Project="packages\boost_stacktrace_windbg_cached-vc141.1.66.0.0\build\native\boost_stacktrace_windbg_cached-vc141.targets" Condition="Exists('packages\boost_stacktrace_windbg_cached-vc141.1.66.0.0\build\native\boost_stacktrace_windbg_cached-vc141.targets')" />
+    <Import Project="packages\boost_system-vc141.1.66.0.0\build\native\boost_system-vc141.targets" Condition="Exists('packages\boost_system-vc141.1.66.0.0\build\native\boost_system-vc141.targets')" />
+    <Import Project="packages\boost_test_exec_monitor-vc141.1.66.0.0\build\native\boost_test_exec_monitor-vc141.targets" Condition="Exists('packages\boost_test_exec_monitor-vc141.1.66.0.0\build\native\boost_test_exec_monitor-vc141.targets')" />
+    <Import Project="packages\boost_thread-vc141.1.66.0.0\build\native\boost_thread-vc141.targets" Condition="Exists('packages\boost_thread-vc141.1.66.0.0\build\native\boost_thread-vc141.targets')" />
+    <Import Project="packages\boost_timer-vc141.1.66.0.0\build\native\boost_timer-vc141.targets" Condition="Exists('packages\boost_timer-vc141.1.66.0.0\build\native\boost_timer-vc141.targets')" />
+    <Import Project="packages\boost_type_erasure-vc141.1.66.0.0\build\native\boost_type_erasure-vc141.targets" Condition="Exists('packages\boost_type_erasure-vc141.1.66.0.0\build\native\boost_type_erasure-vc141.targets')" />
+    <Import Project="packages\boost_unit_test_framework-vc141.1.66.0.0\build\native\boost_unit_test_framework-vc141.targets" Condition="Exists('packages\boost_unit_test_framework-vc141.1.66.0.0\build\native\boost_unit_test_framework-vc141.targets')" />
+    <Import Project="packages\boost_wave-vc141.1.66.0.0\build\native\boost_wave-vc141.targets" Condition="Exists('packages\boost_wave-vc141.1.66.0.0\build\native\boost_wave-vc141.targets')" />
+    <Import Project="packages\boost_wserialization-vc141.1.66.0.0\build\native\boost_wserialization-vc141.targets" Condition="Exists('packages\boost_wserialization-vc141.1.66.0.0\build\native\boost_wserialization-vc141.targets')" />
+    <Import Project="packages\boost_zlib-vc141.1.66.0.0\build\native\boost_zlib-vc141.targets" Condition="Exists('packages\boost_zlib-vc141.1.66.0.0\build\native\boost_zlib-vc141.targets')" />
+    <Import Project="packages\boost-vc141.1.66.0.0\build\native\boost-vc141.targets" Condition="Exists('packages\boost-vc141.1.66.0.0\build\native\boost-vc141.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\boost.1.66.0.0\build\native\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost.1.66.0.0\build\native\boost.targets'))" />
+    <Error Condition="!Exists('packages\boost_atomic-vc141.1.66.0.0\build\native\boost_atomic-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_atomic-vc141.1.66.0.0\build\native\boost_atomic-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_bzip2-vc141.1.66.0.0\build\native\boost_bzip2-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_bzip2-vc141.1.66.0.0\build\native\boost_bzip2-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_chrono-vc141.1.66.0.0\build\native\boost_chrono-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_chrono-vc141.1.66.0.0\build\native\boost_chrono-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_container-vc141.1.66.0.0\build\native\boost_container-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_container-vc141.1.66.0.0\build\native\boost_container-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_context-vc141.1.66.0.0\build\native\boost_context-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_context-vc141.1.66.0.0\build\native\boost_context-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_coroutine-vc141.1.66.0.0\build\native\boost_coroutine-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_coroutine-vc141.1.66.0.0\build\native\boost_coroutine-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_date_time-vc141.1.66.0.0\build\native\boost_date_time-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_date_time-vc141.1.66.0.0\build\native\boost_date_time-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_exception-vc141.1.66.0.0\build\native\boost_exception-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_exception-vc141.1.66.0.0\build\native\boost_exception-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_fiber-vc141.1.66.0.0\build\native\boost_fiber-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_fiber-vc141.1.66.0.0\build\native\boost_fiber-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_filesystem-vc141.1.66.0.0\build\native\boost_filesystem-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_filesystem-vc141.1.66.0.0\build\native\boost_filesystem-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_graph-vc141.1.66.0.0\build\native\boost_graph-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_graph-vc141.1.66.0.0\build\native\boost_graph-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_iostreams-vc141.1.66.0.0\build\native\boost_iostreams-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_iostreams-vc141.1.66.0.0\build\native\boost_iostreams-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_locale-vc141.1.66.0.0\build\native\boost_locale-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_locale-vc141.1.66.0.0\build\native\boost_locale-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_log-vc141.1.66.0.0\build\native\boost_log-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_log-vc141.1.66.0.0\build\native\boost_log-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_log_setup-vc141.1.66.0.0\build\native\boost_log_setup-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_log_setup-vc141.1.66.0.0\build\native\boost_log_setup-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_math_c99-vc141.1.66.0.0\build\native\boost_math_c99-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_math_c99-vc141.1.66.0.0\build\native\boost_math_c99-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_math_c99f-vc141.1.66.0.0\build\native\boost_math_c99f-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_math_c99f-vc141.1.66.0.0\build\native\boost_math_c99f-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_math_c99l-vc141.1.66.0.0\build\native\boost_math_c99l-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_math_c99l-vc141.1.66.0.0\build\native\boost_math_c99l-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_math_tr1-vc141.1.66.0.0\build\native\boost_math_tr1-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_math_tr1-vc141.1.66.0.0\build\native\boost_math_tr1-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_math_tr1f-vc141.1.66.0.0\build\native\boost_math_tr1f-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_math_tr1f-vc141.1.66.0.0\build\native\boost_math_tr1f-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_math_tr1l-vc141.1.66.0.0\build\native\boost_math_tr1l-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_math_tr1l-vc141.1.66.0.0\build\native\boost_math_tr1l-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_prg_exec_monitor-vc141.1.66.0.0\build\native\boost_prg_exec_monitor-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_prg_exec_monitor-vc141.1.66.0.0\build\native\boost_prg_exec_monitor-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_program_options-vc141.1.66.0.0\build\native\boost_program_options-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_program_options-vc141.1.66.0.0\build\native\boost_program_options-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_python-vc141.1.66.0.0\build\native\boost_python-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_python-vc141.1.66.0.0\build\native\boost_python-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_random-vc141.1.66.0.0\build\native\boost_random-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_random-vc141.1.66.0.0\build\native\boost_random-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_regex-vc141.1.66.0.0\build\native\boost_regex-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_regex-vc141.1.66.0.0\build\native\boost_regex-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_serialization-vc141.1.66.0.0\build\native\boost_serialization-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_serialization-vc141.1.66.0.0\build\native\boost_serialization-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_signals-vc141.1.66.0.0\build\native\boost_signals-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_signals-vc141.1.66.0.0\build\native\boost_signals-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_stacktrace_noop-vc141.1.66.0.0\build\native\boost_stacktrace_noop-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_stacktrace_noop-vc141.1.66.0.0\build\native\boost_stacktrace_noop-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_stacktrace_windbg-vc141.1.66.0.0\build\native\boost_stacktrace_windbg-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_stacktrace_windbg-vc141.1.66.0.0\build\native\boost_stacktrace_windbg-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_stacktrace_windbg_cached-vc141.1.66.0.0\build\native\boost_stacktrace_windbg_cached-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_stacktrace_windbg_cached-vc141.1.66.0.0\build\native\boost_stacktrace_windbg_cached-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_system-vc141.1.66.0.0\build\native\boost_system-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_system-vc141.1.66.0.0\build\native\boost_system-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_test_exec_monitor-vc141.1.66.0.0\build\native\boost_test_exec_monitor-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_test_exec_monitor-vc141.1.66.0.0\build\native\boost_test_exec_monitor-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_thread-vc141.1.66.0.0\build\native\boost_thread-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_thread-vc141.1.66.0.0\build\native\boost_thread-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_timer-vc141.1.66.0.0\build\native\boost_timer-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_timer-vc141.1.66.0.0\build\native\boost_timer-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_type_erasure-vc141.1.66.0.0\build\native\boost_type_erasure-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_type_erasure-vc141.1.66.0.0\build\native\boost_type_erasure-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_unit_test_framework-vc141.1.66.0.0\build\native\boost_unit_test_framework-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_unit_test_framework-vc141.1.66.0.0\build\native\boost_unit_test_framework-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_wave-vc141.1.66.0.0\build\native\boost_wave-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_wave-vc141.1.66.0.0\build\native\boost_wave-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_wserialization-vc141.1.66.0.0\build\native\boost_wserialization-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_wserialization-vc141.1.66.0.0\build\native\boost_wserialization-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost_zlib-vc141.1.66.0.0\build\native\boost_zlib-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_zlib-vc141.1.66.0.0\build\native\boost_zlib-vc141.targets'))" />
+    <Error Condition="!Exists('packages\boost-vc141.1.66.0.0\build\native\boost-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost-vc141.1.66.0.0\build\native\boost-vc141.targets'))" />
+  </Target>
+</Project>

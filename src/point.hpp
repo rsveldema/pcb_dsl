@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <assert.h>
+#include <algorithm>
 
 #include "utils.hpp"
 

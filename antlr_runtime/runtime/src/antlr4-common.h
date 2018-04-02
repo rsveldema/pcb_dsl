@@ -68,6 +68,7 @@
     typedef std::u32string UTF32String;
   #endif
 
+	/* RONALD
   #ifdef ANTLR4CPP_EXPORTS
     #define ANTLR4CPP_PUBLIC __declspec(dllexport)
   #else
@@ -77,6 +78,8 @@
       #define ANTLR4CPP_PUBLIC __declspec(dllimport)
     #endif
   #endif
+  */
+#define ANTLR4CPP_PUBLIC
 
   class ANTLR4CPP_PUBLIC std::exception; // Needed for VS 2015.
 

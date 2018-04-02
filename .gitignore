@@ -12,3 +12,7 @@ f
 __pycache__
 *.xml
 gmon.out
+/x64/Debug
+/.vs
+/Debug
+/packages

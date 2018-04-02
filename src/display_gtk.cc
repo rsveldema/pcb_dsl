@@ -1,3 +1,5 @@
+#if USE_GTK
+
 #include "model.hpp"
 #include <cairomm/surface.h>
 #include <cairomm/context.h>
@@ -211,3 +213,5 @@ void Canvas::init(int argc, char **argv)
   app = Gtk::Application::create();
 }
 
+
+#endif

@@ -87,7 +87,7 @@ int main(int argc, char **argv)
   if (! file_exists(filename))
     {
       fprintf(stderr, "ERROR: file '%s' not found\n", filename);
-      exit(1);
+      abort();
     }
   printf("PARSING: %s\n", filename);
 

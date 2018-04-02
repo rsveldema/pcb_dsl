@@ -1,6 +1,8 @@
 #ifndef UTILZ___H__H_
 #define UTILZ___H__H_
 
+#define _USE_MATH_DEFINES
+
 #include <string>
 #include <vector>
 #include <sstream>
