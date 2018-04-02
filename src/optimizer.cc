@@ -540,16 +540,18 @@ void optimization_thread(NestedGeneration* nested,
 			 Canvas *gui)
 {
   unsigned iteration = 1;
-  auto now = currentTimeSecs();
+  auto now = currentTimeMillis();
   auto old = now;
-  auto end = now + time_limit_secs;
+  auto end = now + (time_limit_secs * 1000);
   while (now < end)
     {      
       nested->optimize(iteration);
-      now = currentTimeSecs();
+      now = currentTimeMillis();
       
-      if (now != old)
+      if ((now/1000) != (old/1000))
 	{
+	  old = now;
+	  
 	  auto pair = nested->find_best();
 	  Model *best = pair.second;
 	  score_t score = pair.first;
@@ -572,8 +574,7 @@ void optimization_thread(NestedGeneration* nested,
 	      printf("no best found?");
 	    }
 	  
-	  old = now;
-	  utils::print("left: ", long(end - now),
+	  utils::print("left: ", long(end - now) / 1000,
 		       " secs, done ", iteration,
 		       ", got: ", score.str());
 	}

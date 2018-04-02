@@ -300,7 +300,11 @@ void process_datasheet_prop(Model *model,
     
   printf("reading component prop: %s\n", filename.c_str());
   char cmd[64];
+#if USE_GTK
+  sprintf(cmd, "pdftohtml -xml %s out.xml",  filename.c_str());
+#else
   sprintf(cmd, "c:\\cygwin64\\bin\\pdftohtml -xml %s out.xml",  filename.c_str());
+#endif
   int ret = system(cmd);
   if (ret != 0)
     {

@@ -4,11 +4,7 @@
 #include "create_model.hpp"
 #include "utils.hpp"
 
-
-
 static float WIRE_WIDTH = 0.1;
-
-
 
 ComponentInfo::ComponentInfo(const std::string &_name, bool _is_router)
   : fixed_position(NULL),

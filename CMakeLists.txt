@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 SET (CMAKE_CXX_STANDARD 14)
 
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wno-attributes -g2 -O0")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wno-attributes -g2 -O0 -DUSE_GTK=1")
 # -pg
 
 message("CMAKE DIR IS "  ${PROJECT_SOURCE_DIR}/cmake)
