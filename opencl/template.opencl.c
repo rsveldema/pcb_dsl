@@ -9,6 +9,7 @@ typedef struct Point
 {
     int x;
     int y;
+    int layer;
 } Point;
 
 struct Outline

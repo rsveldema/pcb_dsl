@@ -52,7 +52,7 @@ public:
 
 class Pin
 {
-private:
+public:
 	Outline outline;
 
 public:

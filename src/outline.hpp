@@ -29,12 +29,17 @@ private:
 	p.minmax(d);
       }
   }
-  
+
   size_t size() const
   {
-    return points.size();
+	  return points.size();
   }
-  
+
+  const Point &get(unsigned ix) const
+  {
+	  return points[ix];
+  }
+
   inline layer_t get_layer() const
   {
     assert(points.size() > 0);

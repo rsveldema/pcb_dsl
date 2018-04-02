@@ -143,7 +143,6 @@ class Model
   unsigned count_crossing_lines();
   unsigned count_crossing_pins();
 
-  std::string create_opencl_datastructure();
   void gen_opencl();
   
   void add_layers_for_crossing_lines();
