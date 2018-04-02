@@ -70,8 +70,8 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Ronald\source\repos\pcb_dsl\antlr4cpp_generated_src\antlrcpp;C:\Users\Ronald\source\repos\pcb_dsl\antlr_runtime\runtime\src;C:\Users\Ronald\source\repos\vcpkg\installed\x86-windows\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Ronald\source\repos\vcpkg\installed\x86-windows\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Ronald\source\repos\pcb_dsl\antlr4cpp_generated_src\antlrcpp;C:\Users\Ronald\source\repos\pcb_dsl\antlr_runtime\runtime\src;C:\Users\Ronald\source\repos\vcpkg\installed\x86-windows\include;C:\Intel\OpenCL\sdk\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Ronald\source\repos\vcpkg\installed\x86-windows\lib;c:\Intel\OpenCL\sdk\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -105,9 +105,11 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>SUPPORT_OPENCL</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>cairomm-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cairomm-1.0.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -469,6 +471,7 @@
     <ClInclude Include="src\known_packages.hpp" />
     <ClInclude Include="src\layer_map.hpp" />
     <ClInclude Include="src\model.hpp" />
+    <ClInclude Include="src\mustache.hpp" />
     <ClInclude Include="src\my_vector.hpp" />
     <ClInclude Include="src\optimizer.hpp" />
     <ClInclude Include="src\outline.hpp" />

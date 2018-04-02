@@ -10,6 +10,16 @@ private:
   unsigned count = 0;
 
 public:
+	T* begin()
+	{
+		return &data[0];
+	}
+
+	T* end()
+	{
+		return &data[count];
+	}
+
   void reset(const T &a)
   {
     count = 0;

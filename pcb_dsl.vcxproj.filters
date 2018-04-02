@@ -1121,6 +1121,9 @@
     <ClInclude Include="src\BaseCairoCanvas.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\mustache.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
