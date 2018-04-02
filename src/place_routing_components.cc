@@ -2,35 +2,33 @@
 #include <algorithm>
 #include "utils.hpp"
 
-auto NUM_BENDS_PER_ROUTE     = 2u;
-
+auto NUM_BENDS_PER_ROUTE = 2u;
 
 bool contains(clone_map_t &routers,
-	      Component *p)
+	Component *p)
 {
-  return routers.find(p) != routers.end();
+	return routers.find(p) != routers.end();
 }
 
-
 void revector_connections_to_router(clone_map_t &routers,
-				    Component *router,
-				    Model *model,
-				    Pin *from_pin)
+	Component *router,
+	Model *model,
+	Pin *from_pin)
 {
-  //# see if there is another component that has a link to our pin:
-  //#print("revector ")
-  for (auto comp : model->components)
-    {
-      if (! contains(routers, comp)) //not comp in routers
+	//# see if there is another component that has a link to our pin:
+	//#print("revector ")
+	for (auto comp : model->components)
 	{
-	  for (unsigned ci=0;ci<comp->pins.size();ci++)
-	    {
-	      auto other_pin = comp->pins[ci];
+		if (!contains(routers, comp)) //not comp in routers
+		{
+			for (unsigned ci = 0; ci < comp->pins.size(); ci++)
+			{
+				auto other_pin = comp->pins[ci];
 
-	      other_pin->revector(from_pin, router->pins[0]);
-	    }
+				other_pin->revector(from_pin, router->pins[0]);
+			}
+		}
 	}
-    }
 }
 
 static PinInfo *router_in = new PinInfo("in");
@@ -39,63 +37,59 @@ static ComponentInfo *router_info = new ComponentInfo("router", true);
 
 Component *Model::create_router(const Point &pos)
 {
-  //#print("creating router")
-  auto storage = this->mman.alloc_comp();
-  auto comp = new (storage) Component(router_info, this);
-  components.push_back(comp);
-  auto pin_in  = comp->add_pin(this, router_in);
-  auto pin_out = comp->add_pin(this, router_out);
-  
-  auto s = Point();
-  auto e = s.add(comp->info->dim);
+	//#print("creating router")
+	auto storage = this->mman.alloc_comp();
+	auto comp = new (storage) Component(router_info, this);
+	components.push_back(comp);
+	auto pin_in = comp->add_pin(this, router_in);
+	auto pin_out = comp->add_pin(this, router_out);
 
-  comp->outline.addRect(s, e);
-  pin_in->addRect(s, e);
-  pin_out->addRect(s, e);
+	auto s = Point();
+	auto e = s.add(comp->info->dim);
 
-  comp->transpose( pos );
-  comp->add_bounding_box();
-  return comp;
+	comp->outline.addRect(s, e);
+	pin_in->addRect(s, e);
+	pin_out->addRect(s, e);
+
+	comp->transpose(pos);
+	comp->add_bounding_box();
+	return comp;
 }
-
 
 void Pin::route_around_conflict(Model *model,
-				Component *comp,
-				const Point &around)
+	Component *comp,
+	const Point &around)
 {
-  auto center = this->center();
+	auto center = this->center();
 
-  auto vec = around.sub(center);
-  auto loc1 = center.add(vec.mul(0.9));
-  auto loc2 = center.add(vec.mul(1.1));
+	auto vec = around.sub(center);
+	auto loc1 = center.add(vec.mul(0.9));
+	auto loc2 = center.add(vec.mul(1.1));
 
-  auto router1 = model->create_router(loc1);
-  auto router2 = model->create_router(loc2);
-  
-  //clone_map_t routers;
-  //routers[comp] = comp;
-  // routers[router1] = router1;
-  //routers[router2] = router2;
+	auto router1 = model->create_router(loc1);
+	auto router2 = model->create_router(loc2);
 
-  //  before:  this -> P2
-  //  after:   this -> R1 -> R2 -> P2
+	//clone_map_t routers;
+	//routers[comp] = comp;
+	// routers[router1] = router1;
+	//routers[router2] = router2;
 
-  layer_t new_layer = outline.get_layer() + 1;
-    
+	//  before:  this -> P2
+	//  after:   this -> R1 -> R2 -> P2
 
-  router1->pins[0]->set_layer(this->get_layer());
-  router1->pins[1]->connections.reset(router2->pins[0]);
-  router1->pins[1]->set_layer(new_layer);
-  
-  router2->pins[0]->set_layer(new_layer);  
-  router2->pins[1]->connections = this->connections;
-  router2->pins[1]->set_layer(this->get_layer());
-  
-  this->connections.reset(router1->pins[0]);
+	layer_t new_layer = outline.get_layer() + 1;
 
-  //utils::print("done: ", model->str());
-  model->writeDOT("routed.dot");
-  //revector_connections_to_router(routers, router2, model, his);
+	router1->pins[0]->set_layer(this->get_layer());
+	router1->pins[1]->connections.reset(router2->pins[0]);
+	router1->pins[1]->set_layer(new_layer);
+
+	router2->pins[0]->set_layer(new_layer);
+	router2->pins[1]->connections = this->connections;
+	router2->pins[1]->set_layer(this->get_layer());
+
+	this->connections.reset(router1->pins[0]);
+
+	//utils::print("done: ", model->str());
+	model->writeDOT("routed.dot");
+	//revector_connections_to_router(routers, router2, model, his);
 }
-
-

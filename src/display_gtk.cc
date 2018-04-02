@@ -1,10 +1,7 @@
 #if USE_GTK
-
-#include "model.hpp"
-#include <cairomm/surface.h>
-#include <cairomm/context.h>
 #include <gtkmm.h>
-#include <mutex>
+
+#include "BaseCairoCanvas.hpp"
 
 static Glib::RefPtr<Gtk::Application> app;
 static int app_argc;
@@ -13,7 +10,6 @@ static char **app_argv;
 static std::mutex mutex;
 class CairoCanvas;
 
-static double zoom = 6;
 
 class Viewer : public Gtk::DrawingArea
 {
@@ -35,7 +31,7 @@ public:
   bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
 };
 
-class DemoWindow : public Gtk::Window
+class DemoWindow : public Gtk::Window, public BaseWindow
 {
 public:
   Viewer draw_area;
@@ -67,7 +63,7 @@ public:
 
   
   // Called from the worker thread.
-  void notify()
+  void notify() override
   {
     m_Dispatcher.emit();
   }
@@ -82,105 +78,32 @@ public:
 /** Wrap cairo to avoid importing cairo everywhere.
  * Now cairo is used only in this file.
  */
-class CairoCanvas : public Canvas
-{
-private:
-  Cairo::RefPtr<Cairo::SvgSurface> svg;
-  Cairo::RefPtr<Cairo::Context>    ctxt;
+class CairoCanvas : public BaseCairoCanvas
+{  
+public:
+	DemoWindow * gtkwin = NULL;
 
-  Model *displayed_model = NULL;
-  DemoWindow *window = NULL;
-  
 public:
   CairoCanvas()
+	  : BaseCairoCanvas(::mutex)
   {
-    window = new DemoWindow(this);
   }
   
   CairoCanvas(const std::string &filename)
-  {
-    svg = Cairo::SvgSurface::create(filename, 1000, 1000);
-    ctxt = Cairo::Context::create(svg);
-  }
-
-  virtual ~CairoCanvas()
+	  : BaseCairoCanvas(filename, ::mutex)
   {
   }
   
-public:
-  void draw(const Cairo::RefPtr<Cairo::Context>& cr)
-  {
-    ctxt = cr;
-    if (displayed_model)
-      {
-	displayed_model->draw(this);
-      }
-  }
-  
-  virtual void publish(Model *m)
-  {    
-    mutex.lock();    
-    if (displayed_model)
-      {
-	delete displayed_model;
-      }
-    displayed_model = m->clone();
-    
-    //fprintf(stderr, "signal!\n");
-    //gtk_widget_queue_draw_area(&window->draw_area, 0, 0, 800, 600);
-    //window->draw_area.queue_draw(); //signal_draw();
-
-    window->notify();
-  
-    mutex.unlock();
-  }
-
-  
-  virtual void draw_text(const RGB &color,
-			 const MillimeterPoint &from,
-			 const std::string &text) override
-  {
-    ctxt->set_source_rgb (color.red(),
-			  color.green(),
-			  color.blue());
-    ctxt->set_line_width(0.2 * zoom);
-    ctxt->move_to(from.x.get() * zoom,
-		  from.y.get() * zoom);
-    ctxt->set_font_size(4);
-    ctxt->show_text(text);
-  }
-  
-  virtual void draw_line(const LineStyle style,
-			 const RGB &color,
-			 const MillimeterPoint &from,
-			 const MillimeterPoint &to) override
-  {
-    switch (style)
-      {
-      case LineStyle::SOLID: ctxt->unset_dash(); break;
-      case LineStyle::DASHED:
+public: 
+	BaseWindow * create_window() override
 	{
-	  std::vector<double> vec = {2, 2};
-	  ctxt->set_dash(vec, 5);
-	  break;
+		return window = gtkwin = new DemoWindow(this);
 	}
-      default: abort();
-      }
-    
-    ctxt->set_source_rgb (color.red(),
-			  color.green(),
-			  color.blue());
-    ctxt->set_line_width(0.2 * zoom);
-    ctxt->move_to(from.x.get() * zoom,
-		  from.y.get() * zoom);
-    ctxt->line_to(to.x.get() * zoom,
-		  to.y.get() * zoom);
-    ctxt->stroke();
-  }
+
 
   virtual int run() override
   {
-    return app->run(*window, app_argc, app_argv);
+    return app->run(*gtkwin, app_argc, app_argv);
   }
 };
 
@@ -201,7 +124,9 @@ Canvas *Canvas::create_SVG_canvas(const std::string &filename)
 
 Canvas *Canvas::create_canvas()
 {
-  return new CairoCanvas();
+	auto c = new CairoCanvas();
+	c->create_window();
+	return c;
 }
 
 

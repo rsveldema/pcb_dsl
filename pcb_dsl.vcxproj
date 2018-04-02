@@ -70,7 +70,8 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Ronald\source\repos\pcb_dsl\antlr4cpp_generated_src\antlrcpp;C:\Users\Ronald\source\repos\pcb_dsl\antlr_runtime\runtime\src;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Ronald\source\repos\pcb_dsl\antlr4cpp_generated_src\antlrcpp;C:\Users\Ronald\source\repos\pcb_dsl\antlr_runtime\runtime\src;C:\Users\Ronald\source\repos\vcpkg\installed\x86-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Ronald\source\repos\vcpkg\installed\x86-windows\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -105,6 +106,9 @@
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>cairomm-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="antlr4cpp_generated_src\antlrcpp\dslBaseListener.cpp" />
@@ -271,7 +275,7 @@
     <ClCompile Include="src\crossover.cc" />
     <ClCompile Include="src\datasheet.cc" />
     <ClCompile Include="src\display_gtk.cc" />
-    <ClCompile Include="src\display_windows.cpp" />
+    <ClCompile Include="src\display_SDL.cc" />
     <ClCompile Include="src\draw.cc" />
     <ClCompile Include="src\guessed_initial_placement.cc" />
     <ClCompile Include="src\known_packages.cc" />
@@ -453,6 +457,7 @@
     <ClInclude Include="antlr_runtime\runtime\src\UnbufferedTokenStream.h" />
     <ClInclude Include="antlr_runtime\runtime\src\Vocabulary.h" />
     <ClInclude Include="antlr_runtime\runtime\src\WritableToken.h" />
+    <ClInclude Include="src\BaseCairoCanvas.hpp" />
     <ClInclude Include="src\canvas.hpp" />
     <ClInclude Include="src\component.hpp" />
     <ClInclude Include="src\component_datasheet.hpp" />

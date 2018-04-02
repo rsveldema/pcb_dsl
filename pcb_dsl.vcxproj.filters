@@ -558,7 +558,7 @@
     <ClCompile Include="src\display_gtk.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\display_windows.cpp">
+    <ClCompile Include="src\display_SDL.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1117,6 +1117,9 @@
     </ClInclude>
     <ClInclude Include="src\utils.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BaseCairoCanvas.hpp">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
