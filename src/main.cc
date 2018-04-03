@@ -50,7 +50,9 @@ int main(int argc, char **argv)
 
   InitialPlacement initial_placement = InitialPlacement::CLOSE_TO_ALREADY_PLACED;
   bool enable_gui = false;
+#if SUPPORT_OPENCL
   bool use_opencl = false;
+#endif
   const char *filename = NULL;
   int optimize_secs = 5;
   
@@ -60,10 +62,12 @@ int main(int argc, char **argv)
 	{
 	  enable_gui = true;
 	}
+#if SUPPORT_OPENCL
       else if (strcmp(argv[i], "-opencl") == 0)
 	{
 	  use_opencl = true;
 	}
+#endif
       else if (strcmp(argv[i], "-secs") == 0)
 	{
 	  i++;	  
@@ -131,12 +135,14 @@ int main(int argc, char **argv)
 
   model->check();
 
+  #if SUPPORT_OPENCL
   if (use_opencl)
     {
       Model *best = opencl_optimize_model(model, optimize_secs, enable_gui, initial_placement);
       best->writeSVG("final.svg");
     }
   else
+#endif
     {
       Model *best = cpu_optimize_model(model, optimize_secs, enable_gui, initial_placement);
       best->writeSVG("final.svg");
